@@ -25,7 +25,7 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.ParameterContributor;
-import net.sf.jasperreports.engine.query.JsonQueryExecuterFactory;
+import net.sf.jasperreports.json.query.JsonQueryExecuterFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
