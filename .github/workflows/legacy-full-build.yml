@@ -298,8 +298,8 @@ jobs:
         run: bash scripts/smoke-jasperserver.sh
       - name: REST login and PDF/XLSX report exports
         env:
-          JRS_SMOKE_USER: superuser
-          JRS_SMOKE_PASSWORD: superuser
+          JRS_SMOKE_USER: jasperadmin
+          JRS_SMOKE_PASSWORD: jasperadmin
         run: bash scripts/test-legacy-rest-reports.sh
       - name: Capture Tomcat diagnostics
         if: always()
