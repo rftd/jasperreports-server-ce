@@ -27,7 +27,7 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.AbstractHtmlExporter;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRExporterContext;
-import net.sf.jasperreports.poi.export.JRXlsAbstractExporter;
+import net.sf.jasperreports.engine.export.JRXlsAbstractExporter;
 import net.sf.jasperreports.poi.export.JRXlsExporter;
 import net.sf.jasperreports.export.AbstractXlsExporterConfiguration;
 import net.sf.jasperreports.export.AbstractXlsReportConfiguration;
