@@ -4,8 +4,8 @@
 set -Eeuo pipefail
 
 base="${JRS_BASE_URL:-http://127.0.0.1:8080/jasperserver}"
-user="${JRS_SMOKE_USER:-superuser}"
-password="${JRS_SMOKE_PASSWORD:-superuser}"
+user="${JRS_SMOKE_USER:-jasperadmin}"
+password="${JRS_SMOKE_PASSWORD:-jasperadmin}"
 tmp="$(mktemp -d "${RUNNER_TEMP:-/tmp}/jrs-functional.XXXXXXXX")"
 trap 'rm -rf "$tmp"' EXIT
 
