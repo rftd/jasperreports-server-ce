@@ -1,0 +1,191 @@
+name: Legacy full build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/legacy-full-build.yml'
+      - 'jasperserver/**'
+      - 'jasperserver-ui/**'
+      - 'scripts/prepare-legacy-frontend.py'
+  push:
+    branches:
+      - feature/jasperreports-7-migration
+    paths:
+      - '.github/workflows/legacy-full-build.yml'
+      - 'jasperserver/**'
+      - 'jasperserver-ui/**'
+      - 'scripts/prepare-legacy-frontend.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: legacy-full-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# First recover the historical 8.2/6.20 build. Java, Node, and dependency
+# upgrades will be separate changes once we have a green baseline.
+jobs:
+  frontend:
+    name: Frontend build (Node 14 / Yarn 1)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python 3.9 for legacy native Node modules
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - name: Install Node 14
+        uses: actions/setup-node@v4
+        with:
+          node-version: '14'
+      - name: Install Yarn Classic
+        run: npm install --global yarn@1.22.22
+      - name: Show build tool versions
+        run: |
+          node --version
+          npm --version
+          yarn --version
+          python3 --version
+      - name: Prepare archived private Git packages
+        run: python3 scripts/prepare-legacy-frontend.py --prepare
+      - name: Install frontend dependencies (legacy Lerna bootstrap)
+        working-directory: jasperserver-ui/ce
+        env:
+          npm_config_python: python3
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: |
+          set -o pipefail
+          yarn install --no-lockfile --non-interactive 2>&1 | tee "$RUNNER_TEMP/frontend-install.log"
+      - name: Compile frontend bundles
+        working-directory: jasperserver-ui/ce
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          BUILD_ARTIFACT_VERSION_NAME: ci
+        run: |
+          set -o pipefail
+          yarn run clean 2>&1 | tee "$RUNNER_TEMP/frontend-build.log"
+          yarn run build 2>&1 | tee -a "$RUNNER_TEMP/frontend-build.log"
+          cd jrs-ui
+          yarn run overlay 2>&1 | tee -a "$RUNNER_TEMP/frontend-build.log"
+          test -d build/overlay/scripts
+      - name: Package frontend Maven overlay
+        working-directory: jasperserver-ui/ce/jrs-ui/build/overlay
+        run: zip -qr "$RUNNER_TEMP/jrs-ui-overlay.zip" .
+      - name: Restore original manifests
+        if: always()
+        run: python3 scripts/prepare-legacy-frontend.py --restore
+      - name: Upload frontend overlay
+        uses: actions/upload-artifact@v4
+        with:
+          name: jrs-ui-overlay
+          path: ${{ runner.temp }}/jrs-ui-overlay.zip
+          if-no-files-found: error
+          retention-days: 5
+      - name: Upload frontend diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-logs
+          path: |
+            ${{ runner.temp }}/frontend-install.log
+            ${{ runner.temp }}/frontend-build.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+  backend:
+    name: Backend WAR build (Java 8 / Maven / Ant)
+    needs: frontend
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java 8 and Maven cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+          cache-dependency-path: |
+            jasperserver/pom.xml
+            jasperserver/buildomatic/pom.xml
+      - name: Install Ant and Ant Contrib
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ant ant-contrib
+      - name: Show tool versions
+        run: |
+          java -version
+          mvn -version
+          ant -version
+      - name: Download frontend overlay
+        uses: actions/download-artifact@v4
+        with:
+          name: jrs-ui-overlay
+          path: ${{ runner.temp }}/jrs-ui
+      - name: Register frontend overlay in local Maven repository
+        run: |
+          test -s "$RUNNER_TEMP/jrs-ui/jrs-ui-overlay.zip"
+          unzip -t "$RUNNER_TEMP/jrs-ui/jrs-ui-overlay.zip" >/dev/null
+          mvn -B org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file \
+            -Dfile="$RUNNER_TEMP/jrs-ui/jrs-ui-overlay.zip" \
+            -DgroupId=com.jaspersoft -DartifactId=jrs-ui \
+            -Dversion=ci -Dpackaging=zip -DgeneratePom=true
+      - name: Configure disposable Buildomatic environment
+        run: |
+          set -euo pipefail
+          cat > jasperserver/buildomatic/default_master.properties <<EOF
+          js-path=$GITHUB_WORKSPACE/jasperserver
+          appServerType=skipAppServerCheck
+          appServerDir=$RUNNER_TEMP/jrs-appserver
+          maven=$(command -v mvn)
+          maven.home=$(dirname "$(dirname "$(readlink -f "$(command -v mvn)")")")
+          maven.build.type=community
+          dbType=postgresql
+          dbHost=127.0.0.1
+          dbUsername=postgres
+          dbPassword=postgres
+          buildArtifactVersionName=ci
+          fafBuildArtifactVersionName=ci
+          SKIP_TEST_ARG=skipTests
+          tibco.driver.available=false
+          deprecated.driver.available=false
+          EOF
+          mkdir -p "$RUNNER_TEMP/jrs-appserver"
+      - name: Build original Community WAR
+        working-directory: jasperserver/buildomatic
+        env:
+          MAVEN_OPTS: -Xmx2048m
+          VERBOSE_LOGGING: 'true'
+        run: |
+          set -o pipefail
+          ./js-ant build-ce 2>&1 | tee "$RUNNER_TEMP/backend-build.log"
+      - name: Verify WAR output
+        run: |
+          test -s jasperserver/jasperserver-war/target/jasperserver.war
+          unzip -t jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
+      - name: Upload compiled WAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-jasperserver-war
+          path: jasperserver/jasperserver-war/target/jasperserver.war
+          if-no-files-found: error
+          retention-days: 5
+      - name: Upload backend diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build-logs
+          path: |
+            ${{ runner.temp }}/backend-build.log
+            jasperserver/**/target/surefire-reports/**
+          if-no-files-found: ignore
+          retention-days: 7
