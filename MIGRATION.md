@@ -1,4 +1,4 @@
-# JasperReports Server CE – migration baseline
+# OpenJRS Server — JasperReports Server CE migration baseline
 
 This branch starts with **build recovery**, not a JasperReports 7 runtime upgrade. The current application and its saved reports must remain unchanged until the original build is reproducible.
 
@@ -43,4 +43,4 @@ python3 scripts/prepare-legacy-frontend.py --restore
 4. Establish tests and a compatibility matrix for JasperReports 6 → 7 report compilation, import/export and persistence.
 5. Only then move JasperReports and platform upgrades in separate reviewable changes.
 
-**No build, deployment or functional smoke test has been executed by this initial preflight patch.**
+**Progress update (October 2026):** The original JasperReports 6.20.3 baseline has passed CI compilation, PostgreSQL/Tomcat startup, REST authentication and PDF/XLSX smoke exports in the [legacy baseline PR](https://github.com/rftd/jasperreports-server-ce/pull/1). Migration to JasperReports 7.1.0 is in progress in a [separate experimental PR](https://github.com/rftd/jasperreports-server-ce/pull/2), with API compatibility work still pending. These tests do not establish production readiness.
