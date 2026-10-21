@@ -218,6 +218,15 @@ jobs:
           set -o pipefail
           ./js-ant build-init-js-db-ce 2>&1 | tee "$RUNNER_TEMP/database-init.log"
           ./js-ant run-production-data-ce 2>&1 | tee -a "$RUNNER_TEMP/database-init.log"
+      - name: Prepare runtime WAR with Buildomatic files
+        run: |
+          set -euo pipefail
+          conf="jasperserver/buildomatic/build_conf/default/webapp"
+          test -s "$conf/WEB-INF/classes/hibernate.properties"
+          mkdir -p "$RUNNER_TEMP/runtime-war"
+          unzip -q jasperserver/jasperserver-war/target/jasperserver.war -d "$RUNNER_TEMP/runtime-war"
+          cp -r "$conf/." "$RUNNER_TEMP/runtime-war/"
+          (cd "$RUNNER_TEMP/runtime-war" && zip -qr "$RUNNER_TEMP/jasperserver-runtime.war" .)
       - name: Start Tomcat 9 with generated WAR
         run: |
           set -euo pipefail
@@ -248,7 +257,7 @@ jobs:
           docker run -d --name jrs-tomcat --network host \
             -e CATALINA_OPTS="-Xms256m -Xmx2048m -Djava.awt.headless=true" \
             -v "$RUNNER_TEMP/jrs-smoke/jasperserver.xml:/usr/local/tomcat/conf/Catalina/localhost/jasperserver.xml:ro" \
-            -v "$GITHUB_WORKSPACE/jasperserver/jasperserver-war/target/jasperserver.war:/usr/local/tomcat/webapps/jasperserver.war:ro" \
+            -v "$RUNNER_TEMP/jasperserver-runtime.war:/usr/local/tomcat/webapps/jasperserver.war:ro" \
             -v "$GITHUB_WORKSPACE/jasperserver/buildomatic/conf_source/db/postgresql/jdbc/postgresql-42.5.4.jar:/usr/local/tomcat/lib/postgresql-42.5.4.jar:ro" \
             tomcat:9.0-jdk8-temurin
       - name: Check JasperReports Server login endpoint
