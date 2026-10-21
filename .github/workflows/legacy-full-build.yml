@@ -165,6 +165,9 @@ jobs:
         env:
           MAVEN_OPTS: -Xmx2048m
           VERBOSE_LOGGING: 'true'
+          # Supported by buildomatic/bin/setup.xml: skip interactive keystore
+          # generation in CI; do not change production security behavior.
+          BUILDOMATIC_ENV: ci
         run: |
           set -o pipefail
           ./js-ant build-ce 2>&1 | tee "$RUNNER_TEMP/backend-build.log"
