@@ -38,8 +38,8 @@ import com.jaspersoft.jasperserver.api.metadata.jasperreports.service.ReportData
 import com.jaspersoft.jasperserver.api.metadata.user.domain.Tenant;
 import com.jaspersoft.jasperserver.api.metadata.user.domain.impl.client.MetadataUserDetails;
 import com.jaspersoft.jasperserver.api.metadata.user.service.TenantService;
-import net.sf.jasperreports.data.DataAdapter;
-import net.sf.jasperreports.data.DataAdapterService;
+import net.sf.jasperreports.dataadapters.DataAdapter;
+import net.sf.jasperreports.dataadapters.DataAdapterService;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
