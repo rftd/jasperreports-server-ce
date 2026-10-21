@@ -1,4 +1,8 @@
-# JasperReports Server Community WEB UI
+# OpenJRS Server — legacy web UI
+
+This UI originates from JasperReports Server Community Edition. Its source names, paths and deployment conventions are retained for compatibility. OpenJRS is independently maintained and not supported by the original vendor; see the [project README](../../README.md).
+
+## Historical UI instructions
 ## Set Up
 - install [nodejs](https://nodejs.org). Build tested on version 14.x.x, but it might also work on version 10.x.x
 - install [yarn](https://yarnpkg.com/getting-started/install). Build tested on version 1.22.x
