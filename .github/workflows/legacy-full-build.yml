@@ -175,6 +175,21 @@ jobs:
           deprecated.driver.available=false
           EOF
           mkdir -p "$RUNNER_TEMP/jrs-appserver"
+      - name: Create isolated CI encryption keystore
+        working-directory: jasperserver/buildomatic
+        env:
+          BUILDOMATIC_ENV: ci
+        run: |
+          set -euo pipefail
+          export ks="$RUNNER_TEMP/jrs-ci-keys"
+          export ksp="$RUNNER_TEMP/jrs-ci-keys"
+          mkdir -p "$ks"
+          chmod 700 "$ks"
+          ./js-ant create-keystore
+          test -s "$ks/.jrsks"
+          test -s "$ksp/.jrsksp"
+          test -s keystore.init.properties
+          echo "CI keystore generated in runner temporary storage."
       - name: Build original Community WAR
         working-directory: jasperserver/buildomatic
         env:
@@ -256,6 +271,8 @@ jobs:
           EOF
           docker run -d --name jrs-tomcat --network host \
             -e CATALINA_OPTS="-Xms256m -Xmx2048m -Djava.awt.headless=true" \
+            -e ksp="$RUNNER_TEMP/jrs-ci-keys" \
+            -v "$RUNNER_TEMP/jrs-ci-keys:$RUNNER_TEMP/jrs-ci-keys:ro" \
             -v "$RUNNER_TEMP/jrs-smoke/jasperserver.xml:/usr/local/tomcat/conf/Catalina/localhost/jasperserver.xml:ro" \
             -v "$RUNNER_TEMP/jasperserver-runtime.war:/usr/local/tomcat/webapps/jasperserver.war:ro" \
             -v "$GITHUB_WORKSPACE/jasperserver/buildomatic/conf_source/db/postgresql/jdbc/postgresql-42.5.4.jar:/usr/local/tomcat/lib/postgresql-42.5.4.jar:ro" \
@@ -267,6 +284,7 @@ jobs:
         run: |
           docker logs jrs-tomcat > "$RUNNER_TEMP/tomcat.log" 2>&1 || true
           docker inspect jrs-tomcat > "$RUNNER_TEMP/tomcat-inspect.json" 2>&1 || true
+          grep -E 'SEVERE|ERROR|Caused by:' "$RUNNER_TEMP/tomcat.log" | tail -10 | cut -c1-400 || true
       - name: Upload runtime diagnostic logs
         if: always()
         uses: actions/upload-artifact@v4
