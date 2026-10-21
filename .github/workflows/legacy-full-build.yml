@@ -61,7 +61,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
         run: |
           set -o pipefail
-          yarn install --no-lockfile --non-interactive 2>&1 | tee "$RUNNER_TEMP/frontend-install.log"
+          yarn install --non-interactive 2>&1 | tee "$RUNNER_TEMP/frontend-install.log"
       - name: Compile frontend bundles
         working-directory: jasperserver-ui/ce
         env:
