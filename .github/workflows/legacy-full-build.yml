@@ -9,6 +9,7 @@ on:
       - 'jasperserver-ui/**'
       - 'scripts/prepare-legacy-frontend.py'
       - 'scripts/smoke-jasperserver.sh'
+      - 'scripts/test-legacy-rest-reports.sh'
   push:
     branches:
       - feature/jasperreports-7-migration
@@ -233,6 +234,15 @@ jobs:
           set -o pipefail
           ./js-ant build-init-js-db-ce 2>&1 | tee "$RUNNER_TEMP/database-init.log"
           ./js-ant run-production-data-ce 2>&1 | tee -a "$RUNNER_TEMP/database-init.log"
+      - name: Load SugarCRM sample data and sample reports
+        working-directory: jasperserver/buildomatic
+        env:
+          BUILDOMATIC_ENV: ci
+          MAVEN_OPTS: -Xmx2048m
+        run: |
+          set -o pipefail
+          ./js-ant create-sugarcrm-db load-sugarcrm-db 2>&1 | tee "$RUNNER_TEMP/sample-data.log"
+          ./js-ant import-sample-data-ce 2>&1 | tee -a "$RUNNER_TEMP/sample-data.log"
       - name: Prepare runtime WAR with Buildomatic files
         run: |
           set -euo pipefail
@@ -279,6 +289,11 @@ jobs:
             tomcat:9.0-jdk8-temurin
       - name: Check JasperReports Server login endpoint
         run: bash scripts/smoke-jasperserver.sh
+      - name: REST login and PDF/XLSX report exports
+        env:
+          JRS_SMOKE_USER: superuser
+          JRS_SMOKE_PASSWORD: superuser
+        run: bash scripts/test-legacy-rest-reports.sh
       - name: Capture Tomcat diagnostics
         if: always()
         run: |
@@ -292,6 +307,7 @@ jobs:
           name: runtime-smoke-logs
           path: |
             ${{ runner.temp }}/database-init.log
+            ${{ runner.temp }}/sample-data.log
             ${{ runner.temp }}/tomcat.log
             ${{ runner.temp }}/tomcat-inspect.json
             ${{ runner.temp }}/jrs-login-smoke.html
