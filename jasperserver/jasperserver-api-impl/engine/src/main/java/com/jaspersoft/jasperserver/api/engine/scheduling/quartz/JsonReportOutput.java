@@ -35,7 +35,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JsonMetadataExporter;
+import net.sf.jasperreports.json.export.JsonMetadataExporter;
 
 
 /**
