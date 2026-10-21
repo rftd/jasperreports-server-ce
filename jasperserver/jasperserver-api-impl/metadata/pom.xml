@@ -34,6 +34,12 @@
         <version>${buildArtifactVersionName}</version>
     </parent>
     <dependencies>
+        <!-- JasperReports 7 splits Mondrian and XML/A query executers into the OLAP module. -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-olap</artifactId>
+            <version>${jasperreports.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.jaspersoft.jasperserver.api.common.impl</groupId>
             <artifactId>jasperserver-api-common-impl</artifactId>
