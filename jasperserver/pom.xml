@@ -1487,8 +1487,8 @@
     <aws-java-sdk.version>1.11.505</aws-java-sdk.version>
     <teiid.version>9.1.1</teiid.version>
     <validation.api.version>1.1.0.Final</validation.api.version>
-    <jasperreports.version>6.20.3</jasperreports.version>
-    <jasperreports.ext.version>6.20.3</jasperreports.ext.version>
+    <jasperreports.version>7.1.0</jasperreports.version>
+    <jasperreports.ext.version>7.1.0</jasperreports.ext.version>
     <hibernate.validator.version>5.4.3.Final</hibernate.validator.version>
     <hibernate.core.version>5.6.11.Final</hibernate.core.version>
     <hibernate.tools.version>5.6.2.Final</hibernate.tools.version>
