@@ -23,7 +23,7 @@ package com.jaspersoft.jasperserver.api.engine.jasperreports.json;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.jasperreports.engine.query.JsonQueryExecuterFactory;
+import net.sf.jasperreports.json.query.JsonQueryExecuterFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
