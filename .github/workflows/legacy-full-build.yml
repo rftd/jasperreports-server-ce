@@ -240,7 +240,14 @@ jobs:
           BUILDOMATIC_ENV: ci
           MAVEN_OPTS: -Xmx2048m
         run: |
+          set -euo pipefail
           set -o pipefail
+          # The importer runs in a separate JVM and needs the same keystore
+          # as the Tomcat runtime. Keys stay in the disposable runner.
+          export ks="$RUNNER_TEMP/jrs-ci-keys"
+          export ksp="$RUNNER_TEMP/jrs-ci-keys"
+          test -s "$ks/.jrsks"
+          test -s "$ksp/.jrsksp"
           ./js-ant create-sugarcrm-db load-sugarcrm-db 2>&1 | tee "$RUNNER_TEMP/sample-data.log"
           ./js-ant import-sample-data-ce 2>&1 | tee -a "$RUNNER_TEMP/sample-data.log"
       - name: Prepare runtime WAR with Buildomatic files
