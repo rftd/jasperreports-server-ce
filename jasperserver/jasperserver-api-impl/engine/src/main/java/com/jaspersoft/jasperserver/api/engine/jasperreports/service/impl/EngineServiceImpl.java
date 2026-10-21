@@ -129,7 +129,7 @@ import net.sf.ehcache.pool.impl.DefaultSizeOfEngine;
 import net.sf.jasperreports.data.cache.DataSnapshotException;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.pdf.JRPdfExporter;
 import net.sf.jasperreports.engine.fill.*;
 import net.sf.jasperreports.engine.query.JRQueryExecuter;
 import net.sf.jasperreports.engine.util.JRLoader;
