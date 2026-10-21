@@ -50,7 +50,7 @@ import net.sf.jasperreports.engine.query.JRQueryExecuter;
 import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRQueryExecuterUtils;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
-import net.sf.jasperreports.repo.DataAdapterResource;
+import net.sf.jasperreports.dataadapters.repo.DataAdapterResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanWrapperImpl;
