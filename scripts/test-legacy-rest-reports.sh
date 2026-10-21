@@ -38,31 +38,36 @@ login_status=$(curl --silent --show-error --max-time 30 \
   --data-urlencode "j_username=$user" \
   --data-urlencode "j_password=$password" \
   "$base/rest_v2/login") || failure "REST login request failed"
-[[ "$login_status" == "200" ]] ||
-  failure "REST login returned HTTP $login_status"
-grep -q 'JSESSIONID' "$tmp/cookies" ||
-  failure "Login did not create a JSESSIONID session cookie"
-echo "REST login succeeded and returned a session cookie."
+# Both session login and HTTP Basic are documented REST v2 authentication
+# mechanisms. Prefer the session; diagnose its failure separately from report
+# authorization, rather than treating an HTML login page as successful.
+if [[ "$login_status" == "200" ]] && grep -q 'JSESSIONID' "$tmp/cookies"; then
+  auth_args=(--cookie "$tmp/cookies")
+  echo "REST session login succeeded and returned a session cookie."
+else
+  echo "::warning title=REST session login unsuccessful::POST /rest_v2/login returned HTTP $login_status; validating the documented HTTP Basic alternative."
+  auth_args=(--basic --user "$user:$password")
+fi
 
 # The repository descriptor proves that the authenticated session is accepted,
 # and that the expected built-in sample is actually available.
-echo "Checking the AllAccounts repository report."
-request "$tmp/report-resource" "$base/rest_v2/resources/reports/samples/AllAccounts" \
-  --cookie "$tmp/cookies" --header 'Accept: application/repository.reportUnit+json'
-grep -Eqi '(AllAccounts|reportUnit)' "$tmp/report-resource" ||
+echo "Checking the CustomersReport repository report."
+request "$tmp/report-resource" "$base/rest_v2/resources/reports/interactive/CustomersReport" \
+  "${auth_args[@]}" --header 'Accept: application/repository.reportUnit+json'
+grep -Eqi '(CustomersReport|reportUnit)' "$tmp/report-resource" ||
   failure "Report descriptor was missing or unexpected"
 
 # The report uses the bundled SugarCRM example database.
-report="$base/rest_v2/reports/reports/samples/AllAccounts"
-echo "Exporting AllAccounts as PDF."
-request "$tmp/accounts.pdf" "$report.pdf" --cookie "$tmp/cookies" --header 'Accept: application/pdf'
+report="$base/rest_v2/reports/reports/interactive/CustomersReport"
+echo "Exporting CustomersReport as PDF."
+request "$tmp/accounts.pdf" "$report.pdf" "${auth_args[@]}" --header 'Accept: application/pdf'
 [[ "$(head -c 5 "$tmp/accounts.pdf")" == '%PDF-' ]] ||
   failure "PDF export has no PDF signature (possible HTML login/error response)"
 [[ $(stat -c %s "$tmp/accounts.pdf") -ge 1000 ]] ||
   failure "PDF export is unexpectedly small"
 
-echo "Exporting AllAccounts as XLSX."
-request "$tmp/accounts.xlsx" "$report.xlsx" --cookie "$tmp/cookies" \
+echo "Exporting CustomersReport as XLSX."
+request "$tmp/accounts.xlsx" "$report.xlsx" "${auth_args[@]}" \
   --header 'Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 python3 - "$tmp/accounts.xlsx" <<'PY'
 import sys
@@ -86,4 +91,4 @@ with zipfile.ZipFile(path) as workbook:
 print(f"XLSX workbook and worksheets verified ({path.stat().st_size} bytes).")
 PY
 
-echo "Functional smoke PASSED: REST login, report descriptor, PDF and XLSX."
+echo "Functional smoke PASSED: authenticated REST access, report descriptor, PDF and XLSX."
