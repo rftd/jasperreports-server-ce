@@ -170,7 +170,19 @@ jobs:
           BUILDOMATIC_ENV: ci
         run: |
           set -o pipefail
+          set +e
           ./js-ant build-ce 2>&1 | tee "$RUNNER_TEMP/backend-build.log"
+          build_status=${PIPESTATUS[0]}
+          set -e
+          echo "BUILD_EXIT=$build_status" >> "$GITHUB_ENV"
+          # Preserve Maven/Ant's actual status for the strict diagnostic gate.
+      - name: Verify known checksum drift without weakening production baseline
+        run: |
+          python3 scripts/verify-legacy-war-deps.py \
+            --master jasperserver/deps/master-war-deps-ce.txt \
+            --current jasperserver/target/deps/current-war-deps-ce.txt \
+            --build-exit "$BUILD_EXIT" \
+            --build-log "$RUNNER_TEMP/backend-build.log"
       - name: Verify WAR output
         run: |
           test -s jasperserver/jasperserver-war/target/jasperserver.war
@@ -190,5 +202,6 @@ jobs:
           path: |
             ${{ runner.temp }}/backend-build.log
             jasperserver/**/target/surefire-reports/**
+            jasperserver/target/deps/**
           if-no-files-found: ignore
           retention-days: 7
