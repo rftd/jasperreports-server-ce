@@ -31,6 +31,22 @@
 	<name>Examples of custom datasources</name>
 
 	<dependencies>
+		<!-- JasperReports 7 extracts the data adapter, JSON and Jaxen XML implementations. -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-data-adapters</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-json</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-jaxen</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
 		<!-- dependency>
 			<groupId>com.jaspersoft.connectors.cassandra</groupId>
 			<artifactId>js-cassandracql3-datasource</artifactId>
