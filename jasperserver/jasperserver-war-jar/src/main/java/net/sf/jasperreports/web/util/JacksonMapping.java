@@ -26,9 +26,9 @@ package net.sf.jasperreports.web.util;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @deprecated Replaced by {@link net.sf.jasperreports.util.JacksonMapping}.
+ * @deprecated Replaced by {@link net.sf.jasperreports.jackson.util.JacksonMapping}.
  */
-public class JacksonMapping extends net.sf.jasperreports.util.JacksonMapping
+public class JacksonMapping extends net.sf.jasperreports.jackson.util.JacksonMapping
 {
 	/**
 	 * 
