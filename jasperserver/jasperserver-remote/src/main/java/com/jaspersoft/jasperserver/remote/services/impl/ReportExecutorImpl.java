@@ -48,7 +48,7 @@ import com.jaspersoft.jasperserver.remote.services.ReportExecutionOptions;
 import com.jaspersoft.jasperserver.remote.services.ReportExecutor;
 import com.jaspersoft.jasperserver.remote.utils.AuditHelper;
 import com.jaspersoft.jasperserver.remote.utils.RepositoryHelper;
-import net.sf.jasperreports.engine.JRAbstractExporter;
+import com.jaspersoft.jasperserver.remote.utils.JasperReportsExceptionKeys;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -196,9 +196,7 @@ public class ReportExecutorImpl implements ReportExecutor {
             return exporter.exportReport(inputItems, output, engine, exportParameters, createExecutionContext(),
                     strategyForReport.getConcreteReportURI(report));
         } catch (JRRuntimeException e){
-            if(JRAbstractExporter.EXCEPTION_MESSAGE_KEY_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())
-            		|| JRAbstractExporter.EXCEPTION_MESSAGE_KEY_START_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())
-            		|| JRAbstractExporter.EXCEPTION_MESSAGE_KEY_END_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())){
+            if(JasperReportsExceptionKeys.isPageIndexOutOfRange(e.getMessageKey())){
                 final String pages = exportParameters.get(Argument.RUN_OUTPUT_PAGES).toString();
                 Object[] exceptionArgs = e.getArgs();
 				final int totalPages = ((Integer) exceptionArgs[exceptionArgs.length - 1]) + 1;

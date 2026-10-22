@@ -53,7 +53,7 @@ import com.jaspersoft.jasperserver.remote.services.ReportOutputResource;
 import com.jaspersoft.jasperserver.remote.services.RunReportService;
 import com.jaspersoft.jasperserver.remote.utils.AuditHelper;
 
-import net.sf.jasperreports.engine.JRAbstractExporter;
+import com.jaspersoft.jasperserver.remote.utils.JasperReportsExceptionKeys;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -139,9 +139,7 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
             auditHelper.addExceptionToAllAuditEvents(e);
             throw e;
         } catch (JRRuntimeException e) {
-            if (JRAbstractExporter.EXCEPTION_MESSAGE_KEY_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())
-            		|| JRAbstractExporter.EXCEPTION_MESSAGE_KEY_START_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())
-            		|| JRAbstractExporter.EXCEPTION_MESSAGE_KEY_END_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())) {
+            if (JasperReportsExceptionKeys.isPageIndexOutOfRange(e.getMessageKey())) {
                 final String pagesString = pages.toString();
                 throw new ErrorDescriptorException(new ErrorDescriptor().setMessage(
                         "Page number out of range : " + pagesString + " of "
