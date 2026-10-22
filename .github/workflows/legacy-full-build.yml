@@ -8,6 +8,7 @@ on:
       - 'jasperserver/**'
       - 'jasperserver-ui/**'
       - 'scripts/prepare-legacy-frontend.py'
+      - 'scripts/verify-legacy-war-deps.py'
       - 'scripts/smoke-jasperserver.sh'
       - 'scripts/test-legacy-rest-reports.sh'
   push:
