@@ -308,7 +308,6 @@
       <module>jasperserver-jax-rs-common</module>
       <module>jasperserver-jax-rs-rest</module>
       <module>jasperserver-dto</module>
-      <module>jasperserver-connectors</module>
       <module>jasperserver-ftp</module>
       <module>jasperserver-input-controls</module>
       <module>code-coverage</module>
@@ -1224,37 +1223,6 @@
           <exclusion>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.jaspersoft.connectors.mongodb</groupId>
-        <artifactId>js-mongodb-datasource</artifactId>
-        <version>3.10.2</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
