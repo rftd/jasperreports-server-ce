@@ -25,8 +25,8 @@ package net.sf.jasperreports.web.util;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @deprecated Replaced by {@link net.sf.jasperreports.util.JacksonMappingExtensionsRegistryFactory}.
+ * @deprecated Replaced by {@link net.sf.jasperreports.jackson.util.JacksonMappingExtensionsRegistryFactory}.
  */
-public class JacksonMappingExtensionsRegistryFactory extends net.sf.jasperreports.util.JacksonMappingExtensionsRegistryFactory
+public class JacksonMappingExtensionsRegistryFactory extends net.sf.jasperreports.jackson.util.JacksonMappingExtensionsRegistryFactory
 {
 }
