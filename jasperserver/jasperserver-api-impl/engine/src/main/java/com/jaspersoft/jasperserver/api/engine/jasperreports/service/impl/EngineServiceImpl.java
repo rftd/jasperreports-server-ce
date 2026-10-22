@@ -627,11 +627,13 @@ public class EngineServiceImpl implements EngineService, ReportExecuter,
 						(java.io.OutputStream) exportParameters.get(EngineService.PDF_OUTPUT_STREAM)));
 				Integer firstPage = (Integer) exportParameters.get(EngineService.PDF_START_PAGE_INDEX);
 				Integer lastPage = (Integer) exportParameters.get(EngineService.PDF_END_PAGE_INDEX);
-				if (firstPage != null || lastPage != null) {
+				Boolean overrideHints = (Boolean) exportParameters.get(EngineService.PDF_OVERRIDE_REPORT_HINTS);
+				if (firstPage != null || lastPage != null || overrideHints != null) {
 					net.sf.jasperreports.pdf.SimplePdfReportConfiguration configuration =
 							new net.sf.jasperreports.pdf.SimplePdfReportConfiguration();
 					configuration.setStartPageIndex(firstPage);
 					configuration.setEndPageIndex(lastPage);
+					configuration.setOverrideHints(overrideHints);
 					exporter.setConfiguration(configuration);
 				}
 				exporter.exportReport();

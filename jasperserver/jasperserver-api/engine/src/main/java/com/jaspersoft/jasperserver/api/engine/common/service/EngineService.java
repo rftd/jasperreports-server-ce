@@ -70,6 +70,7 @@ public interface EngineService
 	public static final String PDF_OUTPUT_STREAM = "pdf.outputStream";
 	public static final String PDF_START_PAGE_INDEX = "pdf.startPageIndex";
 	public static final String PDF_END_PAGE_INDEX = "pdf.endPageIndex";
+	public static final String PDF_OVERRIDE_REPORT_HINTS = "pdf.overrideReportHints";
 	
 	/**
 	 * Executes a report.

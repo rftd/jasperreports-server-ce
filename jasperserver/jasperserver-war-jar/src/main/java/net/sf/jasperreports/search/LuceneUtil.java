@@ -76,6 +76,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 
 import net.sf.jasperreports.engine.JRException;
+import java.util.Collections;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintFrame;
 import net.sf.jasperreports.engine.JRPrintPage;
@@ -183,7 +184,7 @@ public class LuceneUtil {
 
 		// get the spans for the matched terms
 		SpanQuery rewrittenQuery = (SpanQuery)query.rewrite(reader);
-		LuceneSpansInfo spansInfo = new LuceneSpansInfo(queryTerms.size());
+		LuceneSpansInfo spansInfo = new LuceneSpansInfo(queryTerms);
 		for (LeafReaderContext context : reader.leaves())
 		{
 			SpanWeight spanWeight = rewrittenQuery.createWeight(searcher, ScoreMode.COMPLETE_NO_SCORES, 1);
@@ -197,15 +198,23 @@ public class LuceneUtil {
 					String uid = doc.get("uid");
 					List<HitTermInfo> hitTermsInfo = hitTermsInfoMap.get(docIndex);
 
-					for (int i = spans.nextStartPosition(); i < spans.endPosition(); i++) {
+					if (hitTermsInfo == null) {
+						continue;
+					}
+					int startPosition;
+					while ((startPosition = spans.nextStartPosition()) != Spans.NO_MORE_POSITIONS) {
+						int endPosition = spans.endPosition();
+						List<HitTermInfo> matchedTerms = new ArrayList<>();
 						for (HitTermInfo ti : hitTermsInfo) {
-							if (ti.getPosition() == i) {
-								if (log.isDebugEnabled()) {
-									log.debug(String.format("term: %s@%d [%d, %d] - uid: %s, pageNo: %s", ti.getValue(), ti.getPosition(), ti.getStart(), ti.getEnd(), uid, doc.get("pageNo")));
-								}
-								ti.setPageNo(doc.get("pageNo"));
-								spansInfo.addTermInfo(uid, ti);
+							if (ti.getPosition() >= startPosition && ti.getPosition() < endPosition) {
+								matchedTerms.add(ti);
 							}
+						}
+						if (!matchedTerms.isEmpty()) {
+							Collections.sort(matchedTerms);
+							HitSpanInfo hitSpan = new HitSpanInfo(matchedTerms);
+							hitSpan.setPageNo(doc.get("pageNo"));
+							spansInfo.addSpanInfo(uid, hitSpan);
 						}
 					}
 				}

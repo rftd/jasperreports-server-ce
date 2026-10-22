@@ -74,7 +74,7 @@ public class SearchAction extends AbstractAction {
 				ObjectMapper mapper = new ObjectMapper();
 				ObjectNode result = mapper.createObjectNode();
 
-				Map<String, Integer> hitTermsPerPage = spansInfo.getHitTermsPerPage();
+				Map<String, Integer> hitTermsPerPage = spansInfo.getHitSpansPerPage();
 				result.put("searchString", searchData.getSearchString());
 
 				if (hitTermsPerPage.size() > 0) {
@@ -84,7 +84,7 @@ public class SearchAction extends AbstractAction {
 					for (Map.Entry<String, Integer> entry: hitTermsPerPage.entrySet()) {
 						item = mapper.createObjectNode();
 						item.put("page", Integer.parseInt(entry.getKey()) + 1);
-						item.put("hitCount", entry.getValue()/spansInfo.getTermsPerQuery());
+						item.put("hitCount", entry.getValue());
 						arrayNode.add(item);
 					}
 				}
