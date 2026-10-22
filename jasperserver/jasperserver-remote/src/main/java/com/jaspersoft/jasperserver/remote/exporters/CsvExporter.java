@@ -71,6 +71,7 @@ public class CsvExporter extends AbstractExporter {
             csv.setFieldDelimiter(exportParams.getFieldDelimiter());
             exporter.setConfiguration((net.sf.jasperreports.export.ExporterConfiguration) csv);
         }
+    }
 
     @Override
     public String getContentType() {
