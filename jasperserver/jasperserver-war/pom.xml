@@ -788,33 +788,6 @@
             <version>3.1.0</version>
         </dependency>
         <!-- big data connector components START -->
-        <dependency>
-            <groupId>com.jaspersoft.connectors.mongodb</groupId>
-            <artifactId>js-mongodb-datasource</artifactId>
-	        <exclusions>
-                <exclusion>
-                    <groupId>commons-pool</groupId>
-                    <artifactId>commons-pool</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jaspersoft.jasperserver</groupId>
-            <artifactId>jrs-mongodb-datasource</artifactId>
-            <version>${buildArtifactVersionName}</version>
-        </dependency>
 
         <!-- big data connector components END -->
 
