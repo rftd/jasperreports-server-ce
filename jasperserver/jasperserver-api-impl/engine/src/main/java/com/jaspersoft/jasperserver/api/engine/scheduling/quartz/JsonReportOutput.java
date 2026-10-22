@@ -32,7 +32,7 @@ import com.jaspersoft.jasperserver.api.metadata.common.domain.ContentResource;
 import com.jaspersoft.jasperserver.api.metadata.common.domain.DataContainer;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
+
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.json.export.JsonMetadataExporter;
@@ -56,16 +56,19 @@ public class JsonReportOutput extends AbstractReportOutput
 			JasperPrint jasperPrint, Integer startPageIndex, Integer endPageIndex) {
 		try {
 			JsonMetadataExporter exporter = new JsonMetadataExporter(getJasperReportsContext());
-			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-			exporter.setParameter(JRExporterParameter.START_PAGE_INDEX, startPageIndex);
-			exporter.setParameter(JRExporterParameter.END_PAGE_INDEX, endPageIndex);
+			exporter.setExporterInput(new net.sf.jasperreports.export.SimpleExporterInput(jasperPrint));
+			net.sf.jasperreports.json.export.SimpleJsonMetadataReportConfiguration configuration =
+					new net.sf.jasperreports.json.export.SimpleJsonMetadataReportConfiguration();
+			configuration.setStartPageIndex(startPageIndex);
+			configuration.setEndPageIndex(endPageIndex);
+			exporter.setConfiguration(configuration);
 			
 			boolean close = false;
 			DataContainer dataContainer = jobContext.createDataContainer(this);
 			OutputStream dataOut = dataContainer.getOutputStream();
 			try {
-				exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, jobContext.getCharacterEncoding());
-				exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, dataOut);
+				exporter.setExporterOutput(new net.sf.jasperreports.export.SimpleWriterExporterOutput(
+						dataOut, jobContext.getCharacterEncoding()));
 				
 				exporter.exportReport();
 				
