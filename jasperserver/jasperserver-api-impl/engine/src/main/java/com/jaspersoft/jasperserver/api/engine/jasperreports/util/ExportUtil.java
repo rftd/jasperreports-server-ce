@@ -47,12 +47,6 @@ public class ExportUtil
 {
 	public static final String HTTP_SERVLET_REQUEST = "HttpServletRequest";
 
-	/**
-	 * @deprecated Replaced by {@link ExportUtil#HTTP_SERVLET_REQUEST}.
-	 */
-	public static final net.sf.jasperreports.engine.export.JRHtmlExporterParameter PARAMETER_HTTP_REQUEST =
-		// derived class required because of protected constructor
-		new net.sf.jasperreports.engine.export.JRHtmlExporterParameter("HttpServletRequest") {};
 
 	private final JasperReportsContext jasperReportsContext;
 	
