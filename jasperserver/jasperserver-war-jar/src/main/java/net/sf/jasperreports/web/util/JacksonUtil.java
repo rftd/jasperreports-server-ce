@@ -28,9 +28,9 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @deprecated Replaced by {@link net.sf.jasperreports.util.JacksonUtil}.
+ * @deprecated Replaced by {@link net.sf.jasperreports.jackson.util.JacksonUtil}.
  */
-public class JacksonUtil extends net.sf.jasperreports.util.JacksonUtil
+public class JacksonUtil extends net.sf.jasperreports.jackson.util.JacksonUtil
 {
 	/**
 	 *
