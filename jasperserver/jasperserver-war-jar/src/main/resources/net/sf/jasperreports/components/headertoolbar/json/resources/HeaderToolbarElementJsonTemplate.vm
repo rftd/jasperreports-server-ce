@@ -58,7 +58,7 @@
     "canSort": ${canSort},
     #if (${canSort})
     "headerToolbar": {
-    	"sortAscBtn": {"sortData": {"actionName":"sort","sortData":${sortAscData}}},
+	"sortAscBtn": {"sortData": {"actionName":"sort","sortData":${sortAscData}}},
         "sortDescBtn": {"sortData": {"actionName":"sort","sortData":${sortDescData}}}
     },
     #end
