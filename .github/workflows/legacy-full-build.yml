@@ -192,6 +192,13 @@ jobs:
           test -s "$ksp/.jrsksp"
           test -s keystore.init.properties
           echo "CI keystore generated in runner temporary storage."
+      - name: Test JR7 Community visualization registration and exports
+        run: |
+          mvn -B -ntp -f jasperserver/pom.xml \
+            -DbuildArtifactVersionName=ci \
+            -Dji-repo-releases=https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts \
+            -Dji-repo-snapshots=https://jaspersoft.jfrog.io/jaspersoft/jr-ce-snapshots \
+            -pl jasperserver-custom-visualization -am test
       - name: Build original Community WAR
         working-directory: jasperserver/buildomatic
         env:

@@ -19,12 +19,16 @@ KNOWN_MIGRATION_ADDITIONS = {
     ("commons-collections4", "4.5.0"): "E5CF89F0C6E132FC970BD9A465FDCB8DBE94F75A",
     ("javax.xml.soap-api", "1.4.0"): "667EF2EEE594CA7E05A1CBE0B37A428F7B57778F",
     ("xmpcore", "6.1.11"): "852F14101381E527E6D43339D7DB1698C970436C",
+    # Required by JR7 PDF API, verified against Jaspersoft's published SHA-1.
+    ("openpdf", "1.3.43.jaspersoft.2"): "2583544F268D26889F2A5E3DA40F2AC5900B5602",
 }
 
 KNOWN_MIGRATION_REMOVALS = {
     # Replaced by newer transitive dependencies during JasperReports migration.
     ("commons-collections4", "4.2"): "54EBEA0A5B653D3C680131E73FE807BB8F78C4ED",
     ("ecj", "3.21.0"): "D06974EEC06892E5594BDB8FBBC95CD81F1C57B2",
+    # Replaced by the exact OpenPDF Classic artifact required by JR 7.1.0.
+    ("openpdf", "1.3.30.jaspersoft.2"): "D78A17A6E9C09C18A0F7787F8D3F4BCCABF3FC12",
     # Proprietary MongoDB adapter deliberately removed from Community.
     ("js-mongodb-datasource", "3.10.2"): "53A6D012198EABE5C1583EABEB4EFA691DB7B17C",
 }
@@ -107,13 +111,13 @@ def main():
             "is different from the master list:",
             "The following 3 library(-ies) have been added:",
             "The following 2 library(-ies) have been removed:",
-            "The following 2 library(-ies) have been changed:",
+            "The following 3 library(-ies) have been changed:",
         )
         if args.build_exit == 0 or any(message not in log for message in expected_messages):
             raise ValueError("Ant failed for a reason other than the exact expected checksum drift")
 
         print("::warning title=Unverified migration WAR inventory::"
-              "Exact dependency hashes match migration run 39718805105. "
+              "Exact hashes match the diagnosed migration inventory and the official JR7 OpenPDF artifact. "
               "Diagnostic CI may continue, but this does not authorize production. "
               "Independently verify all new artifacts and the SiteMesh fork.")
         print("Expected additions:", ", ".join(sorted(x[0] + ":" + x[1] for x in added)))
