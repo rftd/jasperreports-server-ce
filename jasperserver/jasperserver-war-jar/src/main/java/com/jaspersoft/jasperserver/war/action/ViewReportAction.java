@@ -48,7 +48,7 @@ import com.jaspersoft.jasperserver.api.engine.export.HyperlinkProducerFactoryFlo
 import com.jaspersoft.jasperserver.war.util.JSExceptionUtils;
 import com.jaspersoft.jasperserver.war.util.SessionObjectSerieAccessor;
 import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.export.GenericElementJsonHandler;
+import net.sf.jasperreports.json.export.GenericElementJsonHandler;
 import net.sf.jasperreports.engine.fill.JRFillInterruptedException;
 import net.sf.jasperreports.web.JRInteractiveException;
 import net.sf.jasperreports.web.JRInteractiveRuntimeException;
@@ -61,7 +61,7 @@ import net.sf.jasperreports.web.servlets.AsyncJasperPrintAccessor;
 import net.sf.jasperreports.web.servlets.JasperPrintAccessor;
 import net.sf.jasperreports.web.servlets.ReportExecutionStatus;
 import net.sf.jasperreports.web.servlets.ReportPageStatus;
-import net.sf.jasperreports.web.util.JacksonUtil;
+import net.sf.jasperreports.jackson.util.JacksonUtil;
 import net.sf.jasperreports.web.util.WebUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
