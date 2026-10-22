@@ -60,20 +60,6 @@
 			<groupId>com.jaspersoft.jasperserver.api.engine.impl</groupId>
 			<artifactId>jasperserver-api-engine-impl</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.jaspersoft.connectors.mongodb</groupId>
-			<artifactId>js-mongodb-datasource</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 	</dependencies>
 
