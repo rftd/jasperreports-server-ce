@@ -41,7 +41,7 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.export.AbstractHtmlExporter;
 import net.sf.jasperreports.engine.export.JRHyperlinkProducerFactory;
-import net.sf.jasperreports.engine.export.JsonExporter;
+import net.sf.jasperreports.json.export.JsonExporter;
 import net.sf.jasperreports.engine.export.type.ZoomTypeEnum;
 import net.sf.jasperreports.export.HtmlExporterConfiguration;
 import net.sf.jasperreports.export.HtmlReportConfiguration;
@@ -53,7 +53,7 @@ import net.sf.jasperreports.web.actions.SaveZoomCommand;
 import net.sf.jasperreports.web.servlets.JasperPrintAccessor;
 import net.sf.jasperreports.web.servlets.ReportExecutionStatus;
 import net.sf.jasperreports.web.servlets.ReportPageStatus;
-import net.sf.jasperreports.web.util.JacksonUtil;
+import net.sf.jasperreports.jackson.util.JacksonUtil;
 import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 import net.sf.jasperreports.web.util.WebUtil;
 
