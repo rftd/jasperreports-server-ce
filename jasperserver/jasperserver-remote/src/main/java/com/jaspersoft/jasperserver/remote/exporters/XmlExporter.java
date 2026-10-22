@@ -21,7 +21,6 @@
 
 package com.jaspersoft.jasperserver.remote.exporters;
 
-import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ import org.springframework.stereotype.Service;
 public class XmlExporter extends AbstractExporter {
 	
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
         return new JRXmlExporter(getJasperReportsContext());
     }
 

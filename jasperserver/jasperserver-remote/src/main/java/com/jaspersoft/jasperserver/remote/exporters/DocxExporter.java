@@ -20,7 +20,6 @@
  */
 package com.jaspersoft.jasperserver.remote.exporters;
 
-import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ public class DocxExporter extends AbstractExporter{
     }
     
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
         return new JRDocxExporter(getJasperReportsContext());
     }
 

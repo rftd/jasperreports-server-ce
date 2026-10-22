@@ -20,7 +20,6 @@
  */
 package com.jaspersoft.jasperserver.remote.exporters;
 
-import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ import org.springframework.stereotype.Service;
 @Scope("prototype")
 public class XlsxExporter extends XlsExporter{
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
         return new JRXlsxExporter(getJasperReportsContext());
     }
 

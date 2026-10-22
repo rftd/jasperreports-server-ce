@@ -49,7 +49,6 @@ import com.jaspersoft.jasperserver.remote.services.ReportExecutor;
 import com.jaspersoft.jasperserver.remote.utils.AuditHelper;
 import com.jaspersoft.jasperserver.remote.utils.RepositoryHelper;
 import net.sf.jasperreports.engine.JRAbstractExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -185,7 +184,7 @@ public class ReportExecutorImpl implements ReportExecutor {
      * @throws com.jaspersoft.jasperserver.remote.ServiceException
      *
      */
-    public Map<JRExporterParameter, Object> exportReport(String reportUnitURI, List<ExporterInputItem> inputItems, String format, OutputStream output,
+    public Map<String, Object> exportReport(String reportUnitURI, List<ExporterInputItem> inputItems, String format, OutputStream output,
             HashMap exportParameters) throws ServiceException {
         ReportExporter exporter = servicesConfiguration.getExporter(format.toLowerCase());
         if (exporter == null) {

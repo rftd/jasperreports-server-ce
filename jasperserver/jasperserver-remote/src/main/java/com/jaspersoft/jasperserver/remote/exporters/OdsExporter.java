@@ -21,7 +21,6 @@
 package com.jaspersoft.jasperserver.remote.exporters;
 
 import com.jaspersoft.jasperserver.api.engine.jasperreports.common.XlsExportParametersBean;
-import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class OdsExporter extends XlsExporter{
     }
 
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
         return new JROdsExporter(getJasperReportsContext());
     }
 

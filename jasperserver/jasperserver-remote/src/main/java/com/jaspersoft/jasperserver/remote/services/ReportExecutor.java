@@ -25,7 +25,6 @@ import com.jaspersoft.jasperserver.api.engine.jasperreports.domain.impl.ReportUn
 import com.jaspersoft.jasperserver.api.metadata.common.domain.Resource;
 import com.jaspersoft.jasperserver.remote.ServiceException;
 import com.jaspersoft.jasperserver.api.ErrorDescriptorException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.export.ExporterInputItem;
@@ -46,7 +45,7 @@ public interface ReportExecutor {
     boolean isRunnableResource(Resource resource);
     ReportUnitResult runReport(String reportUnitUri, Map<String, Object> parameters,
             ReportExecutionOptions reportExecutionOptions) throws ErrorDescriptorException;
-    Map<JRExporterParameter, Object> exportReport(String reportUnitURI, List<ExporterInputItem> inputItems, String format, OutputStream output,
+    Map<String, Object> exportReport(String reportUnitURI, List<ExporterInputItem> inputItems, String format, OutputStream output,
             HashMap exportParameters) throws ServiceException;
     JasperReportsContext getJasperReportsContext(Boolean interactive);
 	PaginationParameters getExportPaginationParameters(String reportUnitURI, JasperPrint jasperPrint, String outputFormat);

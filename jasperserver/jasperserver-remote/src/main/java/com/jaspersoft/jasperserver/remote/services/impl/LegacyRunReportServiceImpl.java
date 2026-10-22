@@ -34,11 +34,9 @@ import com.jaspersoft.jasperserver.remote.utils.AuditHelper;
 import com.jaspersoft.jasperserver.inputcontrols.util.ReportParametersUtils;
 import com.jaspersoft.jasperserver.inputcontrols.cascade.InputControlsLogicService;
 import com.jaspersoft.jasperserver.ws.xml.ByteArrayDataSource;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.GenericElementReportTransformer;
-import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.engine.util.JRTypeSniffer;
 import net.sf.jasperreports.export.SimpleExporterInputItem;
@@ -265,7 +263,7 @@ public class LegacyRunReportServiceImpl implements LegacyRunReportService, Seria
                 if (value != null) exportParameters.put(Argument.RUN_OUTPUT_IMAGES_URI, value);
                 exportParameters.put(HtmlExporter.INTERACTIVE_PARAM_NAME, Boolean.valueOf(arguments.get(Argument.PARAM_INTERACTIVE)));
 
-                Map<JRExporterParameter, Object> exporterParams;
+                Map<String, Object> exporterParams;
                 try {
                     exporterParams = reportExecutor.exportReport(reportUnitURI, Collections.singletonList(new SimpleExporterInputItem(jasperPrint)), format, bos, exportParameters);
                     if (log.isDebugEnabled()) {
@@ -324,7 +322,7 @@ public class LegacyRunReportServiceImpl implements LegacyRunReportService, Seria
      * @param outputResourcesContainer - the container to put additional attachments
      * @throws ServiceException
      */
-    private void addAdditionalAttachmentsForReport(String format, Map<JRExporterParameter, Object> exportParameters,
+    private void addAdditionalAttachmentsForReport(String format, Map<String, Object> exportParameters,
             Map<String, DataSource> outputResourcesContainer) throws ServiceException {
         if (log.isDebugEnabled()) {
             log.debug("Format requested: " + format + "  " + Argument.RUN_OUTPUT_FORMAT_HTML);
@@ -336,7 +334,7 @@ public class LegacyRunReportServiceImpl implements LegacyRunReportService, Seria
         try {
             // this cast is safe, because of known parameter key
             @SuppressWarnings("unchecked")
-            Map<String, byte[]> imagesMap = (Map<String, byte[]>) exportParameters.get(JRHtmlExporterParameter.IMAGES_MAP);
+            Map<String, byte[]> imagesMap = (Map<String, byte[]>) exportParameters.get(com.jaspersoft.jasperserver.remote.ReportExporter.HTML_IMAGES_KEY);
             if (log.isDebugEnabled()) {
                 log.debug("imagesMap : " + Arrays.asList(imagesMap.keySet().toArray()));
             }

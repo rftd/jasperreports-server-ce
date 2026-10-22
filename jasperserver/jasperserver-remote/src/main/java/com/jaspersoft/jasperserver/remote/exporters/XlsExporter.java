@@ -25,10 +25,7 @@ import com.jaspersoft.jasperserver.api.common.domain.ExecutionContext;
 import com.jaspersoft.jasperserver.api.engine.common.service.EngineService;
 import com.jaspersoft.jasperserver.api.engine.jasperreports.common.XlsExportParametersBean;
 import com.jaspersoft.jasperserver.api.engine.jasperreports.util.ExportUtil;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -58,45 +55,67 @@ public class XlsExporter extends AbstractExporter {
 	}
     
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
         return ExportUtil.getInstance(getJasperReportsContext()).createXlsExporter();
     }
 
     @Override
-    public void configureExporter(JRExporter exporter, HashMap exportParameters) throws Exception {
-        if (exportParams != null) {
-            if (exportParams.isOverrideReportHints())
-                exporter.setParameter(JRExporterParameter.PARAMETERS_OVERRIDE_REPORT_HINTS, Boolean.TRUE);
-            if (exportParams.getOnePagePerSheet() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, exportParams.getOnePagePerSheet());
-            if(exportParameters.get(ONE_PAGE_PER_SHEET) != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.valueOf(String.valueOf(getSingleParameterValue(ONE_PAGE_PER_SHEET, exportParameters))));
-            if (exportParams.getDetectCellType() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, exportParams.getDetectCellType());
-            if (exportParams.getRemoveEmptySpaceBetweenRows() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, exportParams.getRemoveEmptySpaceBetweenRows());
-            if (exportParams.getRemoveEmptySpaceBetweenColumns() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, exportParams.getRemoveEmptySpaceBetweenColumns());
-            if (exportParams.getWhitePageBackground() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, exportParams.getWhitePageBackground());
-            if (exportParams.getIgnoreGraphics() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_IGNORE_GRAPHICS, exportParams.getIgnoreGraphics());
-            if (exportParams.getCollapseRowSpan() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_COLLAPSE_ROW_SPAN, exportParams.getCollapseRowSpan());
-            if (exportParams.getIgnoreCellBorder() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_IGNORE_CELL_BORDER, exportParams.getIgnoreCellBorder());
-            if (exportParams.getFontSizeFixEnabled() != null)
-                exporter.setParameter(JRXlsExporterParameter.IS_FONT_SIZE_FIX_ENABLED, exportParams.getFontSizeFixEnabled());
-            if (exportParams.getMaximumRowsPerSheet() != null)
-                exporter.setParameter(JRXlsExporterParameter.MAXIMUM_ROWS_PER_SHEET, exportParams.getMaximumRowsPerSheet());
-            if (exportParams.getXlsFormatPatternsMap() != null && !exportParams.getXlsFormatPatternsMap().isEmpty())
-                exporter.setParameter(JRXlsExporterParameter.FORMAT_PATTERNS_MAP, exportParams.getXlsFormatPatternsMap());
-        }
-        exporter.setParameter(JRXlsExporterParameter.CREATE_CUSTOM_PALETTE, Boolean.TRUE);
+    @SuppressWarnings("rawtypes")
+    public void configureExporter(net.sf.jasperreports.engine.JRAbstractExporter exporter, HashMap exportParameters,
+            net.sf.jasperreports.export.SimpleReportExportConfiguration config,
+            net.sf.jasperreports.export.ExporterOutput output, Map<String, Object> results) throws Exception {
+        applySpreadsheetSettings(exportParams, exportParameters,
+                (net.sf.jasperreports.export.AbstractXlsReportConfiguration) config);
+        net.sf.jasperreports.export.AbstractXlsExporterConfiguration exporterConfig =
+                createSpreadsheetExporterConfiguration(exporter);
+        exporterConfig.setCreateCustomPalette(Boolean.TRUE);
+        exporter.setConfiguration((net.sf.jasperreports.export.ExporterConfiguration) exporterConfig);
+    }
+
+    static void applySpreadsheetSettings(XlsExportParametersBean exportParams, HashMap exportParameters,
+            net.sf.jasperreports.export.AbstractXlsReportConfiguration config) {
+        if (exportParams == null) return;
+        if (exportParams.isOverrideReportHints()) config.setOverrideHints(Boolean.TRUE);
+        if (exportParams.getOnePagePerSheet() != null)
+            config.setOnePagePerSheet(exportParams.getOnePagePerSheet());
+        if (exportParameters.get(ONE_PAGE_PER_SHEET) != null)
+            config.setOnePagePerSheet(Boolean.valueOf(String.valueOf(
+                    exportParameters.get(ONE_PAGE_PER_SHEET))));
+        if (exportParams.getDetectCellType() != null)
+            config.setDetectCellType(exportParams.getDetectCellType());
+        if (exportParams.getRemoveEmptySpaceBetweenRows() != null)
+            config.setRemoveEmptySpaceBetweenRows(exportParams.getRemoveEmptySpaceBetweenRows());
+        if (exportParams.getRemoveEmptySpaceBetweenColumns() != null)
+            config.setRemoveEmptySpaceBetweenColumns(exportParams.getRemoveEmptySpaceBetweenColumns());
+        if (exportParams.getWhitePageBackground() != null)
+            config.setWhitePageBackground(exportParams.getWhitePageBackground());
+        if (exportParams.getIgnoreGraphics() != null)
+            config.setIgnoreGraphics(exportParams.getIgnoreGraphics());
+        if (exportParams.getCollapseRowSpan() != null)
+            config.setCollapseRowSpan(exportParams.getCollapseRowSpan());
+        if (exportParams.getIgnoreCellBorder() != null)
+            config.setIgnoreCellBorder(exportParams.getIgnoreCellBorder());
+        if (exportParams.getFontSizeFixEnabled() != null)
+            config.setFontSizeFixEnabled(exportParams.getFontSizeFixEnabled());
+        if (exportParams.getMaximumRowsPerSheet() != null)
+            config.setMaxRowsPerSheet(exportParams.getMaximumRowsPerSheet());
+        if (exportParams.getXlsFormatPatternsMap() != null && !exportParams.getXlsFormatPatternsMap().isEmpty())
+            config.setFormatPatternsMap(exportParams.getXlsFormatPatternsMap());
+    }
+
+    static net.sf.jasperreports.export.AbstractXlsExporterConfiguration createSpreadsheetExporterConfiguration(
+            net.sf.jasperreports.engine.JRAbstractExporter exporter) {
+        if (exporter instanceof net.sf.jasperreports.engine.export.ooxml.XlsxMetadataExporter)
+            return new net.sf.jasperreports.export.SimpleXlsxMetadataExporterConfiguration();
+        if (exporter instanceof net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter)
+            return new net.sf.jasperreports.export.SimpleXlsxExporterConfiguration();
+        if (exporter instanceof net.sf.jasperreports.engine.export.oasis.JROdsExporter)
+            return new net.sf.jasperreports.export.SimpleOdsExporterConfiguration();
+        return new net.sf.jasperreports.export.SimpleXlsExporterConfiguration();
     }
 
     @Override
-    public Map<JRExporterParameter, Object> exportReport(JasperPrint jasperPrint, OutputStream output, EngineService engineService, HashMap exportParameters, ExecutionContext executionContext, String reportUnitURI) throws Exception {
+    public Map<String, Object> exportReport(JasperPrint jasperPrint, OutputStream output, EngineService engineService, HashMap exportParameters, ExecutionContext executionContext, String reportUnitURI) throws Exception {
         return super.exportReport(jasperPrint, output, engineService, exportParameters, executionContext, reportUnitURI);
     }
 

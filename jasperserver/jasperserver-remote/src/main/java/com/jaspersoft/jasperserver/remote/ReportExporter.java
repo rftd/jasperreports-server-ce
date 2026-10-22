@@ -25,7 +25,6 @@ import com.jaspersoft.jasperserver.api.common.domain.ExecutionContext;
 import com.jaspersoft.jasperserver.api.engine.common.service.EngineService;
 import com.jaspersoft.jasperserver.api.engine.jasperreports.domain.impl.PaginationParameters;
 
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.export.ExporterInputItem;
@@ -41,8 +40,9 @@ import java.util.Map;
  * @@version $Id: WSExporter.java 19933 2010-12-11 15:27:37Z tmatyashovsky $
  */
 public interface ReportExporter extends Serializable {
+	String HTML_IMAGES_KEY = "html.images";
 	
-	public Map<JRExporterParameter, Object> exportReport (
+	public Map<String, Object> exportReport (
 			JasperPrint jasperPrint, 
 			OutputStream output, 
 			EngineService engineService, 
@@ -51,7 +51,7 @@ public interface ReportExporter extends Serializable {
 			String reportUnitURI
 			) throws Exception;
 	
-	public default Map<JRExporterParameter, Object> exportReport (
+	public default Map<String, Object> exportReport (
 			List<ExporterInputItem> inputItems, 
 			OutputStream output, 
 			EngineService engineService, 
