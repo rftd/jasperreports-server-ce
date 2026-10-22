@@ -51,6 +51,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.version}</version>
                 <dependencies>
+        <!-- JasperReports 7 moved the JSON exporter into a dedicated artifact. -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-json</artifactId>
+            <version>${jasperreports.version}</version>
+        </dependency>
                     <!--
                         Was added intentionally. Otherwise JUnit conflicts with the TestNG dependency,
                         and maven-surefire-plugin takes TestNG provider instead of JUnit.
