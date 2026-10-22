@@ -26,7 +26,7 @@ Maintainers and reviewers remain responsible for deciding which changes are acce
 
 ## Branching and release safety
 
-The legacy working baseline and the JasperReports 7.1.0 migration are maintained separately. Do not merge experimental engine upgrades or rename compatibility-sensitive internals as part of a documentation-only branding change.
+The legacy working baseline and the JasperReports 7.1.0 migration are maintained separately. Do not merge experimental engine upgrades or rename compatibility-sensitive internals as part of the public-facing branding change.
 
 Before a production-oriented release, resolve known build integrity exceptions, verify third-party license obligations, assess security exposure of legacy dependencies, and run functional regression testing beyond the current CI smoke suite.
 

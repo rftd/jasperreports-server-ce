@@ -27,7 +27,7 @@ This is a **work-in-progress modernization fork**, not a certified production-re
 | Legacy backend build | Verified in CI with Java 8, Maven, and Ant; produces a WAR |
 | Runtime smoke test | Verified in CI with PostgreSQL 14 and Tomcat 9 |
 | Functional smoke tests | REST authentication and sample report exports to PDF and XLSX pass on the legacy baseline |
-| JasperReports Library 7.1.0 migration | **In progress**; incompatible APIs and report formats are still being addressed |
+| JasperReports Library 7.1.0 migration | **Separate, experimental PR #2**: CI verifies PDF/XLSX, viewer controls, interactive tables and Community visualizations; broader compatibility and dependency integrity remain under review |
 
 The tested legacy baseline lives in [PR #1](https://github.com/rftd/jasperreports-server-ce/pull/1); the experimental engine migration lives in [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2). Neither PR is described here as a production release.
 
@@ -39,7 +39,7 @@ See [MAINTENANCE.md](MAINTENANCE.md) for how contributions and AI-assisted chang
 
 ## Build and development
 
-The codebase still uses its **original internal directory names, Maven coordinates, Java packages, WAR name, and application context path** (for example, `jasperserver/` and `/jasperserver`). These are kept deliberately for compatibility while the new brand is introduced. **Do not rename internal identifiers merely to change the public-facing name.**
+The codebase still uses its **original internal directory names, Maven coordinates, Java packages, WAR name, and application context path** (for example, `jasperserver/` and `/jasperserver`). These are kept deliberately for compatibility while the public-facing brand is introduced in documentation, login, navigation and the About dialog. **Do not rename internal identifiers merely to change the public-facing name.**
 
 - [Backend build guide](jasperserver/README.md)
 - [Frontend build guide](jasperserver-ui/ce/README.md)
@@ -54,7 +54,7 @@ OpenJRS Server builds on pre-existing code. **Original copyright and license not
 
 The independent name **OpenJRS Server does not remove or replace any upstream copyright, license, trademark, or attribution obligations**. This README is not a substitute for the licenses associated with individual files or dependencies.
 
-See [BRANDING.md](BRANDING.md) for the project identity and attribution conventions.
+See [BRANDING.md](BRANDING.md) for identity and attribution conventions, and [MERGING.md](MERGING.md) for the PR integration order and outstanding release gates.
 
 ## Contributions and support
 

@@ -41,7 +41,7 @@
         <!--
         <meta http-equiv="X-UA-Compatible" content="IE=8"/>
         -->
-        <link rel="shortcut icon" href='${pageContext.request.contextPath}/<spring:theme code="images/favicon.ico" />' />
+        <link rel="shortcut icon" href='${pageContext.request.contextPath}/runtime/${not empty runtimeHash ? runtimeHash : jsOptimizationProperties.runtimeHash}/themes/openjrs-favicon.svg' />
 
         <!--
             <link rel="shortcut icon" href="favicon.ico" />
@@ -70,7 +70,7 @@
         <div id="systemMessageConsole" style="display:none">
             <p id="systemMessage"><spring:message code="button.close"/></p>
         </div>
-        <div id="logo" class="sectionLeft" aria-label="<spring:message code="logo.label"/>" role="img"></div>
+        <div id="logo" class="sectionLeft openjrs-wordmark">OpenJRS <span class="openjrs-edition">Server</span></div>
         <c:if test="${pageProperties['meta.noMenu']==null}">
             <nav class="sectionLeft" aria-label="<spring:message code='menu.name.main'/>">
                 <ul

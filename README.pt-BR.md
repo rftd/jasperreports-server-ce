@@ -23,7 +23,7 @@ O OpenJRS Server **ainda não é uma substituição pronta para produção**.
 | Backend legado | WAR gerado no CI com Java 8, Maven e Ant |
 | Inicialização | PostgreSQL 14 e Tomcat 9 validados no CI |
 | Testes funcionais | Autenticação REST e exportações PDF/XLSX validadas na base original |
-| Motor JasperReports 7.1.0 | **Migração em andamento**, ainda com incompatibilidades |
+| Motor JasperReports 7.1.0 | **PR #2 separado e experimental**: CI valida PDF/XLSX, viewer, tabelas interativas e visualizações Community; compatibilidade ampliada e integridade das dependências seguem em revisão |
 
 O [PR #1](https://github.com/rftd/jasperreports-server-ce/pull/1) mantém a base original testada. O [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2) trata da migração experimental para o motor 7.1.0.
 
@@ -35,7 +35,7 @@ A manutenção é comunitária e realizada em regime de melhor esforço, sem gar
 
 ## Compatibilidade e compilação
 
-Os nomes internos originais foram mantidos intencionalmente durante esta fase: pastas `jasperserver/`, pacotes Java, coordenadas Maven, nome do WAR e contexto web `/jasperserver`. O rebranding documental **não altera as APIs nem o funcionamento do servidor**.
+Os nomes internos originais foram mantidos intencionalmente durante esta fase: pastas `jasperserver/`, pacotes Java, coordenadas Maven, nome do WAR e contexto web `/jasperserver`. A identidade pública aparece na documentação, no login, no cabeçalho e na janela Sobre. As APIs e os identificadores técnicos permanecem compatíveis.
 
 - [Guia do backend](jasperserver/README.md)
 - [Guia do frontend](jasperserver-ui/ce/README.md)
@@ -47,7 +47,7 @@ A presença de ferramentas legadas sem suporte e a aprovação no CI **não equi
 
 O código é derivado de um projeto existente. **Os avisos de copyright, autoria e licença originais devem ser preservados.** Os cabeçalhos de arquivos originais identificam a licença GNU AGPL, versão 3 ou posterior, salvo licenciamento comercial separado. Componentes de terceiros podem ter outras licenças e exigências de redistribuição.
 
-O nome OpenJRS Server **não modifica nem elimina** essas obrigações. Veja [BRANDING.md](BRANDING.md).
+O nome OpenJRS Server **não modifica nem elimina** essas obrigações. Veja [BRANDING.md](BRANDING.md) e a [ordem de integração dos PRs](MERGING.md).
 
 ## Contribuições
 

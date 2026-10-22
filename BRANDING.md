@@ -16,9 +16,17 @@ The name **OpenJRS Server** is a proposed independent identity for this fork; av
 
 ## Scope of this phase
 
-This initial rebranding changes project-facing documentation and descriptions. It **does not** change package coordinates, copyright headers, dependency identities, existing file names, UI image assets, WAR file name, servlet context path, database objects, REST endpoints, import/export formats, or compatibility contracts.
+This rebranding changes documentation and public interface identity: login,
+navigation/header, browser titles, the footer About link, the About dialog and
+community links. The default UI uses a text wordmark and an original typographic
+favicon. Vendor artwork is retained as inherited files and is not repurposed as
+the OpenJRS identity. Core identity strings are updated in all eight existing
+locales; additional project descriptions are provided in English and Portuguese.
 
-Those changes, if desired, must be introduced in separate, reviewed steps with migration guides and regression tests. Existing vendor artwork must not be repurposed as the OpenJRS identity without a separate rights review.
+Package coordinates, copyright headers, dependency identities, WAR file name,
+servlet context path, database objects, REST endpoints and report formats retain
+their existing identifiers. Renaming those internals requires a separate reviewed
+migration. See [MERGING.md](MERGING.md) for integration and release constraints.
 
 ## Preservation of upstream notices
 

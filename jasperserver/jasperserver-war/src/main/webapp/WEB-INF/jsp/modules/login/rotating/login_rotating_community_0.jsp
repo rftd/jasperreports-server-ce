@@ -23,23 +23,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <div class="secondary">
-	<h2 class="palette01" id="gettingStartedListTitle"><spring:message code='LOGIN_ROTATING_0_GETTING_STARTED'/></h2>
-	<nav aria-labelledby="gettingStartedListTitle">
-		<ul class="list decorated" aria-labelledby="gettingStartedListTitle">
-			<li><a class="launcher" href="http://www.jaspersoft.com/getting-started" target="_blank" rel="noopener noreferrer"><spring:message code='LOGIN_ROTATING_CE_0_GETTING_STARTED_ITEM_1'/></a></li>
-			<li><a class="launcher" href="http://community.jaspersoft.com/documentation" target="_blank" rel="noopener noreferrer"><spring:message code='LOGIN_ROTATING_CE_0_GETTING_STARTED_ITEM_2'/></a></li>
-			<li><a class="launcher" href="https://www.jaspersoft.com/self-service-express-subscription" target="_blank" rel="noopener noreferrer"><spring:message code='LOGIN_ROTATING_CE_0_GETTING_STARTED_ITEM_3'/></a></li>
-			<li><a class="launcher" href="http://www.jaspersoft.com/editions" target="_blank" rel="noopener noreferrer"><spring:message code='LOGIN_ROTATING_CE_0_GETTING_STARTED_ITEM_4'/></a></li>
-			<li><a class="launcher" href="http://www.jaspersoft.com/contact-us" target="_blank" rel="noopener noreferrer"><spring:message code='LOGIN_ROTATING_CE_0_GETTING_STARTED_ITEM_5'/></a></li>
-		</ul>
-	</nav>
+    <h2 class="palette01" id="gettingStartedListTitle"><spring:message code="openjrs.login.project"/></h2>
+    <nav aria-labelledby="gettingStartedListTitle">
+        <ul class="list decorated">
+            <li><a class="launcher" href="https://github.com/rftd/jasperreports-server-ce#readme" target="_blank" rel="noopener noreferrer"><spring:message code="openjrs.links.documentation"/></a></li>
+            <li><a class="launcher" href="https://github.com/rftd/jasperreports-server-ce/issues" target="_blank" rel="noopener noreferrer"><spring:message code="openjrs.links.support"/></a></li>
+            <li><a class="launcher" href="https://github.com/rftd/jasperreports-server-ce" target="_blank" rel="noopener noreferrer"><spring:message code="openjrs.links.source"/></a></li>
+        </ul>
+    </nav>
 </div>
 <div class="primary">
-	<h2 class="palette01" id="whatsNewListTitle"><spring:message code='LOGIN_ROTATING_0_WHAT_IS_NEW'/></h2>
-	<ul class="list decorated" aria-labelledby="whatsNewListTitle">
-		<li><span class="sellPoint"><spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_1_1'/></span> <spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_1_2'/></li>
-		<li><span class="sellPoint"><spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_2_1'/></span> <spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_2_2'/></li>
-		<li><span class="sellPoint"><spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_3_1'/></span> <spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_3_2'/></li>
-		<li><span class="sellPoint"><spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_4_1'/></span> <spring:message code='LOGIN_ROTATING_CE_0_WHAT_IS_NEW_ITEM_4_2'/></li>
-	</ul>
+    <h2 class="palette01" id="whatsNewListTitle">OpenJRS Server</h2>
+    <p><spring:message code="openjrs.login.description"/></p>
+    <p><spring:message code="openjrs.login.subtitle"/></p>
 </div>
