@@ -1517,8 +1517,8 @@
     			<entry key="net.sf.jasperreports.repo.ReportResource">
     				<bean class="net.sf.jasperreports.repo.SerializedReportPersistenceService"/>
     			</entry>
-    			<entry key="net.sf.jasperreports.repo.DataAdapterResource">
-    				<bean class="net.sf.jasperreports.repo.JacksonDataAdapterPersistenceService">
+    			<entry key="net.sf.jasperreports.dataadapters.repo.DataAdapterResource">
+    				<bean class="net.sf.jasperreports.dataadapters.repo.JacksonDataAdapterPersistenceService">
     					<constructor-arg ref="${bean.jasperReportsContext}"/>
     				</bean>
     			</entry>
