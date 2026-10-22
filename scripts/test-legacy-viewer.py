@@ -34,7 +34,7 @@ def main():
             "Authorization": "Basic " + base64.b64encode(f"{user}:{password}".encode()).decode(),
             "Accept": "application/repository.reportUnit+json",
         })
-        created = False
+        created = []
         browser = playwright.chromium.launch(executable_path=chrome, headless=True,
                                              chromium_sandbox=True)
         page = browser.new_page(viewport={"width": 1440, "height": 1100})
@@ -90,7 +90,7 @@ def main():
                 "alwaysPromptControls": False,
             }, headers={"Content-Type": "application/repository.reportUnit+json"})
             assert response.status in (200, 201), f"Create fixture: HTTP {response.status}"
-            created = True
+            created.append(resource)
             report(resource)
             # Intercept the link target so the check needs no external service.
             page.context.route(target, lambda route: route.fulfill(body="OpenJRS hyperlink target"))
@@ -99,6 +99,36 @@ def main():
             popup.value.wait_for_load_state()
             assert popup.value.url == target
             checks.append("hyperlink opens correct target")
+
+            # Exercise the real component protocol/cache with a deterministic
+            # AMD renderer served by the browser test, without external services.
+            script_url = base + "/openjrs-cv-smoke.js"
+            renderer = (Path(__file__).resolve().parents[1] / "jasperserver"
+                        / "jasperserver-custom-visualization/src/test/resources/cv-browser-smoke.js").read_text()
+            page.route(script_url + "*", lambda route: route.fulfill(content_type="text/javascript", body=renderer))
+            cv_xml = f'''<jasperReport name="CVViewerSmoke" pageWidth="300" pageHeight="200"
+                columnWidth="260" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+                whenNoDataType="AllSectionsNoDetail"><title height="110">
+                <element kind="component" x="0" y="0" width="200" height="100">
+                <component kind="customvisualization">
+                <itemProperty name="script" value="{script_url}"/>
+                <itemProperty name="module" value="openjrs-cv-smoke"/>
+                </component></element></title></jasperReport>'''
+            cv_resource = resource + "_cv"
+            response = api.put(base + "/rest_v2/resources" + cv_resource, data={
+                "label": "OpenJRS disposable CV viewer smoke",
+                "jrxml": {"jrxmlFile": {"label": "CV viewer smoke JRXML", "type": "jrxml",
+                                        "content": base64.b64encode(cv_xml.encode()).decode()}},
+                "alwaysPromptControls": False,
+            }, headers={"Content-Type": "application/repository.reportUnit+json"})
+            assert response.status in (200, 201), f"Create CV fixture: HTTP {response.status}"
+            created.append(cv_resource)
+            report(cv_resource)
+            circle = page.locator(".jrPage svg circle")
+            circle.wait_for(state="visible", timeout=30000)
+            assert circle.get_attribute("fill") == "#1264a3"
+            checks.append("Community visualization rendered in viewer")
+            page.screenshot(path=str(output / "visualization.png"), full_page=True)
             assert not errors, errors
             assert not bad_responses, bad_responses
         except Exception:
@@ -109,8 +139,8 @@ def main():
             (output / "result.json").write_text(json.dumps({
                 "checks": checks, "javascript_errors": errors, "failed_requests": bad_responses,
             }, indent=2))
-            if created:
-                response = api.delete(base + "/rest_v2/resources" + resource)
+            for uri in reversed(created):
+                response = api.delete(base + "/rest_v2/resources" + uri)
                 assert response.status in (200, 204), f"Delete fixture: HTTP {response.status}"
             api.dispose()
             browser.close()

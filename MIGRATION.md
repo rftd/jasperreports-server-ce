@@ -68,9 +68,10 @@ LGPL JasperReports 6.21.5 source archive; existing copyright notices remain inta
 
 `ViewerActionMappingsTest` checks the engine mapper and resource registration.
 `scripts/test-legacy-viewer.py` exercises UI authentication, HTML rendering,
-pagination, zoom, highlighted search matches and a real reference hyperlink.
+pagination, zoom, highlighted search matches, a real reference hyperlink and
+a Community custom visualization using a controlled AMD script fixture.
 The browser test requires Playwright and a sandbox-capable Chrome executable;
-it creates and deletes one uniquely named report in the disposable CI repository.
+it creates and deletes uniquely named reports in the disposable CI repository.
 It does not establish full coverage of table sorting/filtering, save/undo,
 drill-down or every report/component type. A replacement viewer belongs in a
 separate PR; the current migration preserves this viewer.

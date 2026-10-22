@@ -48,6 +48,13 @@ connections omit Tyrus's synthetic browser Origin header; Chrome's origin
 policy and sandbox remain enabled. Browser policy must permit the renderer's
 temporary local HTML/script files.
 
+JR7 also filters Java deserialization when the server reloads compiled reports
+from its cache. The module registers only `CVDesignComponent` through the
+official `StandardDeserializationClassWhitelistExtension`. The filter stays
+enabled. A regression test reloads compiled/filled reports and verifies that
+an unrelated serialized class is still rejected. The viewer browser check
+additionally displays a custom SVG using a controlled AMD script fixture.
+
 ## Source provenance and license
 
 Copyright and LGPL notices in recovered files are preserved. See `LICENSE`.

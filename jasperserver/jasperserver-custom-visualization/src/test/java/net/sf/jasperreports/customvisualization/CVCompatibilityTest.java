@@ -102,6 +102,47 @@ public class CVCompatibilityTest {
     }
 
     @Test
+    public void roundTripsCompiledComponentAndPrintWithDeserializationFilterEnabled() throws Exception {
+        SimpleJasperReportsContext context = new SimpleJasperReportsContext();
+        net.sf.jasperreports.engine.util.DeserializationClassFilter filter =
+                new net.sf.jasperreports.engine.util.DeserializationClassFilter(context);
+        assertTrue("JR7 deserialization filter must stay enabled", filter.isFilteringEnabled());
+        assertFalse("Unrelated classes must remain rejected", filter.isClassVisible(UntrustedPayload.class.getName()));
+        JasperDesign design = design();
+        CVDesignComponent component = new CVDesignComponent();
+        component.addItemProperty(new StandardItemProperty("script", "sample.js", null));
+        JRDesignComponentElement element = new JRDesignComponentElement();
+        element.setX(0); element.setY(30); element.setWidth(180); element.setHeight(30);
+        element.setComponent(component);
+        ((JRDesignBand) design.getDetailSection().getBands()[0]).addElement(element);
+        ByteArrayOutputStream compiled = new ByteArrayOutputStream();
+        net.sf.jasperreports.engine.util.JRSaver.saveObject(JasperCompileManager.getInstance(context).compile(design), compiled);
+        JasperReport restored = (JasperReport) net.sf.jasperreports.engine.util.JRLoader.loadObject(
+                context, new ByteArrayInputStream(compiled.toByteArray()));
+        JasperPrint print = JasperFillManager.getInstance(context).fill(restored,
+                new java.util.HashMap<String, Object>(), new JREmptyDataSource());
+        ByteArrayOutputStream filled = new ByteArrayOutputStream();
+        net.sf.jasperreports.engine.util.JRSaver.saveObject(print, filled);
+        JasperPrint reloadedPrint = (JasperPrint) net.sf.jasperreports.engine.util.JRLoader.loadObject(
+                context, new ByteArrayInputStream(filled.toByteArray()));
+        assertTrue(reloadedPrint.getPages().get(0).getElements().stream()
+                .anyMatch(e -> e instanceof JRGenericPrintElement));
+        ByteArrayOutputStream untrusted = new ByteArrayOutputStream();
+        net.sf.jasperreports.engine.util.JRSaver.saveObject(new UntrustedPayload(), untrusted);
+        try {
+            net.sf.jasperreports.engine.util.JRLoader.loadObject(context,
+                    new ByteArrayInputStream(untrusted.toByteArray()));
+            fail("Unregistered serialized class was accepted");
+        } catch (JRRuntimeException expected) {
+            assertTrue(expected.getMessage().contains(UntrustedPayload.class.getName()));
+        }
+    }
+
+    private static class UntrustedPayload implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+    }
+
+    @Test
     public void exportsPdfWithCustomExtensionInstalled() throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         JRPdfExporter exporter = new JRPdfExporter();
