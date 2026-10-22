@@ -133,7 +133,7 @@ public class JRQueryExecuterAdapter {
 				parametersMap.put(parameter.getName(), parameter);
 			}
 
-			JRQueryExecuter executer = queryExecuterFactory.createQueryExecuter(dataset, parametersMap);
+			JRQueryExecuter executer = queryExecuterFactory.createQueryExecuter(DefaultJasperReportsContext.getInstance(), dataset, parametersMap);
 
 			try {
 
@@ -318,7 +318,7 @@ public class JRQueryExecuterAdapter {
 				parametersMap.put(parameter.getName(), parameterValue);
 			}
 
-			JRQueryExecuter executer = queryExecuterFactory.createQueryExecuter(dataset, parametersMap);
+			JRQueryExecuter executer = queryExecuterFactory.createQueryExecuter(DefaultJasperReportsContext.getInstance(), dataset, parametersMap);
 			return executer;
 		} catch (JRException e) {
 			throw new JSExceptionWrapper(e);
@@ -483,12 +483,9 @@ public class JRQueryExecuterAdapter {
 			return reportDataset.getResourceBundle();
 		}
 
-		public byte getWhenResourceMissingType() {
-			return getWhenResourceMissingTypeValue().getValue();
-		}
-
-		public WhenResourceMissingTypeEnum getWhenResourceMissingTypeValue() {
-			return reportDataset.getWhenResourceMissingTypeValue();
+		@Override
+		public WhenResourceMissingTypeEnum getWhenResourceMissingType() {
+			return reportDataset.getWhenResourceMissingType();
 		}
 
 		public void setWhenResourceMissingType(byte type) {
