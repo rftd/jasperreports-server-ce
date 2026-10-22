@@ -66,13 +66,22 @@ save and undo/redo deserialization. Image/font/default web-resource handlers
 are registered separately. The action resource bundle is recovered from the
 LGPL JasperReports 6.21.5 source archive; existing copyright notices remain intact.
 
+The table/crosstab action implementations, JSON metadata handlers and table
+filter/style contributors are also ported from the LGPL Community source.
+See `jasperserver-war-jar/README-viewer-compatibility.md` for provenance and the
+JR7 API changes, including its concrete crosstab order-model contract.
+
 `ViewerActionMappingsTest` checks the engine mapper and resource registration.
 `scripts/test-legacy-viewer.py` exercises UI authentication, HTML rendering,
 pagination, zoom, highlighted search matches, a real reference hyperlink and
 a Community custom visualization using a controlled AMD script fixture.
+It also sorts and filters an interactive table and validates undo/redo through
+the actual browser controls. `InteractiveTableActionsTest` executes actions
+against the design cache and checks the filled output, resizing validation
+and the JR7 crosstab order-model loading contract.
 The browser test requires Playwright and a sandbox-capable Chrome executable;
 it creates and deletes uniquely named reports in the disposable CI repository.
-It does not establish full coverage of table sorting/filtering, save/undo,
+It does not establish full coverage of formatting, save, crosstab interactions,
 drill-down or every report/component type. A replacement viewer belongs in a
 separate PR; the current migration preserves this viewer.
 

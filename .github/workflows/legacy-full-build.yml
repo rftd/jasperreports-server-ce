@@ -231,7 +231,7 @@ jobs:
         run: |
           mvn -B -ntp -f jasperserver/jasperserver-war-jar/pom.xml \
             -s jasperserver/buildomatic/build_conf/default/maven_settings_community.xml \
-            -DskipTests=false -Dtest=ViewerActionMappingsTest test
+            -DskipTests=false -Dtest=ViewerActionMappingsTest,InteractiveTableActionsTest test
       - name: Upload compiled WAR
         uses: actions/upload-artifact@v4
         with:

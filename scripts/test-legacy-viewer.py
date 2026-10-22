@@ -49,6 +49,16 @@ def main():
             page.wait_for_selector(".jrPage", timeout=60000)
             page.wait_for_function('!document.querySelector("#export").disabled', timeout=60000)
 
+        def create_report(uri, label, jrxml):
+            response = api.put(base + "/rest_v2/resources" + uri, data={
+                "label": label,
+                "jrxml": {"jrxmlFile": {"label": "Viewer smoke JRXML", "type": "jrxml",
+                                        "content": base64.b64encode(jrxml.encode()).decode()}},
+                "alwaysPromptControls": False,
+            }, headers={"Content-Type": "application/repository.reportUnit+json"})
+            assert response.status in (200, 201), f"Create fixture: HTTP {response.status}"
+            created.append(uri)
+
         try:
             page.goto(base + "/login.html", wait_until="networkidle")
             page.locator("#j_username").fill(user)
@@ -83,14 +93,7 @@ def main():
             checks.append("search and highlighted match")
             page.screenshot(path=str(output / "customers.png"), full_page=True)
 
-            response = api.put(base + "/rest_v2/resources" + resource, data={
-                "label": "OpenJRS disposable viewer smoke",
-                "jrxml": {"jrxmlFile": {"label": "Viewer smoke JRXML", "type": "jrxml",
-                                        "content": base64.b64encode(xml.encode()).decode()}},
-                "alwaysPromptControls": False,
-            }, headers={"Content-Type": "application/repository.reportUnit+json"})
-            assert response.status in (200, 201), f"Create fixture: HTTP {response.status}"
-            created.append(resource)
+            create_report(resource, "OpenJRS disposable viewer smoke", xml)
             report(resource)
             # Intercept the link target so the check needs no external service.
             page.context.route(target, lambda route: route.fulfill(body="OpenJRS hyperlink target"))
@@ -115,20 +118,48 @@ def main():
                 <itemProperty name="module" value="openjrs-cv-smoke"/>
                 </component></element></title></jasperReport>'''
             cv_resource = resource + "_cv"
-            response = api.put(base + "/rest_v2/resources" + cv_resource, data={
-                "label": "OpenJRS disposable CV viewer smoke",
-                "jrxml": {"jrxmlFile": {"label": "CV viewer smoke JRXML", "type": "jrxml",
-                                        "content": base64.b64encode(cv_xml.encode()).decode()}},
-                "alwaysPromptControls": False,
-            }, headers={"Content-Type": "application/repository.reportUnit+json"})
-            assert response.status in (200, 201), f"Create CV fixture: HTTP {response.status}"
-            created.append(cv_resource)
+            create_report(cv_resource, "OpenJRS disposable CV viewer smoke", cv_xml)
             report(cv_resource)
             circle = page.locator(".jrPage svg circle")
             circle.wait_for(state="visible", timeout=30000)
             assert circle.get_attribute("fill") == "#1264a3"
             checks.append("Community visualization rendered in viewer")
             page.screenshot(path=str(output / "visualization.png"), full_page=True)
+
+            table_resource = resource + "_table"
+            table_xml = (Path(__file__).resolve().parents[1] / "jasperserver"
+                         / "jasperserver-war-jar/src/test/resources/interactive-table.jrxml").read_text()
+            create_report(table_resource, "OpenJRS disposable table viewer smoke", table_xml)
+            report(table_resource)
+            page.locator(".jrcolHeader").first.click()
+            page.locator(".sortAscIcon:visible").click()
+            sorted_rows = '''() => {const text=document.querySelector('.jrPage').innerText;
+                return text.indexOf('alpha')>=0 && text.indexOf('alpha')<text.indexOf('beta')
+                    && text.indexOf('beta')<text.indexOf('zeta');}'''
+            original_rows = '''() => {const text=document.querySelector('.jrPage').innerText;
+                return text.indexOf('zeta')>=0 && text.indexOf('zeta')<text.indexOf('alpha');}'''
+            page.wait_for_function(sorted_rows, timeout=30000)
+            page.locator("#undo").click()
+            page.wait_for_function(original_rows, timeout=30000)
+            page.locator("#redo").click()
+            page.wait_for_function(sorted_rows, timeout=30000)
+            page.locator("#undo").click()
+            page.wait_for_function(original_rows, timeout=30000)
+            checks.append("interactive table sort, undo and redo")
+            page.locator(".jrcolHeader").first.click()
+            page.locator(".filterIcon:visible").click()
+            dialog = page.locator(".tableFilterDialog:visible")
+            dialog.locator('input[name="clearFilter"][value="false"]').check()
+            dialog.locator('select[name="filterTypeOperator"]').select_option(label="Equals")
+            dialog.locator('input[name="fieldValueStart"]').fill("alpha")
+            dialog.get_by_role("button", name="OK", exact=True).click()
+            page.wait_for_function('''() => {const text=document.querySelector('.jrPage').innerText;
+                return text.includes('alpha') && !text.includes('zeta') && !text.includes('beta');}''', timeout=30000)
+            checks.append("interactive table filter")
+            page.screenshot(path=str(output / "table-filter.png"), full_page=True)
+            page.locator("#undo").click()
+            page.wait_for_function(original_rows, timeout=30000)
+            checks.append("undo table filter")
             assert not errors, errors
             assert not bad_responses, bad_responses
         except Exception:
