@@ -52,3 +52,11 @@ The legacy Jaspersoft MongoDB adapter (`com.jaspersoft.connectors.mongodb:js-mon
 The experimental branch removes the proprietary adapter dependency, its connector module, example classes, Spring bean registrations, and the temporary compatibility shims. **Do not assume that existing MongoDB-backed reports will work after upgrading.** MongoDB JDBC-related source code and configuration are separate from this adapter and remain for independent review; a driver might still be required for that path. The original baseline is preserved on its own branch.
 
 The historical WAR checksum inventory and diagnostic exception must be revisited deliberately after this dependency removal; a changed WAR inventory is not automatically a successful or production-approved build.
+
+## JasperReports 7 interactive web API breaking change
+
+The JasperReports 7.1.0 library removed several types used directly by the 8.2.0 server web UI, including `net.sf.jasperreports.web.WebReportContext`, `net.sf.jasperreports.web.actions.Action` / `AbstractAction` / `MultiAction`, `net.sf.jasperreports.web.commands.CommandStack`, and legacy web-resource handling APIs. These types are not present in the JasperReports 7.1.0 source tree; adding another normal JasperReports module does not restore the old interactive viewer protocol.
+
+The migration therefore requires an explicit plan to port or replace the interactive report context/actions/commands/asset-serving integration, including compatibility tests for drill-down, interactive actions, pagination and viewer rendering. This work must not be bypassed by stubbing out actions or deleting core interactive features. The JSON exporter and Jackson helper were moved to `jasperreports-json` and `net.sf.jasperreports.jackson.util`; their dependency/import corrections are handled separately.
+
+**Status:** backend WAR compilation and functional report runtime validation remain blocked until this compatibility layer is migrated. The legacy 6.20.3 baseline remains the known-tested fallback.
