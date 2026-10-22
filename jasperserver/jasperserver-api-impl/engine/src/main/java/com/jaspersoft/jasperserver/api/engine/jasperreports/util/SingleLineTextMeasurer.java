@@ -147,6 +147,13 @@ public class SingleLineTextMeasurer implements JRTextMeasurer {
 		public float getTextWidth() {
 			return textWidth;
 		}
+
+		@Override
+		public float getAverageCharWidth() {
+			// Character advance is not otherwise retained by this legacy measurer.
+			// Estimate from the actual measured text width and consumed characters.
+			return textOffset > 0 ? textWidth / textOffset : 0f;
+		}
 	}
 
 	/**
@@ -172,7 +179,7 @@ public class SingleLineTextMeasurer implements JRTextMeasurer {
 		bottomPadding = textElement.getLineBox().getBottomPadding().intValue();
 		rightPadding = textElement.getLineBox().getRightPadding().intValue();
 
-		switch (textElement.getRotationValue()) {
+		switch (textElement.getRotation()) {
 		case LEFT: {
 			width = textElement.getHeight();
 			height = textElement.getWidth();
@@ -520,7 +527,7 @@ public class SingleLineTextMeasurer implements JRTextMeasurer {
 			measuredState.fontSizeSum += maxFontSizeFinder.findMaxFontSize(
 					new AttributedString(paragraph, lineStartPosition,
 							lineStartPosition + layout.getCharacterCount())
-							.getIterator(), textElement.getFontsize());
+							.getIterator(), textElement.getFontSize());
 
 			if (measuredState.lines == 1) {
 				measuredState.firstLineLeading = measuredState.textHeight;
