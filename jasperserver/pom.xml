@@ -291,6 +291,7 @@
       <module>common</module>
       <module>jasperserver-action-model</module>
       <module>jasperserver-custom-visualization</module>
+      <module>jasperserver-legacy-jrxml</module>
       <module>jasperserver-api</module>
       <module>jasperserver-api-impl</module>
       <module>jasperserver-util</module>

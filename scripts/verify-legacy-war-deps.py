@@ -26,7 +26,6 @@ KNOWN_MIGRATION_ADDITIONS = {
 KNOWN_MIGRATION_REMOVALS = {
     # Replaced by newer transitive dependencies during JasperReports migration.
     ("commons-collections4", "4.2"): "54EBEA0A5B653D3C680131E73FE807BB8F78C4ED",
-    ("ecj", "3.21.0"): "D06974EEC06892E5594BDB8FBBC95CD81F1C57B2",
     # Replaced by the exact OpenPDF Classic artifact required by JR 7.1.0.
     ("openpdf", "1.3.30.jaspersoft.2"): "D78A17A6E9C09C18A0F7787F8D3F4BCCABF3FC12",
     # Proprietary MongoDB adapter deliberately removed from Community.
@@ -110,7 +109,7 @@ def main():
             "The list of third-party JARs found in the WAR file:",
             "is different from the master list:",
             "The following 3 library(-ies) have been added:",
-            "The following 2 library(-ies) have been removed:",
+            "The following 1 library(-ies) have been removed:",
             "The following 3 library(-ies) have been changed:",
         )
         if args.build_exit == 0 or any(message not in log for message in expected_messages):
