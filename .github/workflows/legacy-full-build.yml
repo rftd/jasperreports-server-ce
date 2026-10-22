@@ -11,6 +11,7 @@ on:
       - 'scripts/verify-legacy-war-deps.py'
       - 'scripts/smoke-jasperserver.sh'
       - 'scripts/test-legacy-rest-reports.sh'
+      - 'scripts/test-legacy-viewer.py'
   push:
     branches:
       - feature/jasperreports-7-migration
@@ -226,6 +227,11 @@ jobs:
         run: |
           test -s jasperserver/jasperserver-war/target/jasperserver.war
           unzip -t jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
+      - name: Test legacy viewer action and resource registration
+        run: |
+          mvn -B -ntp -f jasperserver/jasperserver-war-jar/pom.xml \
+            -s jasperserver/buildomatic/build_conf/default/maven_settings_community.xml \
+            -DskipTests=false -Dtest=ViewerActionMappingsTest test
       - name: Upload compiled WAR
         uses: actions/upload-artifact@v4
         with:
@@ -309,6 +315,22 @@ jobs:
           JRS_SMOKE_USER: jasperadmin
           JRS_SMOKE_PASSWORD: jasperadmin
         run: bash scripts/test-legacy-rest-reports.sh
+      - name: Install pinned browser test dependencies
+        run: python3 -m pip install playwright==1.62.0 greenlet==3.5.5 pyee==13.0.1
+      - name: Browser login, viewer controls and hyperlinks
+        env:
+          JRS_SMOKE_USER: jasperadmin
+          JRS_SMOKE_PASSWORD: jasperadmin
+        run: python3 scripts/test-legacy-viewer.py
+      - name: Render Community visualization SVG and PDF in Chrome
+        run: |
+          chrome_path=$(command -v google-chrome)
+          mvn -B -ntp -f jasperserver/pom.xml \
+            -DbuildArtifactVersionName=ci \
+            -Dji-repo-releases=https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts \
+            -Dji-repo-snapshots=https://jaspersoft.jfrog.io/jaspersoft/jr-ce-snapshots \
+            -pl jasperserver-custom-visualization -am \
+            -Dtest=CVBrowserIT -Dopenjrs.chrome.path="$chrome_path" test
       - name: Capture Tomcat diagnostics
         if: always()
         run: |
@@ -335,6 +357,8 @@ jobs:
             ${{ runner.temp }}/tomcat-inspect.json
             ${{ runner.temp }}/jrs-login-smoke.html
             ${{ runner.temp }}/jrs-login-headers.txt
+            ${{ runner.temp }}/viewer-smoke/**
+            jasperserver/jasperserver-custom-visualization/target/cv-browser/**
           if-no-files-found: ignore
           retention-days: 7
       - name: Upload backend diagnostic logs

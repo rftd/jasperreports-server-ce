@@ -32,6 +32,9 @@ import org.apache.commons.logging.LogFactory;
 
 import com.github.kklisura.cdt.services.ChromeDevToolsService;
 import com.github.kklisura.cdt.services.types.ChromeTab;
+import com.github.kklisura.cdt.protocol.commands.Target;
+import com.github.kklisura.cdt.services.impl.ChromeDevToolsServiceImpl;
+import com.github.kklisura.cdt.services.impl.ChromeServiceImpl;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -53,29 +56,27 @@ public class StandardPageCreator implements PageCreator
     {
         return chromeInstance.runWithChromeInstance(chromeService ->
         {
-            ChromeTab tab = null;
-            try
+            // Current Chrome requires PUT for /json/new; the legacy CDT client's
+            // createTab() sends GET. Use the supported CDP Target API instead.
+            IsolatedPageCreator tools = IsolatedPageCreator.instance();
+            try (ChromeDevToolsServiceImpl browser = tools.getBrowserDevToolsService(chromeService))
             {
-                tab = chromeService.createTab();
-                if (log.isDebugEnabled())
+                Target target = browser.getTarget();
+                String id = target.createTarget(ChromeServiceImpl.ABOUT_BLANK_PAGE,
+                        null, null, null, null, null, null);
+                try
                 {
-                    log.debug("created tab " + tab.getId());
-                }
-
-                try(ChromeDevToolsService devToolsService = chromeService.createDevToolsService(tab))
-                {
-                    return tabAction.apply(devToolsService);
-                }
-            }
-            finally
-            {
-                if (tab != null)
-                {
-                    chromeService.closeTab(tab);
-                    if (log.isDebugEnabled())
+                    ChromeTab tab = tools.getTab(chromeService, id);
+                    if (log.isDebugEnabled()) log.debug("created tab " + id);
+                    try (ChromeDevToolsService devToolsService = tools.getDevToolsService(tab.getWebSocketDebuggerUrl()))
                     {
-                        log.debug("closed tab " + tab.getId());
+                        return tabAction.apply(devToolsService);
                     }
+                }
+                finally
+                {
+                    target.closeTarget(id);
+                    if (log.isDebugEnabled()) log.debug("closed tab " + id);
                 }
             }
         });

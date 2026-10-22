@@ -26,6 +26,13 @@ package net.sf.jasperreports.chrome;
 // OpenJRS adaptation (2026): JR7 Community integration; see this module's README.
 
 import java.lang.reflect.Method;
+import java.io.IOException;
+import java.util.List;
+import javax.websocket.ClientEndpointConfig;
+import javax.websocket.DeploymentException;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.Session;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -40,7 +47,6 @@ import com.github.kklisura.cdt.services.ChromeDevToolsService;
 import com.github.kklisura.cdt.services.ChromeService;
 import com.github.kklisura.cdt.services.WebSocketService;
 import com.github.kklisura.cdt.services.config.ChromeDevToolsServiceConfiguration;
-import com.github.kklisura.cdt.services.exceptions.WebSocketServiceException;
 import com.github.kklisura.cdt.services.impl.ChromeDevToolsServiceImpl;
 import com.github.kklisura.cdt.services.impl.ChromeServiceImpl;
 import com.github.kklisura.cdt.services.impl.WebSocketServiceImpl;
@@ -93,7 +99,7 @@ public class IsolatedPageCreator implements PageCreator
                         }
 
                         ChromeTab tab = getTab(chromeService, targetId);
-                        try(ChromeDevToolsService devToolsService = chromeService.createDevToolsService(tab))
+                        try(ChromeDevToolsService devToolsService = getDevToolsService(tab.getWebSocketDebuggerUrl()))
                         {
                             return tabAction.apply(devToolsService);
                         }
@@ -139,14 +145,37 @@ public class IsolatedPageCreator implements PageCreator
 
     protected ChromeDevToolsServiceImpl getBrowserDevToolsService(ChromeService chromeService)
     {
+        return getDevToolsService(chromeService.getVersion().getWebSocketDebuggerUrl());
+    }
+
+    protected ChromeDevToolsServiceImpl getDevToolsService(String webSocketUrl)
+    {
         try
         {
             ChromeDevToolsServiceConfiguration devToolsServiceConfiguration =
                     new ChromeDevToolsServiceConfiguration();
 
-            //TODO lucian cache url or service?
-            String browserWSUrl = chromeService.getVersion().getWebSocketDebuggerUrl();
-            WebSocketService wsService = WebSocketServiceImpl.create(new URI(browserWSUrl));
+            // CDP is a native client connection. Tyrus adds a browser Origin by
+            // default, which current Chrome rejects. Omit that synthetic header
+            // rather than relaxing Chrome's origin policy or sandbox.
+            ClientEndpointConfig config = ClientEndpointConfig.Builder.create()
+                    .configurator(new ClientEndpointConfig.Configurator()
+                    {
+                        @Override
+                        public void beforeRequest(Map<String, List<String>> headers)
+                        {
+                            headers.keySet().removeIf("Origin"::equalsIgnoreCase);
+                        }
+                    }).build();
+            Session session = WebSocketServiceImpl.getWebSocketContainer().connectToServer(new Endpoint()
+            {
+                @Override
+                public void onOpen(Session openedSession, EndpointConfig endpointConfig)
+                {
+                    // The CDT service installs the message handler on this session.
+                }
+            }, config, new URI(webSocketUrl));
+            WebSocketService wsService = new WebSocketServiceImpl(session);
 
             CommandInvocationHandler invocationHandler = new CommandInvocationHandler();
             Map<Method, Object> cache = new ConcurrentHashMap<>();
@@ -160,7 +189,7 @@ public class IsolatedPageCreator implements PageCreator
             invocationHandler.setChromeDevToolsService(devToolsService);
             return devToolsService;
         }
-        catch (WebSocketServiceException | URISyntaxException e)
+        catch (URISyntaxException | DeploymentException | IOException e)
         {
             throw new JRRuntimeException(e);
         }

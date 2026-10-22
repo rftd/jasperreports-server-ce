@@ -39,6 +39,15 @@ browser tests. Historical JR6 XML syntax and compiled `.jasper` objects are not
 made compatible by this module; report-format conversion is a separate JR7
 migration concern.
 
+`CVBrowserIT` is an additional required CI check, explicitly selected with
+`-Dtest=CVBrowserIT -Dopenjrs.chrome.path=/path/to/google-chrome`. It runs an AMD
+component script in Chrome, verifies the rendered SVG and exports that component
+to PDF. The Chrome integration creates tabs with the CDP Target API, since the
+old client's GET `/json/new` is rejected by current Chrome. Native WebSocket
+connections omit Tyrus's synthetic browser Origin header; Chrome's origin
+policy and sandbox remain enabled. Browser policy must permit the renderer's
+temporary local HTML/script files.
+
 ## Source provenance and license
 
 Copyright and LGPL notices in recovered files are preserved. See `LICENSE`.

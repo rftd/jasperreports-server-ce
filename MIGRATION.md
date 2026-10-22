@@ -59,4 +59,23 @@ The JasperReports 7.1.0 library removed several types used directly by the 8.2.0
 
 The migration therefore requires an explicit plan to port or replace the interactive report context/actions/commands/asset-serving integration, including compatibility tests for drill-down, interactive actions, pagination and viewer rendering. This work must not be bypassed by stubbing out actions or deleting core interactive features. The JSON exporter and Jackson helper were moved to `jasperreports-json` and `net.sf.jasperreports.jackson.util`; their dependency/import corrections are handled separately.
 
-**Status:** backend WAR compilation and functional report runtime validation remain blocked until this compatibility layer is migrated. The legacy 6.20.3 baseline remains the known-tested fallback.
+The migration branch now retains the Community viewer compatibility classes and
+registers their action subtypes through JR7's
+`JacksonMappingExtensionsRegistryFactory`. This restores `saveZoom`, search,
+save and undo/redo deserialization. Image/font/default web-resource handlers
+are registered separately. The action resource bundle is recovered from the
+LGPL JasperReports 6.21.5 source archive; existing copyright notices remain intact.
+
+`ViewerActionMappingsTest` checks the engine mapper and resource registration.
+`scripts/test-legacy-viewer.py` exercises UI authentication, HTML rendering,
+pagination, zoom, highlighted search matches and a real reference hyperlink.
+The browser test requires Playwright and a sandbox-capable Chrome executable;
+it creates and deletes one uniquely named report in the disposable CI repository.
+It does not establish full coverage of table sorting/filtering, save/undo,
+drill-down or every report/component type. A replacement viewer belongs in a
+separate PR; the current migration preserves this viewer.
+
+The JR7 legacy XML loader and Community visualization port have their own
+scope and limitations documented in `jasperserver-legacy-jrxml/README.md` and
+`jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
+not approve the unresolved production WAR inventory differences.
