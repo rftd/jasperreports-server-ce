@@ -133,10 +133,18 @@
         </profile>
     </profiles>
     <dependencies>
+        <!--
+          JasperReports 7.1.0 has no Community Edition release of this optional
+          custom visualization extension. Retain the last published LGPL
+          Community artifact instead of dropping custom visualization support.
+          Its JasperReports 6 transitive engine is excluded below; runtime
+          compatibility with JasperReports 7 requires functional verification.
+          Do not use the similarly named proprietary customvisualization artifact.
+        -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-custom-visualization</artifactId>
-            <version>${jasperreports.ext.version}</version>
+            <version>6.21.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>net.sf.jasperreports</groupId>
