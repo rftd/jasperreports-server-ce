@@ -1,5 +1,5 @@
 # syntax=docker.io/docker/dockerfile:1
-# Local development image. Dependency audit exceptions remain diagnostic only.
+# Local development image. Builds require strict WAR dependency verification.
 FROM docker.io/library/node:14.21.3-bullseye AS frontend
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ zip \
     && rm -rf /var/lib/apt/lists/*
@@ -32,7 +32,7 @@ ENV BUILDOMATIC_ENV=ci MAVEN_OPTS=-Xmx2048m
 FROM build-tools AS builder
 WORKDIR /src
 COPY jasperserver jasperserver
-COPY scripts/verify-legacy-war-deps.py scripts/verify-legacy-war-deps.py
+COPY scripts/verify-war-deps.py scripts/verify-war-deps.py
 COPY scripts/verify-no-vendor-heartbeat.py scripts/verify-no-vendor-heartbeat.py
 COPY scripts/verify-native-reports.py scripts/verify-native-reports.py
 COPY docker/local /opt/openjrs-docker

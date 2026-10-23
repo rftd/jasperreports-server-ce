@@ -143,10 +143,12 @@ de SELinux, namespaces e execução rootless ainda podem exigir diagnóstico pr�
 ## Limitações conhecidas
 
 O build executa os testes focados de JR7/JRXML/ações do viewer e usa o mesmo fluxo
-Buildomatic do CI. A auditoria diagnóstica só aceita as diferenças de dependências
-já enumeradas, com versões e hashes fixos. A verificação original de produção
-permanece rígida. A procedência do SiteMesh e a compatibilidade ampliada continuam
-pendentes: esta imagem não é uma distribuição de produção aprovada.
+Buildomatic do CI. O inventário atualizado é rígido: qualquer falha do Ant
+interrompe o build, sem exceções diagnósticas. A verificação adicional confere os
+JARs reais do WAR, incluindo SHA-256 das dependências revisadas e dos módulos JR7.
+A [revisão de procedência](../../jasperserver/deps/README.md) documenta também a
+republicação oficial do SiteMesh. Compatibilidade ampliada e revisão de segurança
+das dependências legadas continuam pendentes; a imagem é voltada a testes locais.
 
 O Chromium usa seu sandbox; não acrescente `--no-sandbox` para contornar falhas.
 O serviço usa o perfil seccomp padrão do Moby com uma regra adicional para os

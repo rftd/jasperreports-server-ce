@@ -22,8 +22,9 @@ O OpenJRS Server **ainda não é uma substituição pronta para produção**.
 | Frontend legado | Compilação validada no CI com Node.js 14 e Yarn Classic |
 | Backend legado | WAR gerado no CI com Java 8, Maven e Ant |
 | Inicialização | PostgreSQL 14 e Tomcat 9 validados no CI |
+| Integridade das dependências | Inventário rígido do WAR e SHA-256 dos artefatos revisados; veja [procedência e escopo](jasperserver/deps/README.md) |
 | Testes funcionais | CI valida autenticação REST, PDF/XLSX, controles do viewer, tabelas interativas, visualizações Community e a interface OpenJRS |
-| Motor atual | **JasperReports Library 7.1.0, experimental**; compatibilidade ampliada e integridade das dependências seguem em revisão |
+| Motor atual | **JasperReports Library 7.1.0, experimental**; compatibilidade ampliada e segurança das dependências legadas seguem em revisão |
 
 A branch `master` reúne a base recuperada, a identidade OpenJRS, o motor JR 7.1.0, o ambiente Docker local, a remoção do heartbeat e os exemplos Community nativos do JR7 dos PRs #1–#6, já mesclados. Veja o [histórico de integração e a cobertura validada](MERGING.md). A integração não constitui uma versão de produção. A base original com JR 6.20.3 permanece na branch `feature/jasperreports-7-migration`.
 

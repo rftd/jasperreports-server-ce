@@ -37,11 +37,12 @@ appropriate checks. Keep PRs in Draft until integration is authorized; passing
 CI alone does not authorize a merge or a production release. See
 [MIGRATION.md](MIGRATION.md) for report-format changes and existing-install updates.
 
-Before a production release, resolve the SiteMesh provenance/integrity
-difference and review all enumerated dependency changes. The production
-Buildomatic inventory stays strict; the CI diagnostic allowance is not
-production approval. Preserve upstream copyright, license and third-party
-notices, and review the independent project name before a public release.
+The [dependency provenance review](jasperserver/deps/README.md) documents the
+official SiteMesh republication, reviewed migration artifacts and JR7 SHA-256
+pins. Buildomatic's updated inventory is strict and no diagnostic allowance
+remains. Before a production release, complete broader functional regression and
+legacy dependency security/license review. Preserve upstream copyright, license
+and third-party notices, and review the independent project name before release.
 
 Keep `/jasperserver`, Maven/Java package identities, database names and the
 Java 8 / Node 14 / Tomcat 9 / PostgreSQL 14 toolchain stable in unrelated changes.

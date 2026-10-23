@@ -13,16 +13,13 @@ mvn -B -ntp -f /src/jasperserver/pom.xml -DbuildArtifactVersionName=ci \
   -Dji-repo-releases=https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts \
   -Dji-repo-snapshots=https://jaspersoft.jfrog.io/jaspersoft/jr-ce-snapshots \
   -pl jasperserver-custom-visualization -am test
-set +e
 ./js-ant build-ce 2>&1 | tee /tmp/backend-build.log
-build_status=${PIPESTATUS[0]}
-set -e
-# The existing audit accepts only the exact documented diagnostic differences.
-# No failure other than that known inventory mismatch can pass this gate.
-python3 /src/scripts/verify-legacy-war-deps.py \
+# Ant must succeed with the reviewed inventory; no build failure is tolerated.
+python3 /src/scripts/verify-war-deps.py \
   --master /src/jasperserver/deps/master-war-deps-ce.txt \
   --current /src/jasperserver/target/deps/current-war-deps-ce.txt \
-  --build-exit "$build_status" --build-log /tmp/backend-build.log
+  --war /src/jasperserver/jasperserver-war/target/jasperserver.war \
+  --project-version ci
 mvn -B -ntp -f /src/jasperserver/jasperserver-war-jar/pom.xml \
   -s build_conf/default/maven_settings_community.xml \
   -DskipTests=false -Dtest=JSCommonControllerTest,ViewerActionMappingsTest,InteractiveTableActionsTest test

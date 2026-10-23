@@ -18,6 +18,8 @@ on:
       - 'scripts/test-native-samples.py'
       - 'scripts/verify-no-vendor-heartbeat.py'
       - 'scripts/verify-native-reports.py'
+      - 'scripts/verify-war-deps.py'
+      - 'scripts/tests/**'
       - 'docker/local/**'
       - '.github/workflows/local-docker.yml'
 
@@ -48,6 +50,7 @@ jobs:
           python3 -m py_compile docker/local/configure.py
           python3 scripts/sync-jr7-samples.py
           python3 scripts/verify-native-reports.py
+          python3 -m unittest discover -s scripts/tests -v
       - name: Build frontend, backend, initializer and runtime images
         run: |
           set -o pipefail

@@ -88,13 +88,13 @@ JR 7.1.0's official `openpdf.classic.version` is `1.3.43.jaspersoft.2`.
 The server's old `1.3.30.jaspersoft.2` lacks `BaseFont.setIncludeCidSet(boolean)`;
 the PDF regression test reproduces that binary incompatibility. The parent POM
 now uses the exact official JR7 dependency. Its Jaspersoft repository checksum
-was verified before updating the diagnostic inventory allowance:
+was independently verified before promotion into the strict WAR inventory:
 
 - SHA-1: `2583544F268D26889F2A5E3DA40F2AC5900B5602`
 - SHA-256: `c8f2b3262b8128029f94fe9a789486bd252eddc06d475198c90583d94e7b7909`
 - Source: `https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/com/github/librepdf/openpdf/1.3.43.jaspersoft.2/`
 
-The production Buildomatic master inventory remains unchanged and strict. The
-CI diagnostic gate permits only this exact replacement, in addition to the
-previously documented differences; the historical SiteMesh provenance issue
-remains unresolved.
+The updated Buildomatic inventory requires this exact replacement. The WAR
+verifier additionally checks SHA-256 against the reviewed provenance manifest;
+no diagnostic build-failure exception remains. See
+[dependency integrity and SiteMesh provenance](../deps/README.md).
