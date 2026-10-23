@@ -24,7 +24,7 @@
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="summary"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.4" value="pageFooter"/>
-	<property name="net.sf.jasperreports.export.pdf.tagged" value="true"/>
+	<property name="net.sf.jasperreports.export.pdf.tagged" value="false"/>
 	<property name="net.sf.jasperreports.export.pdf.tag.language" value="EN-US"/>
 	<import></import>
 	<style name="Sans_Normal" default="true" fontName="SansSerif" fontSize="12.0" pdfFontName="Helvetica" pdfEncoding="Cp1252" pdfEmbedded="false"/>

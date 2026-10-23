@@ -71,7 +71,7 @@ jobs:
         run: |
           python3 scripts/test-openjrs-branding.py
           python3 scripts/test-legacy-viewer.py
-      - name: Check native JR7 employee samples and drilldown
+      - name: Check native JR7 samples, MDX and drilldown
         run: python3 scripts/test-native-samples.py
       - name: Check shipped table, OpenStreetMap, drilldown and image exports
         env:

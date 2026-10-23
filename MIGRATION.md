@@ -12,8 +12,10 @@ All seven JRXML definitions in the PostgreSQL/MySQL Community catalogs are nativ
 Employees, EmployeeAccounts, FoodmartSalesMondrianReport, CustomersReport,
 OrdersReport (subreport), TableReport and MapReport. Standalone Community examples
 and production/remote-test fixtures have also been rewritten with the official
-JR7 writer. Source copyright/license comments are retained. Historical `*-pro.zip`
-archives are outside the Community bootstrap and this migration.
+JR7 writer. The Community import-test packages contain another thirteen native
+JRXML definitions and one native JRTX style template. Source copyright/license
+comments are retained. Historical Pro/Visualize.js archives and old `script-revs`
+upgrade catalogs are outside the Community bootstrap and this migration.
 
 For user reports, use [Jaspersoft Studio 7 or later](https://github.com/Jaspersoft/jasperreports/blob/7.1.0/changes.txt)
 to migrate source files and style templates, review renamed APIs/component modules,
@@ -34,14 +36,16 @@ against Maven Central and recorded in
 The diagnostic allowance pins these exact replacements. The original strict
 Buildomatic inventory and the unresolved SiteMesh review remain unchanged.
 
-**BREAKING CHANGE — PDF accessibility:** Employees, EmployeeAccounts and the
-Foodmart MDX example (including its source fixtures) now set
+**BREAKING CHANGE — PDF accessibility:** bundled examples/fixtures that requested
+tagged PDF now set
 `net.sf.jasperreports.export.pdf.tagged=false` and export ordinary, untagged PDF.
 JasperReports 7.1.0 Community's default PDF tagger rejects tagged export; the
 official silent factory also produces untagged output. This is not accessible
 tagged PDF or a PDF/UA compliance claim. PDF accessibility is deferred to separate
 work. Existing structural tag properties remain in the JRXML for that work but
-have no effect while tagging is disabled. This changes only these sample definitions:
+have no effect while tagging is disabled. In the main CE catalog this affects
+Employees, EmployeeAccounts and Foodmart; auxiliary AllAccounts, SalesByMonth,
+ParamMany and import-package examples also use ordinary PDF. This changes sample definitions:
 there is no global silent tagger or override of users' report settings.
 
 Existing databases preserve their stored reports on image rebuild. From an updated
@@ -191,6 +195,6 @@ drill-down or every report/component type. A replacement viewer belongs in a
 separate PR; the current migration preserves this viewer.
 
 Native sample sources and the Community visualization port have their own
-scope and limitations documented in `samples/jrxml7/README.md` and
-`jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
+scope and limitations documented in `jasperserver/samples/jrxml7/README.md` and
+`jasperserver/jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
 not approve the unresolved production WAR inventory differences.

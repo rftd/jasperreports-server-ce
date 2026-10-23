@@ -22,12 +22,12 @@
 <!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
 <jasperReport name="test" dpi="72" pageWidth="612" pageHeight="792" columnWidth="552" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="c8161eb4-aadc-4b5c-a93b-4ef6634a2459">
 	<property name="com.jaspersoft.ji.adhoc" value="1"/>
-	<style name="ReportDefault" default="true" forecolor="#000000" backcolor="#FFFFFF" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="10.0" pdfFontName="Helvetica">
+	<style name="ReportDefault" default="true" forecolor="#000000" backcolor="#FFFFFF" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="10.0" pdfFontName="Helvetica" hImageAlign="Left" vImageAlign="Middle">
 		<box>
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="PageHeaderFooter" style="ReportDefault" forecolor="#000000" vTextAlign="Top" fontName="SansSerif" fontSize="9.0">
+	<style name="PageHeaderFooter" style="ReportDefault" forecolor="#000000" vTextAlign="Top" fontName="SansSerif" fontSize="9.0" vImageAlign="Top">
 		<pen lineWidth="1.0" lineStyle="Solid"/>
 	</style>
 	<style name="Group1HeaderFooter" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#FFFFFF" fontName="SansSerif" fontSize="12.0" bold="true" pdfFontName="Helvetica-Bold"/>
@@ -55,7 +55,7 @@
 			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
 		</box>
 	</style>
-	<style name="Title" style="ReportDefault" mode="Opaque" backcolor="#FFFFFF" hTextAlign="Center" fontName="SansSerif" fontSize="18.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="Title" style="ReportDefault" mode="Opaque" backcolor="#FFFFFF" hTextAlign="Center" fontName="SansSerif" fontSize="18.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Center">
 		<pen lineWidth="0.5" lineStyle="Solid"/>
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
@@ -67,67 +67,67 @@
 			<conditionExpression><![CDATA[new Boolean($V{InnerRowCount}.intValue() % 2 == 0)]]></conditionExpression>
 		</conditionalStyle>
 	</style>
-	<style name="CrosstabDefaults" style="ReportDefault" mode="Opaque" forecolor="#000000" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabDefaults" style="ReportDefault" mode="Opaque" forecolor="#000000" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" pdfFontName="Helvetica-Bold" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabTitleStyle" style="ReportDefault" mode="Transparent" forecolor="#000000" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="13.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabTitleStyle" style="ReportDefault" mode="Transparent" forecolor="#000000" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="13.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Center" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabColumn1" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#C0C0C0" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabColumn1" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#C0C0C0" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Center" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabColumn2" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#EFEFEF" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabColumn2" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#EFEFEF" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Center" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabColumn3" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#F5F2F2" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabColumn3" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#F5F2F2" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Center" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabRow1" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#FFFFFF" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabRow1" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#FFFFFF" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Left" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabRow2" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#D0D0D0" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabRow2" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#D0D0D0" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Left" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabRow3" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#F5F2F2" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabRow3" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#F5F2F2" hTextAlign="Left" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Left" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabGrandTotal" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#C0C0C0" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabGrandTotal" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#C0C0C0" hTextAlign="Center" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Center" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabColumnWidth" style="ReportDefault" mode="Opaque" forecolor="#000000" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabColumnWidth" style="ReportDefault" mode="Opaque" forecolor="#000000" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" pdfFontName="Helvetica-Bold" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabRowWidth" style="ReportDefault" mode="Opaque" forecolor="#000000" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabRowWidth" style="ReportDefault" mode="Opaque" forecolor="#000000" vTextAlign="Middle" fontName="SansSerif" fontSize="11.0" pdfFontName="Helvetica-Bold" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="CrosstabMeasureCell" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#FFFFFF" vTextAlign="Middle" fontName="SansSerif" fontSize="10.0" pdfFontName="Helvetica-Bold">
+	<style name="CrosstabMeasureCell" style="ReportDefault" mode="Opaque" forecolor="#000000" backcolor="#FFFFFF" vTextAlign="Middle" fontName="SansSerif" fontSize="10.0" pdfFontName="Helvetica-Bold" vImageAlign="Middle">
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="ChartReportTitle" style="ReportDefault" mode="Opaque" backcolor="#FFFFFF" hTextAlign="Center" fontName="SansSerif" fontSize="18.0" bold="true" pdfFontName="Helvetica-Bold">
+	<style name="ChartReportTitle" style="ReportDefault" mode="Opaque" backcolor="#FFFFFF" hTextAlign="Center" fontName="SansSerif" fontSize="18.0" bold="true" pdfFontName="Helvetica-Bold" hImageAlign="Center">
 		<pen lineWidth="0.5" lineStyle="Solid"/>
 		<box style="ReportDefault">
 			<pen lineColor="#000000"/>

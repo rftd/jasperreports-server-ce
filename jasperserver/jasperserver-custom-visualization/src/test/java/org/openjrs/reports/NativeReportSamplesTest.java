@@ -298,6 +298,34 @@ public class NativeReportSamplesTest {
     }
 
     @Test
+    public void loadsImportFixtureReportsAndStyleTemplateNatively() throws Exception {
+        int definitions = 0;
+        for (String fixture : new String[] {"samples-export/samples-ce-export.zip", "encryption-import/encryption-resource.zip"}) {
+            try (ZipFile zip = new ZipFile(Paths.get("..", "production-tests", "src", "test", "resources", fixture).toFile())) {
+                java.util.Enumeration<? extends ZipEntry> entries = zip.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    if (!entry.getName().endsWith(".data")) continue;
+                    byte[] data = read(zip.getInputStream(entry));
+                    String xml = new String(data, StandardCharsets.UTF_8);
+                    if (xml.contains("<jasperReport")) {
+                        assertTrue(entry.getName(), JacksonReportLoader.instance().loadReport(
+                                DefaultJasperReportsContext.getInstance(), data).isPresent());
+                        definitions++;
+                    } else if (xml.contains("<jasperTemplate")) {
+                        JRTemplate template = JacksonReportLoader.instance().loadTemplate(
+                                DefaultJasperReportsContext.getInstance(), data).get();
+                        assertTrue(template.getStyles().length > 0);
+                        assertEquals("Arial", template.getStyles()[0].getFontName());
+                        definitions++;
+                    }
+                }
+            }
+        }
+        assertEquals(14, definitions);
+    }
+
+    @Test
     public void exportsNativeMdxLayoutAsOrdinaryPdf() throws Exception {
         JasperDesign design = JRXmlLoader.load(Paths.get("..", "samples", "jrxml7", "analysis",
                 "FoodmartSalesMondrianReport.jrxml").toFile());

@@ -37,6 +37,11 @@ A manutenção é comunitária e realizada em regime de melhor esforço, sem gar
 
 Para testar localmente com Docker, veja o [guia de Docker Compose](docker/local/README.md).
 
+**BREAKING CHANGE:** os relatórios e templates de estilo devem usar o formato
+nativo do JasperReports 7. O adaptador automático de JR6 foi removido. Os exemplos
+Community foram migrados; bancos existentes e relatórios próprios precisam de
+migração explícita. Consulte [o procedimento](MIGRATION.md#native-jr7-reports--breaking-change).
+
 Os nomes internos originais foram mantidos intencionalmente durante esta fase: pastas `jasperserver/`, pacotes Java, coordenadas Maven, nome do WAR e contexto web `/jasperserver`. A identidade pública aparece na documentação, no login, no cabeçalho e na janela Sobre.
 
 O heartbeat que enviava informações à Jaspersoft foi removido, incluindo a coleta,

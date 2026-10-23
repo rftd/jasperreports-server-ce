@@ -35,7 +35,9 @@ def main():
             if path.suffix.lower() in {".jrxml", ".jrtx"}:
                 check_xml(path.read_bytes(), str(path.relative_to(root)))
                 checked += 1
-    for path in (root / "buildomatic/install_resources/export").glob("*-ce.zip"):
+    archives = list((root / "buildomatic/install_resources/export").glob("*-ce.zip"))
+    archives += list((root / "production-tests/src/test/resources").rglob("*.zip"))
+    for path in archives:
         with ZipFile(path) as archive:
             for name in archive.namelist():
                 if name.endswith(".data"):

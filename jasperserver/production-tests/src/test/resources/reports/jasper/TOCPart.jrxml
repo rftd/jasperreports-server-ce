@@ -34,7 +34,7 @@
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<style name="Default" fontName="DejaVu Sans"/>
-	<style name="Title" style="Default" hTextAlign="Right" fontSize="32.0">
+	<style name="Title" style="Default" hTextAlign="Right" fontSize="32.0" hImageAlign="Right">
 		<box style="Default">
 			<topPen lineWidth="1.0"/>
 		</box>

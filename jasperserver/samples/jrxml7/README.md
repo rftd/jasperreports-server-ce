@@ -25,19 +25,25 @@ recompile old `.jasper` files with JR7. An image rebuild preserves existing
 repository files; it does not migrate them. The viewer and Community visualization
 component remain available independently of report source conversion.
 
-**BREAKING CHANGE — PDF accessibility:** Employees, EmployeeAccounts and the
-Foodmart MDX sample explicitly set `net.sf.jasperreports.export.pdf.tagged=false`.
+**BREAKING CHANGE — PDF accessibility:** bundled examples and fixtures that
+requested tagged PDF explicitly set `net.sf.jasperreports.export.pdf.tagged=false`.
+The main CE catalog includes Employees, EmployeeAccounts and Foodmart; auxiliary
+AllAccounts, SalesByMonth, ParamMany and import-package examples follow the same policy.
 They produce ordinary PDF because JR7 Community's default tagger rejects tagged
 export. There is no global silent tagger override. Accessibility support is
 deferred; these examples make no tagged PDF or PDF/UA compliance claim.
 
-Standalone sample and test-fixture JRXML sources are also native. The auxiliary
+Standalone sample and test-fixture JRXML sources are also native. The two Community
+import-test archives contain thirteen further JRXML files and one JRTX style
+template in native format; encrypted credentials and other entries are preserved.
+The auxiliary
 ChartPart book example uses a Community pie chart to count customers by country
 instead of its former commercial Highcharts component. Specialized examples
 retain their plugin requirements: HQL and WebScraper need their real query
 executers installed, and Groovy needs its JR7 compiler module. Source-format
-migration does not supply missing optional integrations. Historical Pro catalogs
-are outside the Community bootstrap and this conversion.
+migration does not supply missing optional integrations. Historical Pro/Visualize.js
+archives and old `script-revs` upgrade catalogs are outside the Community bootstrap
+and this conversion.
 
 As specified by JR7, former 3D chart types render in 2D with the newer JFreeChart.
 
