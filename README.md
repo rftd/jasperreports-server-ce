@@ -26,10 +26,10 @@ This is a **work-in-progress modernization fork**, not a certified production-re
 | Legacy frontend build | Verified in CI with Node.js 14 and Yarn Classic |
 | Legacy backend build | Verified in CI with Java 8, Maven, and Ant; produces a WAR |
 | Runtime smoke test | Verified in CI with PostgreSQL 14 and Tomcat 9 |
-| Functional smoke tests | REST authentication and sample report exports to PDF and XLSX pass on the legacy baseline |
-| JasperReports Library 7.1.0 migration | **Separate, experimental PR #2**: CI verifies PDF/XLSX, viewer controls, interactive tables and Community visualizations; broader compatibility and dependency integrity remain under review |
+| Functional smoke tests | CI verifies REST authentication, PDF/XLSX exports, viewer controls, interactive tables, Community visualizations and the OpenJRS interface |
+| Current reporting engine | **JasperReports Library 7.1.0, experimental**; broader compatibility and dependency integrity remain under review |
 
-The tested legacy baseline lives in [PR #1](https://github.com/rftd/jasperreports-server-ce/pull/1); the experimental engine migration lives in [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2). Neither PR is described here as a production release.
+This development tree includes the baseline recovered in [PR #1](https://github.com/rftd/jasperreports-server-ce/pull/1), the OpenJRS identity from [PR #3](https://github.com/rftd/jasperreports-server-ce/pull/3), and the experimental engine migration from [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2). Integration does not constitute a production release. The original JR 6.20.3 baseline remains available on `feature/jasperreports-7-migration`.
 
 ### AI-assisted maintenance
 

@@ -1,21 +1,21 @@
-# OpenJRS Server — integrating the current PRs
+# OpenJRS Server — PR integration and release checks
 
 The baseline, engine migration and branding are independent review scopes.
-The current PRs remain Draft until their maintainers approve them; CI success
+Keep a PR in Draft until its maintainers authorize integration; CI success
 does not itself authorize a merge or a production release.
 
 | PR | Base | Scope | Integration condition |
 | --- | --- | --- | --- |
 | [#1](https://github.com/rftd/jasperreports-server-ce/pull/1) | `master` | Recover the historical Java 8 / JR 6.20.3 build and runtime baseline | Review the baseline and its diagnostic integrity exceptions |
-| [#3](https://github.com/rftd/jasperreports-server-ce/pull/3) | `feature/jasperreports-7-migration` | OpenJRS documentation and public UI identity | Review branding, notices and locale/browser checks against the baseline |
-| [#2](https://github.com/rftd/jasperreports-server-ce/pull/2) | `feature/jasperreports-7-migration` | JR 7.1.0 engine, exports and Community viewer/component compatibility | Complete compatibility review and keep unresolved release gates explicit |
+| [#3](https://github.com/rftd/jasperreports-server-ce/pull/3) | `master` | OpenJRS documentation and public UI identity | Review branding, notices and locale/browser checks against the baseline |
+| [#2](https://github.com/rftd/jasperreports-server-ce/pull/2) | `master` | JR 7.1.0 engine, exports and Community viewer/component compatibility | Revalidate the combined tree and keep unresolved compatibility/release gates explicit |
 
-Integrate the reviewed baseline first. After #1 reaches `master`, retarget #3
-and #2 to `master` and verify that their diffs contain only their intended
-changes. Branding can then be integrated independently of the experimental
-engine upgrade. Update the remaining PR with the resulting base and rerun its
-checks before merging it. Do not copy engine changes into the branding PR just
-to combine the branches.
+The integration order is #1, #3, then #2. After the baseline reaches `master`,
+target the remaining PRs at `master` and verify that their diffs contain only
+their intended changes. Update each remaining branch with the integrated base
+and rerun its checks before merging it. This validates the engine together with
+the OpenJRS interface. Preserve the original branches for comparison; do not
+copy engine changes into the branding PR just to combine the branches.
 
 The engine branch's [validated CI run](https://github.com/rftd/jasperreports-server-ce/actions/runs/39871809564)
 covers REST PDF/XLSX, login, HTML/pagination/zoom/search/hyperlinks, table
