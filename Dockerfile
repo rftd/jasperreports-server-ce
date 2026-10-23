@@ -35,7 +35,7 @@ COPY jasperserver jasperserver
 COPY scripts/verify-legacy-war-deps.py scripts/verify-legacy-war-deps.py
 COPY docker/local /opt/openjrs-docker
 COPY --from=frontend /tmp/jrs-ui-overlay.zip /tmp/jrs-ui-overlay.zip
-RUN --mount=type=cache,target=/root/.m2 \
+RUN --mount=type=cache,id=openjrs-maven,target=/root/.m2,sharing=locked \
     bash /opt/openjrs-docker/build.sh \
     && cp -a /root/.m2/repository /opt/maven-repository
 

@@ -3,7 +3,7 @@
 **/node_modules
 **/__pycache__
 **/target
-**/build
+jasperserver-ui/ce/*/build
 **/.legacy-private-deps
 **/.env.local
 .env
