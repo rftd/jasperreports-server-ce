@@ -1,0 +1,334 @@
+name: Legacy full build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/legacy-full-build.yml'
+      - 'jasperserver/**'
+      - 'jasperserver-ui/**'
+      - 'scripts/prepare-legacy-frontend.py'
+      - 'scripts/smoke-jasperserver.sh'
+      - 'scripts/test-legacy-rest-reports.sh'
+  push:
+    branches:
+      - feature/jasperreports-7-migration
+    paths:
+      - '.github/workflows/legacy-full-build.yml'
+      - 'jasperserver/**'
+      - 'jasperserver-ui/**'
+      - 'scripts/prepare-legacy-frontend.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: legacy-full-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# First recover the historical 8.2/6.20 build. Java, Node, and dependency
+# upgrades will be separate changes once we have a green baseline.
+jobs:
+  frontend:
+    name: Frontend build (Node 14 / Yarn 1)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python 3.9 for legacy native Node modules
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - name: Install Node 14
+        uses: actions/setup-node@v4
+        with:
+          node-version: '14'
+      - name: Install Yarn Classic
+        run: npm install --global yarn@1.22.22
+      - name: Show build tool versions
+        run: |
+          node --version
+          npm --version
+          yarn --version
+          python3 --version
+      - name: Prepare archived private Git packages
+        run: python3 scripts/prepare-legacy-frontend.py --prepare
+      - name: Install frontend dependencies (legacy Lerna bootstrap)
+        working-directory: jasperserver-ui/ce
+        env:
+          npm_config_python: python3
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: |
+          set -o pipefail
+          yarn install --non-interactive 2>&1 | tee "$RUNNER_TEMP/frontend-install.log"
+      - name: Compile frontend bundles
+        working-directory: jasperserver-ui/ce
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          BUILD_ARTIFACT_VERSION_NAME: ci
+        run: |
+          set -o pipefail
+          yarn run clean 2>&1 | tee "$RUNNER_TEMP/frontend-build.log"
+          yarn run build 2>&1 | tee -a "$RUNNER_TEMP/frontend-build.log"
+          cd jrs-ui
+          yarn run overlay 2>&1 | tee -a "$RUNNER_TEMP/frontend-build.log"
+          test -d build/overlay/scripts
+      - name: Package frontend Maven overlay
+        working-directory: jasperserver-ui/ce/jrs-ui/build/overlay
+        run: zip -qr "$RUNNER_TEMP/jrs-ui-overlay.zip" .
+      - name: Restore original manifests
+        if: always()
+        run: python3 scripts/prepare-legacy-frontend.py --restore
+      - name: Upload frontend overlay
+        uses: actions/upload-artifact@v4
+        with:
+          name: jrs-ui-overlay
+          path: ${{ runner.temp }}/jrs-ui-overlay.zip
+          if-no-files-found: error
+          retention-days: 5
+      - name: Upload frontend diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-logs
+          path: |
+            ${{ runner.temp }}/frontend-install.log
+            ${{ runner.temp }}/frontend-build.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+  backend:
+    name: Backend WAR + runtime smoke (Java 8 / Tomcat 9 / PostgreSQL)
+    needs: frontend
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java 8 and Maven cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+          cache-dependency-path: |
+            jasperserver/pom.xml
+            jasperserver/buildomatic/pom.xml
+      - name: Install Ant and Ant Contrib
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ant ant-contrib
+      - name: Show tool versions
+        run: |
+          java -version
+          mvn -version
+          ant -version
+      - name: Download frontend overlay
+        uses: actions/download-artifact@v4
+        with:
+          name: jrs-ui-overlay
+          path: ${{ runner.temp }}/jrs-ui
+      - name: Register frontend overlay in local Maven repository
+        run: |
+          test -s "$RUNNER_TEMP/jrs-ui/jrs-ui-overlay.zip"
+          unzip -t "$RUNNER_TEMP/jrs-ui/jrs-ui-overlay.zip" >/dev/null
+          mvn -B org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file \
+            -Dfile="$RUNNER_TEMP/jrs-ui/jrs-ui-overlay.zip" \
+            -DgroupId=com.jaspersoft -DartifactId=jrs-ui \
+            -Dversion=ci -Dpackaging=zip -DgeneratePom=true
+      - name: Configure disposable Buildomatic environment
+        run: |
+          set -euo pipefail
+          cat > jasperserver/buildomatic/default_master.properties <<EOF
+          js-path=$GITHUB_WORKSPACE/jasperserver
+          appServerType=skipAppServerCheck
+          appServerDir=$RUNNER_TEMP/jrs-appserver
+          maven=$(command -v mvn)
+          maven.home=$(dirname "$(dirname "$(readlink -f "$(command -v mvn)")")")
+          maven.build.type=community
+          dbType=postgresql
+          dbHost=127.0.0.1
+          dbUsername=postgres
+          dbPassword=postgres
+          buildArtifactVersionName=ci
+          fafBuildArtifactVersionName=ci
+          SKIP_TEST_ARG=skipTests
+          tibco.driver.available=false
+          deprecated.driver.available=false
+          EOF
+          mkdir -p "$RUNNER_TEMP/jrs-appserver"
+      - name: Create isolated CI encryption keystore
+        working-directory: jasperserver/buildomatic
+        env:
+          BUILDOMATIC_ENV: ci
+        run: |
+          set -euo pipefail
+          export ks="$RUNNER_TEMP/jrs-ci-keys"
+          export ksp="$RUNNER_TEMP/jrs-ci-keys"
+          mkdir -p "$ks"
+          chmod 700 "$ks"
+          ./js-ant create-keystore
+          test -s "$ks/.jrsks"
+          test -s "$ksp/.jrsksp"
+          test -s keystore.init.properties
+          echo "CI keystore generated in runner temporary storage."
+      - name: Build original Community WAR
+        working-directory: jasperserver/buildomatic
+        env:
+          MAVEN_OPTS: -Xmx2048m
+          VERBOSE_LOGGING: 'true'
+          # Supported by buildomatic/bin/setup.xml: skip interactive keystore
+          # generation in CI; do not change production security behavior.
+          BUILDOMATIC_ENV: ci
+        run: |
+          set -o pipefail
+          set +e
+          ./js-ant build-ce 2>&1 | tee "$RUNNER_TEMP/backend-build.log"
+          build_status=${PIPESTATUS[0]}
+          set -e
+          echo "BUILD_EXIT=$build_status" >> "$GITHUB_ENV"
+          # Preserve Maven/Ant's actual status for the strict diagnostic gate.
+      - name: Verify known checksum drift without weakening production baseline
+        run: |
+          python3 scripts/verify-legacy-war-deps.py \
+            --master jasperserver/deps/master-war-deps-ce.txt \
+            --current jasperserver/target/deps/current-war-deps-ce.txt \
+            --build-exit "$BUILD_EXIT" \
+            --build-log "$RUNNER_TEMP/backend-build.log"
+      - name: Verify WAR output
+        run: |
+          test -s jasperserver/jasperserver-war/target/jasperserver.war
+          unzip -t jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
+      - name: Upload compiled WAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-jasperserver-war
+          path: jasperserver/jasperserver-war/target/jasperserver.war
+          if-no-files-found: error
+          retention-days: 5
+      - name: Initialize JasperReports repository database
+        working-directory: jasperserver/buildomatic
+        env:
+          BUILDOMATIC_ENV: ci
+          MAVEN_OPTS: -Xmx2048m
+        run: |
+          set -o pipefail
+          ./js-ant build-init-js-db-ce 2>&1 | tee "$RUNNER_TEMP/database-init.log"
+          ./js-ant run-production-data-ce 2>&1 | tee -a "$RUNNER_TEMP/database-init.log"
+      - name: Load SugarCRM sample data and sample reports
+        working-directory: jasperserver/buildomatic
+        env:
+          BUILDOMATIC_ENV: ci
+          MAVEN_OPTS: -Xmx2048m
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          # The importer runs in a separate JVM and needs the same keystore
+          # as the Tomcat runtime. Keys stay in the disposable runner.
+          export ks="$RUNNER_TEMP/jrs-ci-keys"
+          export ksp="$RUNNER_TEMP/jrs-ci-keys"
+          test -s "$ks/.jrsks"
+          test -s "$ksp/.jrsksp"
+          ./js-ant create-sugarcrm-db load-sugarcrm-db 2>&1 | tee "$RUNNER_TEMP/sample-data.log"
+          ./js-ant import-sample-data-ce 2>&1 | tee -a "$RUNNER_TEMP/sample-data.log"
+      - name: Prepare runtime WAR with Buildomatic files
+        run: |
+          set -euo pipefail
+          conf="jasperserver/buildomatic/build_conf/default/webapp"
+          test -s "$conf/WEB-INF/classes/hibernate.properties"
+          mkdir -p "$RUNNER_TEMP/runtime-war"
+          unzip -q jasperserver/jasperserver-war/target/jasperserver.war -d "$RUNNER_TEMP/runtime-war"
+          cp -r "$conf/." "$RUNNER_TEMP/runtime-war/"
+          (cd "$RUNNER_TEMP/runtime-war" && zip -qr "$RUNNER_TEMP/jasperserver-runtime.war" .)
+      - name: Start Tomcat 9 with generated WAR
+        run: |
+          set -euo pipefail
+          # Mount the build's own WAR and use an isolated Tomcat/PG environment.
+          # Use a standard Tomcat 9 datasource factory for the disposable test.
+          mkdir -p "$RUNNER_TEMP/jrs-smoke"
+          cat > "$RUNNER_TEMP/jrs-smoke/jasperserver.xml" <<'EOF'
+          <Context path="/jasperserver">
+            <Resource name="jdbc/jasperserver" auth="Container" type="javax.sql.DataSource"
+              factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/jasperserver"
+              username="postgres" password="postgres" maxTotal="40" maxIdle="10"
+              validationQuery="SELECT 1" testOnBorrow="true"/>
+            <Resource name="jdbc/jasperserverAudit" auth="Container" type="javax.sql.DataSource"
+              factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/jasperserver"
+              username="postgres" password="postgres" maxTotal="20"/>
+            <Resource name="jdbc/sugarcrm" auth="Container" type="javax.sql.DataSource"
+              factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/jasperserver"
+              username="postgres" password="postgres" maxTotal="10"/>
+            <Resource name="jdbc/foodmart" auth="Container" type="javax.sql.DataSource"
+              factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/jasperserver"
+              username="postgres" password="postgres" maxTotal="10"/>
+          </Context>
+          EOF
+          docker run -d --name jrs-tomcat --network host \
+            -e CATALINA_OPTS="-Xms256m -Xmx2048m -Djava.awt.headless=true" \
+            -e ksp="$RUNNER_TEMP/jrs-ci-keys" \
+            -v "$RUNNER_TEMP/jrs-ci-keys:$RUNNER_TEMP/jrs-ci-keys:ro" \
+            -v "$RUNNER_TEMP/jrs-smoke/jasperserver.xml:/usr/local/tomcat/conf/Catalina/localhost/jasperserver.xml:ro" \
+            -v "$RUNNER_TEMP/jasperserver-runtime.war:/usr/local/tomcat/webapps/jasperserver.war:ro" \
+            -v "$GITHUB_WORKSPACE/jasperserver/buildomatic/conf_source/db/postgresql/jdbc/postgresql-42.5.4.jar:/usr/local/tomcat/lib/postgresql-42.5.4.jar:ro" \
+            tomcat:9.0-jdk8-temurin
+      - name: Check JasperReports Server login endpoint
+        run: bash scripts/smoke-jasperserver.sh
+      - name: REST login and PDF/XLSX report exports
+        env:
+          JRS_SMOKE_USER: jasperadmin
+          JRS_SMOKE_PASSWORD: jasperadmin
+        run: bash scripts/test-legacy-rest-reports.sh
+      - name: Capture Tomcat diagnostics
+        if: always()
+        run: |
+          docker logs jrs-tomcat > "$RUNNER_TEMP/tomcat.log" 2>&1 || true
+          docker inspect jrs-tomcat > "$RUNNER_TEMP/tomcat-inspect.json" 2>&1 || true
+          grep -E 'SEVERE|ERROR|Caused by:' "$RUNNER_TEMP/tomcat.log" | tail -10 | cut -c1-400 || true
+      - name: Upload runtime diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-smoke-logs
+          path: |
+            ${{ runner.temp }}/database-init.log
+            ${{ runner.temp }}/sample-data.log
+            ${{ runner.temp }}/tomcat.log
+            ${{ runner.temp }}/tomcat-inspect.json
+            ${{ runner.temp }}/jrs-login-smoke.html
+            ${{ runner.temp }}/jrs-login-headers.txt
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload backend diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build-logs
+          path: |
+            ${{ runner.temp }}/backend-build.log
+            jasperserver/**/target/surefire-reports/**
+            jasperserver/target/deps/**
+          if-no-files-found: ignore
+          retention-days: 7

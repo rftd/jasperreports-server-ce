@@ -1,0 +1,46 @@
+# JasperReports Server CE – migration baseline
+
+This branch starts with **build recovery**, not a JasperReports 7 runtime upgrade. The current application and its saved reports must remain unchanged until the original build is reproducible.
+
+## Baseline observed in the source
+
+- Server parent: `jasperserver/pom.xml` (24 Maven modules); Java compiler targets 8.
+- JasperReports engine: 6.20.3; Spring 5.3.26; Spring Security 5.7.2; Hibernate 5.6.11.Final.
+- Web UI: `jasperserver-ui/ce`, Lerna 3 / Yarn Classic, with archived Git dependencies.
+- Original build flow requires publishing the web UI overlay into the local Maven repository before `buildomatic/js-ant build-all-ce`.
+- `jasperserver/settings.xml` configures an HTTP Maven mirror, which needs separate verification and remediation.
+
+## Restore historical private frontend dependencies
+
+The UI manifests reference `git@git.jaspersoft.com` (no longer assumed accessible). The source tree also has ten corresponding archived source snapshots in `jasperserver-ui/ce/yarn-offline-mirror`. The bootstrap below validates and extracts those snapshots locally, then temporarily rewrites only the matching `package.json` references to local `file:` paths.
+
+From the **repository root**:
+
+```bash
+python3 scripts/prepare-legacy-frontend.py --check
+python3 scripts/prepare-legacy-frontend.py --prepare
+cd jasperserver-ui/ce
+yarn install --no-lockfile
+# Once dependencies resolve: yarn run clean && yarn run build
+cd ../..
+python3 scripts/prepare-legacy-frontend.py --restore
+```
+
+**Important limitations:**
+
+- The archived snapshots cover the historical private Git dependencies only. Other packages still require access to public npm registries or an existing Yarn cache; this is **not a complete offline installation**.
+- Use Python 3.9+ and a legacy-compatible Node/Yarn toolchain (the original UI README identifies Node 14 and Yarn Classic 1.22). This is for build recovery only; do not deploy an unsupported Node version to production.
+- `--no-lockfile` avoids changing the original Yarn lockfile during this diagnostic run. Do not commit generated lockfiles or temporarily rewritten manifests.
+- `--restore` restores byte-for-byte manifest backups; the generated `.legacy-private-deps` directory is ignored by Git.
+- The archive verifier rejects links and path traversal. Review the vendor packages and their licenses before redistribution. The script does not imply that they are security-patched.
+- If the bootstrap fails, stop and record the error; do not proceed to JasperReports 7 or Jakarta EE migration yet.
+
+## Build gates for the next phases
+
+1. Verify the historical frontend install and compile (and publish its `jrs-ui` overlay).
+2. Resolve the legacy Maven artifact repositories and compile all original server modules without changing engine versions.
+3. Provision a disposable PostgreSQL/Tomcat 9 environment and run smoke tests for authentication, repository navigation, PDF/XLSX exports, parameters, schedules, REST endpoints, and security.
+4. Establish tests and a compatibility matrix for JasperReports 6 → 7 report compilation, import/export and persistence.
+5. Only then move JasperReports and platform upgrades in separate reviewable changes.
+
+**No build, deployment or functional smoke test has been executed by this initial preflight patch.**

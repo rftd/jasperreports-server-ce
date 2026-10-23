@@ -1,2 +1,2 @@
 node_modules/
-yarn-offline-mirror/
+yarn-offline-mirror/.legacy-private-deps/

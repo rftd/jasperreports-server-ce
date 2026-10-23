@@ -1,0 +1,35 @@
+name: Legacy build preflight
+
+on:
+  push:
+    branches:
+      - feature/jasperreports-7-migration
+  pull_request:
+    paths:
+      - 'scripts/prepare-legacy-frontend.py'
+      - 'jasperserver-ui/ce/yarn-offline-mirror/**'
+      - 'jasperserver-ui/ce/*/package.json'
+      - 'jasperserver-ui/ce/.gitignore'
+      - '.github/workflows/legacy-build-preflight.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  legacy-frontend-archives:
+    name: Check archived private dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate checked-in package archives
+        run: python3 scripts/prepare-legacy-frontend.py --check
+      - name: Test temporary manifest rewrite and restoration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/prepare-legacy-frontend.py --prepare
+          python3 scripts/prepare-legacy-frontend.py --restore
+          git diff --exit-code -- jasperserver-ui/ce
