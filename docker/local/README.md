@@ -85,6 +85,24 @@ Essa remoção é definitiva para os volumes deste projeto Compose. Não a execu
 em um ambiente cujo conteúdo queira preservar. Não reutilize volumes de uma
 instalação existente como destino do bootstrap local.
 
+## Podman: resolução de imagens
+
+O Compose e o Dockerfile usam referências completas `docker.io/library/...` para
+as imagens externas. Isso permite usar Podman sem configurar aliases de nomes
+curtos ou um registry de busca padrão.
+
+Se aparecer `short-name "postgres:14" did not resolve to an alias` (ou o mesmo
+erro para `eclipse-temurin`), atualize o checkout e reconstrua na raiz do projeto:
+
+```sh
+git pull --ff-only
+podman-compose -p openjrs-local -f compose.yaml up -d --build
+```
+
+Conserve o usuário, o nome do projeto e os volumes da instalação anterior.
+Mensagens `no such container` ou `no such pod` durante `down` indicam que esses
+recursos já não existem; não exigem apagar volumes.
+
 ## Podman: erro ao abrir o perfil seccomp
 
 Se aparecer `opening seccomp profile failed: open {"defaultAction":...}: file name too long`
@@ -141,3 +159,12 @@ As versões legadas de Node/Java são mantidas para reproduzir a stack atual.
 Suporte a outras arquiteturas, principalmente ARM64, exige validação específica.
 O rebuild de uma imagem não implementa migração automática de schema ou de
 relatórios compilados antigos; consulte [MIGRATION.md](../../MIGRATION.md).
+
+**BREAKING CHANGE:** o servidor aceita somente JRXML/JRTX nativos do JasperReports
+7; o conversor automático de relatórios JR6 foi removido. Todos os sete JRXML dos
+exemplos Community já foram migrados. Para atualizar as cópias originais em um banco local já inicializado, execute
+`python3 scripts/update-native-samples.py` na raiz do checkout e, após conferir a
+prévia, repita com `--apply`. O procedimento salva backup e recusa sobrescrever
+JRXML personalizado. Consulte [os exemplos nativos](../../jasperserver/samples/jrxml7/README.md).
+**BREAKING CHANGE:** o PDF de Employees, EmployeeAccounts e Foodmart passa a ser comum, sem tags de
+acessibilidade. O suporte a PDF acessível será tratado separadamente.

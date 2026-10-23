@@ -12,7 +12,12 @@ on:
       - 'jasperserver-ui/**'
       - 'scripts/test-openjrs-branding.py'
       - 'scripts/test-legacy-viewer.py'
+      - 'scripts/test-sample-map-table.py'
+      - 'scripts/sync-jr7-samples.py'
+      - 'scripts/update-native-samples.py'
+      - 'scripts/test-native-samples.py'
       - 'scripts/verify-no-vendor-heartbeat.py'
+      - 'scripts/verify-native-reports.py'
       - 'docker/local/**'
       - '.github/workflows/local-docker.yml'
 
@@ -33,6 +38,7 @@ jobs:
       JRS_BASE_URL: http://127.0.0.1:18080/jasperserver
       JRS_SMOKE_USER: jasperadmin
       JRS_SMOKE_PASSWORD: jasperadmin
+      OPENJRS_JAVA_OPTS: -Xms256m -Xmx2048m -Djava.awt.headless=true -Dopenjrs.map.tile.url=http://127.0.0.1:8080/jasperserver/scripts/openjrs-map-test-tile.png
     steps:
       - uses: actions/checkout@v4
       - name: Validate Compose and shell scripts
@@ -40,6 +46,8 @@ jobs:
           docker compose config --quiet
           bash -n docker/local/*.sh
           python3 -m py_compile docker/local/configure.py
+          python3 scripts/sync-jr7-samples.py
+          python3 scripts/verify-native-reports.py
       - name: Build frontend, backend, initializer and runtime images
         run: |
           set -o pipefail
@@ -63,6 +71,14 @@ jobs:
         run: |
           python3 scripts/test-openjrs-branding.py
           python3 scripts/test-legacy-viewer.py
+      - name: Check native JR7 samples, MDX and drilldown
+        run: python3 scripts/test-native-samples.py
+      - name: Check shipped table, OpenStreetMap, drilldown and image exports
+        env:
+          JRS_MAP_EXPORT: '1'
+        run: |
+          docker compose cp jasperserver/jasperserver-custom-visualization/src/test/resources/map-test-tile.png openjrs:/usr/local/tomcat/webapps/jasperserver/scripts/openjrs-map-test-tile.png
+          python3 scripts/test-sample-map-table.py
       - name: Check sandboxed Chromium in the runtime image
         run: docker compose exec -T openjrs chromium --headless --disable-gpu --dump-dom about:blank
       - name: Export a Community visualization using Chromium inside Tomcat
@@ -75,7 +91,19 @@ jobs:
           docker compose logs --no-color > "$RUNNER_TEMP/docker-runtime.log" 2>&1 || true
           docker compose ps -a > "$RUNNER_TEMP/docker-status.txt" 2>&1 || true
           docker compose cp openjrs:/usr/local/tomcat/webapps/jasperserver/WEB-INF/logs "$RUNNER_TEMP/application-logs" || true
-          rg -n -A20 'ERROR|Caused by:' "$RUNNER_TEMP/application-logs/jasperserver.log" | tail -100 || true
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          log = Path(os.environ['RUNNER_TEMP']) / 'application-logs/jasperserver.log'
+          if log.exists():
+              lines = log.read_text(errors='replace').splitlines()
+              selected = set()
+              for index, line in enumerate(lines):
+                  if 'ERROR' in line or 'Caused by:' in line:
+                      selected.update(range(index, min(index + 21, len(lines))))
+              for index in sorted(selected)[-150:]:
+                  print(str(index + 1) + ': ' + lines[index])
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -87,6 +115,8 @@ jobs:
             ${{ runner.temp }}/openjrs-branding/**
             ${{ runner.temp }}/viewer-smoke/**
             ${{ runner.temp }}/docker-cv.pdf
+            ${{ runner.temp }}/map-table-tests/**
+            ${{ runner.temp }}/native-sample-tests/**
           retention-days: 7
       - name: Remove disposable CI environment
         if: always()

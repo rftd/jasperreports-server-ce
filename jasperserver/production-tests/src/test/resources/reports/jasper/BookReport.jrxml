@@ -19,46 +19,46 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="BookReport" sectionType="Part" uuid="e52780b9-8f01-4b16-86fe-712163e5aadc">
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="BookReport" dpi="72" pageWidth="595" pageHeight="842" sectionType="Part" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" uuid="e52780b9-8f01-4b16-86fe-712163e5aadc">
 	<property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
-	<queryString>
-		<![CDATA[SELECT 1]]>
-	</queryString>
+	<query language="sql"><![CDATA[
+		SELECT 1
+	]]></query>
 	<detail>
-		<part evaluationTime="Report">
+		<part uuid="6e9a3d7d-9c6e-46ee-9eb4-4307304de3d4" evaluationTime="Report">
 			<property name="net.sf.jasperreports.bookmarks.data.source.parameter" value="REPORT_DATA_SOURCE"/>
-			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd" usingCache="true">
-				<parametersMapExpression>null</parametersMapExpression>
-				<subreportExpression>"repo:TOCPart"</subreportExpression>
-			</p:subreportPart>
+			<component kind="subreportPart" usingCache="true">
+				<parametersMapExpression><![CDATA[null]]></parametersMapExpression>
+				<expression><![CDATA["repo:TOCPart"]]></expression>
+			</component>
 		</part>
-		<part>
-			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd" usingCache="true">
-				<parametersMapExpression>null</parametersMapExpression>
-				<subreportParameter name="REPORT_CONNECTION">
-					<subreportParameterExpression>$P{REPORT_CONNECTION}</subreportParameterExpression>
-				</subreportParameter>
-				<subreportExpression>"repo:ChartPart"</subreportExpression>
-			</p:subreportPart>
+		<part uuid="5a16d0bd-2581-4f1c-9274-2d8919253c0e">
+			<component kind="subreportPart" usingCache="true">
+				<parametersMapExpression><![CDATA[null]]></parametersMapExpression>
+				<parameter name="REPORT_CONNECTION">
+					<expression><![CDATA[$P{REPORT_CONNECTION}]]></expression>
+				</parameter>
+				<expression><![CDATA["repo:ChartPart"]]></expression>
+			</component>
 		</part>
-		<part>
-			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd" usingCache="true">
-				<parametersMapExpression>null</parametersMapExpression>
-				<subreportParameter name="REPORT_CONNECTION">
-					<subreportParameterExpression>$P{REPORT_CONNECTION}</subreportParameterExpression>
-				</subreportParameter>
-				<subreportExpression>"repo:CrosstabPart"</subreportExpression>
-			</p:subreportPart>
+		<part uuid="d76ba02c-a9fc-4be1-b46e-1440d7f7ee52">
+			<component kind="subreportPart" usingCache="true">
+				<parametersMapExpression><![CDATA[null]]></parametersMapExpression>
+				<parameter name="REPORT_CONNECTION">
+					<expression><![CDATA[$P{REPORT_CONNECTION}]]></expression>
+				</parameter>
+				<expression><![CDATA["repo:CrosstabPart"]]></expression>
+			</component>
 		</part>
-		<part>
-			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd" usingCache="true">
-				<parametersMapExpression>null</parametersMapExpression>
-				<subreportParameter name="REPORT_CONNECTION">
-					<subreportParameterExpression>$P{REPORT_CONNECTION}</subreportParameterExpression>
-				</subreportParameter>
-				<subreportExpression>"repo:TablePart"</subreportExpression>
-			</p:subreportPart>
+		<part uuid="c6badf53-1a7d-4004-9e88-e60e98240d27">
+			<component kind="subreportPart" usingCache="true">
+				<parametersMapExpression><![CDATA[null]]></parametersMapExpression>
+				<parameter name="REPORT_CONNECTION">
+					<expression><![CDATA[$P{REPORT_CONNECTION}]]></expression>
+				</parameter>
+				<expression><![CDATA["repo:TablePart"]]></expression>
+			</component>
 		</part>
 	</detail>
 </jasperReport>

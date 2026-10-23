@@ -197,7 +197,20 @@ public class CVElementJsonHandler extends CVElementAbstractGenericHandler implem
     {
         if (htmlResourceHandler != null && !isUrl(scriptResourceLocation))
         {
-            return htmlResourceHandler.getResourcePath(scriptResourceLocation);
+            String path = htmlResourceHandler.getResourcePath(scriptResourceLocation);
+            // These two bundled assets are classpath resources, not attachments
+            // in a report's repository folder. The servlet still applies the
+            // exact resource whitelist from jasperreports.properties.
+            if ("org/openjrs/maps/openjrs-osm-map.js".equals(scriptResourceLocation)
+                    || "org/openjrs/maps/leaflet.css".equals(scriptResourceLocation))
+            {
+                int repositoryPath = path.indexOf("/rest_v2/resources");
+                if (repositoryPath >= 0)
+                {
+                    return path.substring(0, repositoryPath) + "/reportresource?resource=" + scriptResourceLocation;
+                }
+            }
+            return path;
         }
 
         return scriptResourceLocation;

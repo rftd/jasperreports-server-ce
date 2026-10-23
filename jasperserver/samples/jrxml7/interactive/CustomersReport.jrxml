@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2005-2023. Cloud Software Group, Inc. All Rights Reserved.
+  ~ http://www.jaspersoft.com.
+  ~
+  ~ Unless you have purchased a commercial license agreement from Jaspersoft,
+  ~ the following license terms apply:
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="CustomersReport" dpi="72" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="99507f13-709c-4e97-998b-e0ecd5fc9ced">
+	<property name="net.sf.jasperreports.data.adapter" value="repo:/reports/interactive/CustomersDataAdapter"/>
+	<style name="Sans_Normal" default="true" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12.0" bold="true" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Italic" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="true" underline="false" strikeThrough="false"/>
+	<query language="xPath"><![CDATA[/Northwind/Customers]]></query>
+	<field name="CustomerID" class="java.lang.String">
+		<description><![CDATA[CustomerID]]></description>
+	</field>
+	<field name="CompanyName" class="java.lang.String">
+		<description><![CDATA[CompanyName]]></description>
+	</field>
+	<title height="50">
+		<element kind="line" uuid="11a6740e-f257-4544-8964-6d5de3af8672" x="0" y="0" width="515" height="1"/>
+		<element kind="staticText" uuid="fcb52575-5ffe-411d-80f1-d9650426ab92" x="0" y="10" width="515" height="30" fontSize="22.0" hTextAlign="Center" style="Sans_Normal">
+			<text><![CDATA[Customer Orders Report]]></text>
+		</element>
+	</title>
+	<pageHeader height="21">
+		<element kind="staticText" uuid="e61eb695-796a-4ea5-bdb0-0ff0a0e253e3" x="0" y="5" width="515" height="15" forecolor="#FFFFFF" backcolor="#333333" mode="Opaque" style="Sans_Bold">
+			<text><![CDATA[Customer Order List]]></text>
+		</element>
+	</pageHeader>
+	<detail>
+		<band height="50">
+			<element kind="textField" uuid="472bb65e-154a-48dd-8d60-65c2c7aab274" x="5" y="5" width="100" height="15" printWhenDetailOverflows="true" style="Sans_Bold">
+				<expression><![CDATA[$F{CustomerID}]]></expression>
+			</element>
+			<element kind="staticText" uuid="ba1a70d7-a8f8-4ffd-83a4-492caef18082" x="404" y="5" width="100" height="15" printRepeatedValues="false" printWhenDetailOverflows="true" style="Sans_Bold">
+				<text><![CDATA[(continued)]]></text>
+			</element>
+			<element kind="line" uuid="bd0474c9-b2c5-46a5-8b52-b4ecaa9f33a2" x="0" y="20" width="515" height="1" printWhenDetailOverflows="true"/>
+			<element kind="subreport" uuid="2d740418-e541-4d38-99c1-603aa94b2c0b" x="5" y="25" width="507" height="20" backcolor="#FFCC99" printRepeatedValues="false" removeLineWhenBlank="true">
+				<parameter name="XML_DATA_DOCUMENT">
+					<expression><![CDATA[$P{XML_DATA_DOCUMENT}]]></expression>
+				</parameter>
+				<parameter name="XML_DATE_PATTERN">
+					<expression><![CDATA[$P{XML_DATE_PATTERN}]]></expression>
+				</parameter>
+				<parameter name="XML_NUMBER_PATTERN">
+					<expression><![CDATA[$P{XML_NUMBER_PATTERN}]]></expression>
+				</parameter>
+				<parameter name="XML_LOCALE">
+					<expression><![CDATA[$P{XML_LOCALE}]]></expression>
+				</parameter>
+				<parameter name="XML_TIME_ZONE">
+					<expression><![CDATA[$P{XML_TIME_ZONE}]]></expression>
+				</parameter>
+				<parameter name="CustomerID">
+					<expression><![CDATA[$F{CustomerID}]]></expression>
+				</parameter>
+				<expression><![CDATA["repo:OrdersReport"]]></expression>
+			</element>
+			<element kind="textField" uuid="205e18ca-ffa6-4b30-86db-a97b430dd5fd" x="109" y="5" width="291" height="15" printWhenDetailOverflows="true" style="Sans_Bold">
+				<expression><![CDATA[$F{CompanyName}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<pageFooter height="40">
+		<element kind="line" uuid="3cf07d31-197f-490f-9231-bf94163e980f" x="0" y="10" width="515" height="1"/>
+		<element kind="textField" uuid="b7e0e20c-c0d7-413d-8556-54b3e3a637a7" x="200" y="20" width="80" height="15" hTextAlign="Right">
+			<expression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></expression>
+		</element>
+		<element kind="textField" uuid="b488e227-5e7b-426f-8bba-0c439745113c" x="280" y="20" width="75" height="15" evaluationTime="Report">
+			<expression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></expression>
+		</element>
+	</pageFooter>
+</jasperReport>

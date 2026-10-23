@@ -1,0 +1,50 @@
+{
+  "catalogs": [
+    "js-catalog-postgresql-ce.zip",
+    "js-catalog-mysql-ce.zip"
+  ],
+  "reports": [
+    {
+      "uri": "/analysis/reports/Employees",
+      "file": "analysis/Employees.jrxml",
+      "resource": "/analysis/reports/Employees_files/EmployeesJRXML",
+      "legacySha256": "b253d3082a81805820a252de1e786d2468192ae3ef5248d1351c63e39e5d31a2"
+    },
+    {
+      "uri": "/analysis/reports/EmployeeAccounts",
+      "file": "analysis/EmployeeAccounts.jrxml",
+      "resource": "/analysis/reports/EmployeeAccounts_files/EmployeeAccountsJRXML",
+      "legacySha256": "b3e65c197b729f1a33d9c3ce152d4cb55e79441a1cfc13c1d154409dda8c90e1"
+    },
+    {
+      "uri": "/analysis/reports/FoodmartSalesMondrianReport",
+      "file": "analysis/FoodmartSalesMondrianReport.jrxml",
+      "resource": "/analysis/reports/FoodmartSalesMondrianReport_files/FoodmartSalesReportJRXML",
+      "legacySha256": "ef14fe0c1131ccf684aa8db1957eaeca5e244755453ba63f1b6c65000d718474"
+    },
+    {
+      "uri": "/reports/interactive/CustomersReport",
+      "file": "interactive/CustomersReport.jrxml",
+      "resource": "/reports/interactive/CustomersReport_files/CustomersReport",
+      "legacySha256": "b586af880db0df2c54c383a82a9885dad68f65cb432860eeccb306ee6b21c62c"
+    },
+    {
+      "uri": "/reports/interactive/CustomersReport",
+      "file": "interactive/OrdersReport.jrxml",
+      "resource": "/reports/interactive/CustomersReport_files/OrdersReport",
+      "legacySha256": "91a892a50e251de91e68bcdd9d17c8988ab4402d4eb6bbf98d0676a256b26352"
+    },
+    {
+      "uri": "/reports/interactive/MapReport",
+      "file": "interactive/MapReport.jrxml",
+      "resource": "/reports/interactive/MapReport_files/MapReport",
+      "legacySha256": "9c37da727d1b540ba4c3e9904837e071041e9832fe6a64e9ef88ca72bfb86ffb"
+    },
+    {
+      "uri": "/reports/interactive/TableReport",
+      "file": "interactive/TableReport.jrxml",
+      "resource": "/reports/interactive/TableReport_files/TableReport",
+      "legacySha256": "e2c237d58a04d3a9f6a79af4b28d933d6df280db6becb7298c5c009ecfd817d7"
+    }
+  ]
+}

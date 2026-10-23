@@ -19,107 +19,79 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20">
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="test" dpi="72" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="a6e01407-a4e2-4f23-b29a-b7e57f89cf1d">
 	<property name="ireport.scriptlethandling" value="2"/>
 	<property name="ireport.encoding" value="UTF-8"/>
-	<import value="net.sf.jasperreports.engine.*"/>
-	<import value="java.util.*"/>
-	<import value="net.sf.jasperreports.engine.data.*"/>
-	<parameter name="TEST_PARAMETER" class="java.lang.String" isForPrompting="false"/>
-	<queryString>
-		<![CDATA[SELECT name, phone_office, billing_address_city, 
-billing_address_street, billing_address_country 
-FROM accounts 
-ORDER BY billing_address_country, billing_address_city]]>
-	</queryString>
+	<import></import>
+	<parameter name="TEST_PARAMETER" forPrompting="false" class="java.lang.String"/>
+	<query language="sql"><![CDATA[
+		SELECT name, phone_office, billing_address_city,
+billing_address_street, billing_address_country
+FROM accounts
+ORDER BY billing_address_country, billing_address_city
+	]]></query>
 	<field name="name" class="java.lang.String"/>
 	<field name="phone_office" class="java.lang.String"/>
 	<field name="billing_address_city" class="java.lang.String"/>
 	<field name="billing_address_street" class="java.lang.String"/>
 	<field name="billing_address_country" class="java.lang.String"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="105" splitType="Stretch">
-			<textField isBlankWhenNull="false">
-				<reportElement key="textField-1" x="22" y="11" width="429" height="35"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{TEST_PARAMETER}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="false">
-				<reportElement key="textField-2" x="22" y="61" width="429" height="35"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[""+$P{REPORT_LOCALE}]]></textFieldExpression>
-			</textField>
-		</band>
+	<background splitType="Stretch"/>
+	<title height="105" splitType="Stretch">
+		<element kind="textField" uuid="f05636e5-3dc1-4706-b688-e449811ceb4c" key="textField-1" x="22" y="11" width="429" height="35" blankWhenNull="false" hTextAlign="Center" vTextAlign="Middle">
+			<box>
+				<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+			<expression><![CDATA[$P{TEST_PARAMETER}]]></expression>
+		</element>
+		<element kind="textField" uuid="d7a7583b-f3ff-4a6b-8e90-5212a173f3a9" key="textField-2" x="22" y="61" width="429" height="35" blankWhenNull="false" hTextAlign="Center" vTextAlign="Middle">
+			<box>
+				<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+			<expression><![CDATA[""+$P{REPORT_LOCALE}]]></expression>
+		</element>
 	</title>
-	<pageHeader>
-		<band splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band height="20" splitType="Stretch">
-			<textField isBlankWhenNull="false">
-				<reportElement key="textField" x="0" y="0" width="197" height="18"/>
+			<element kind="textField" uuid="76907de3-e7e3-4b99-9121-b69e43af9dda" key="textField" x="0" y="0" width="197" height="18" blankWhenNull="false">
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="false">
-				<reportElement key="textField" x="197" y="0" width="106" height="18"/>
+				<expression><![CDATA[$F{name}]]></expression>
+			</element>
+			<element kind="textField" uuid="05b1521d-b312-448a-96ee-8fb0919088ea" key="textField" x="197" y="0" width="106" height="18" blankWhenNull="false">
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{phone_office}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="false">
-				<reportElement key="textField" x="303" y="0" width="232" height="18"/>
+				<expression><![CDATA[$F{phone_office}]]></expression>
+			</element>
+			<element kind="textField" uuid="23a5f031-637f-4818-a850-2b6760400eb8" key="textField" x="303" y="0" width="232" height="18" blankWhenNull="false">
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{billing_address_city}]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement key="line-1" x="0" y="19" width="535" height="1"/>
-			</line>
+				<expression><![CDATA[$F{billing_address_city}]]></expression>
+			</element>
+			<element kind="line" uuid="2203455c-2173-4372-b96e-d052e2c2fa04" key="line-1" x="0" y="19" width="535" height="1"/>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="9" splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
+	<columnFooter height="9" splitType="Stretch"/>
+	<pageFooter splitType="Stretch"/>
+	<summary splitType="Stretch"/>
 </jasperReport>

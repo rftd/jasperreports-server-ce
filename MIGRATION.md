@@ -1,5 +1,91 @@
 # OpenJRS Server — JasperReports Server CE migration baseline
 
+## Native JR7 reports — BREAKING CHANGE
+
+OpenJRS accepts **native JasperReports 7.1.0 JRXML/JRTX only**. The automatic
+JR6 XML conversion module, its dependency and its extension registration have
+been removed. JR6 sources must be migrated before import; JR6 compiled `.jasper`
+files must be regenerated with JR7. Keeping a database volume or rebuilding
+an image does not migrate the reports stored in that database.
+
+All seven JRXML definitions in the PostgreSQL/MySQL Community catalogs are native:
+Employees, EmployeeAccounts, FoodmartSalesMondrianReport, CustomersReport,
+OrdersReport (subreport), TableReport and MapReport. Standalone Community examples
+and production/remote-test fixtures have also been rewritten with the official
+JR7 writer. The Community import-test packages contain another thirteen native
+JRXML definitions and one native JRTX style template. Source copyright/license
+comments are retained. Historical Pro/Visualize.js archives and old `script-revs`
+upgrade catalogs are outside the Community bootstrap and this migration.
+
+For user reports, use [Jaspersoft Studio 7 or later](https://github.com/Jaspersoft/jasperreports/blob/7.1.0/changes.txt)
+to migrate source files and style templates, review renamed APIs/component modules,
+recompile with JR7, and validate data sources, subreports, interactions and exports
+before import. There is no JR6 runtime or automatic fallback. The existing web
+viewer and the Community visualization implementation retain their JR7 integration.
+
+The parent aligns Jackson with JR7's declared versions (2.22.3, annotations 2.22)
+and JFreeChart with 1.5.6. Even the official native JR7 pie example fails with
+the former Jackson 2.13.4 polymorphic plot merge. The auxiliary ChartPart book
+example uses a Community pie chart for customer counts by country in place of
+its commercial Highcharts component; title, bookmarks and book navigation remain.
+New JFreeChart no longer needs `jcommon`; Jackson's JAXB provider also removes
+the redundant `jakarta.xml.bind-api` path while `jaxb-api` remains. Twelve new
+artifact hashes, including the resolved Activation API version, were checked
+against Maven Central and recorded in
+[`jr7-native-reports-provenance.json`](jasperserver/deps/jr7-native-reports-provenance.json).
+The diagnostic allowance pins these exact replacements. The original strict
+Buildomatic inventory and the unresolved SiteMesh review remain unchanged.
+
+**BREAKING CHANGE — PDF accessibility:** bundled examples/fixtures that requested
+tagged PDF now set
+`net.sf.jasperreports.export.pdf.tagged=false` and export ordinary, untagged PDF.
+JasperReports 7.1.0 Community's default PDF tagger rejects tagged export; the
+official silent factory also produces untagged output. This is not accessible
+tagged PDF or a PDF/UA compliance claim. PDF accessibility is deferred to separate
+work. Existing structural tag properties remain in the JRXML for that work but
+have no effect while tagging is disabled. In the main CE catalog this affects
+Employees, EmployeeAccounts and Foodmart; auxiliary AllAccounts, SalesByMonth,
+ParamMany and import-package examples also use ordinary PDF. This changes sample definitions:
+there is no global silent tagger or override of users' report settings.
+
+Existing databases preserve their stored reports on image rebuild. From an updated
+checkout with the local server running, `python3 scripts/update-native-samples.py`
+previews the upgrade and `--apply` backs up and updates only known unmodified
+originals among all seven catalog JRXML files. Customized files are refused, versions are checked and volumes are
+preserved. See [native sample sources and upgrade instructions](jasperserver/samples/jrxml7/README.md).
+
+## Table Report and OpenStreetMap example
+
+The shipped Table Report stores native JR7 hyperlink parameters and current
+stretch aliases directly in its JRXML. Its city
+drilldown points to `/reports/interactive/MapReport` and retains coordinates.
+
+The native MapReport renders through the Community visualization
+integration using bundled Leaflet 1.9.4 and OpenStreetMap tiles. Google Maps and
+its API key are no longer used for these maps. The shipped Map Report keeps its
+default center and accepts latitude, longitude and numeric zoom parameters;
+missing/blank request parameters use its defaults. An existing database needs
+the explicit sample update described above before the old adapter is removed.
+
+**Compatibility change:** MapReport now uses OpenStreetMap/Leaflet directly.
+User reports with Google map components require their own explicit component
+migration; no automatic map conversion remains.
+
+The browser can pan and zoom the map; PDF/XLSX images use sandboxed Chromium,
+configured through `chrome.path` as for other Community visualizations. Export
+waits for tile loading; missing tiles do not silently produce a successful blank
+map. Runtime network access to the tile provider is required. The default public
+OSM endpoint is for light interactive use; follow its tile policy and use an
+appropriate provider for sustained traffic. JVM option
+`-Dopenjrs.map.tile.url=https://your-provider/{z}/{x}/{y}.png` selects another tile
+endpoint. Preserve the attribution required by the provider and map data.
+
+CI uses deterministic local tiles to test the renderer, coordinates, pan/zoom,
+table drilldown and image exports without crawling a public map service. It does
+not verify availability of the public OSM service from each deployment network.
+Leaflet's provenance/license and OSM policy links are packaged in
+`org/openjrs/maps/NOTICE.md` in the Community visualization module.
+
 ## Vendor heartbeat removal — BREAKING CHANGE
 
 OpenJRS removes the Jaspersoft heartbeat subsystem: outbound HTTP client,
@@ -108,7 +194,7 @@ It does not establish full coverage of formatting, save, crosstab interactions,
 drill-down or every report/component type. A replacement viewer belongs in a
 separate PR; the current migration preserves this viewer.
 
-The JR7 legacy XML loader and Community visualization port have their own
-scope and limitations documented in `jasperserver-legacy-jrxml/README.md` and
-`jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
+Native sample sources and the Community visualization port have their own
+scope and limitations documented in `jasperserver/samples/jrxml7/README.md` and
+`jasperserver/jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
 not approve the unresolved production WAR inventory differences.

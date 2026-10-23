@@ -48,6 +48,12 @@ connections omit Tyrus's synthetic browser Origin header; Chrome's origin
 policy and sandbox remain enabled. Browser policy must permit the renderer's
 temporary local HTML/script files.
 
+Browser discovery accepts additional fields only in the local `/json/version`
+metadata response (for example Chromium's `File-Path-Style`). It still requires
+a valid browser WebSocket URL and rejects malformed JSON and HTTP failures.
+The bounded HTTP reader is separate from report/CDP payload deserialization;
+no global Jackson settings, Chrome origin checks or sandbox flags are relaxed.
+
 JR7 also filters Java deserialization when the server reloads compiled reports
 from its cache. The module registers only `CVDesignComponent` through the
 official `StandardDeserializationClassWhitelistExtension`. The filter stays
