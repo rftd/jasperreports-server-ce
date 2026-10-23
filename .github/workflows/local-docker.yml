@@ -12,10 +12,13 @@ on:
       - 'jasperserver-ui/**'
       - 'scripts/test-openjrs-branding.py'
       - 'scripts/test-legacy-viewer.py'
+      - 'scripts/test-legacy-rest-reports.sh'
       - 'scripts/test-sample-map-table.py'
       - 'scripts/sync-jr7-samples.py'
       - 'scripts/update-native-samples.py'
       - 'scripts/test-native-samples.py'
+      - 'scripts/test-report-runtime.py'
+      - 'scripts/requirements-runtime-tests.txt'
       - 'scripts/verify-no-vendor-heartbeat.py'
       - 'scripts/verify-native-reports.py'
       - 'scripts/verify-war-deps.py'
@@ -66,8 +69,12 @@ jobs:
             sleep 2
           done
           exit 1
-      - name: Check REST authentication and PDF/XLSX exports
-        run: bash scripts/test-legacy-rest-reports.sh
+      - name: Install pinned report validation dependency
+        run: python3 -m pip install --require-hashes -r scripts/requirements-runtime-tests.txt
+      - name: Check REST exports, native parameters, permissions and scheduled output
+        run: |
+          bash scripts/test-legacy-rest-reports.sh
+          python3 scripts/test-report-runtime.py
       - name: Install pinned browser test dependencies
         run: python3 -m pip install playwright==1.62.0 greenlet==3.5.5 pyee==13.0.1
       - name: Check branding, viewer controls and Community components
@@ -120,6 +127,7 @@ jobs:
             ${{ runner.temp }}/docker-cv.pdf
             ${{ runner.temp }}/map-table-tests/**
             ${{ runner.temp }}/native-sample-tests/**
+            ${{ runner.temp }}/report-runtime-tests/**
           retention-days: 7
       - name: Remove disposable CI environment
         if: always()

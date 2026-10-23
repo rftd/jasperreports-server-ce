@@ -1,0 +1,4 @@
+# Test-only PDF parser; never added to the server or Docker runtime.
+pypdf==6.21.2 --hash=sha256:1d44d1a3a200f25062adff0085b02040e4646431ac2ccac22e42679e91466084
+# pypdf requires this compatibility dependency on Python 3.9 and 3.10.
+typing_extensions==4.16.0; python_version < "3.11" --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
