@@ -1,0 +1,5 @@
+Dockerfile text eol=lf
+compose.yaml text eol=lf
+docker/local/* text eol=lf
+*.sh text eol=lf
+jasperserver/buildomatic/js-ant text eol=lf

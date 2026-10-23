@@ -3,3 +3,6 @@
 **/.DS_Store
 tomcat/
 ide/
+/.env
+/docker/local/__pycache__/
+/openjrs-sample-backups/

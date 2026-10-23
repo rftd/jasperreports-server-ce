@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2005-2023. Cloud Software Group, Inc. All Rights Reserved.
+  ~ http://www.jaspersoft.com.
+  ~
+  ~ Unless you have purchased a commercial license agreement from Jaspersoft,
+  ~ the following license terms apply:
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+<!-- Created with Jaspersoft Studio version last-->
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="OrdersReport" dpi="72" pageWidth="515" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="500" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0ad346aa-e71c-4e2d-a550-0588bfc03e4c">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Sans_Normal" default="true" fontName="DejaVu Sans" fontSize="8.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="8.0" bold="true" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Italic" fontName="DejaVu Sans" fontSize="8.0" bold="false" italic="true" underline="false" strikeThrough="false"/>
+	<dataset name="TableDataset" uuid="eef26112-b528-41ed-a6c4-b9f22aa78616">
+		<parameter name="CustomerID" class="java.lang.String"/>
+		<query language="xPath"><![CDATA[
+			/Northwind/Orders[CustomerID='$P{CustomerID}']
+		]]></query>
+		<field name="ShippedDate" class="java.util.Date">
+			<description><![CDATA[ShippedDate]]></description>
+		</field>
+		<field name="ShipCountry" class="java.lang.String">
+			<description><![CDATA[ShipCountry]]></description>
+		</field>
+		<field name="ShipAddress" class="java.lang.String">
+			<description><![CDATA[ShipAddress]]></description>
+		</field>
+		<field name="Id" class="java.lang.String">
+			<description><![CDATA[OrderID]]></description>
+		</field>
+		<field name="ShipName" class="java.lang.String">
+			<description><![CDATA[ShipName]]></description>
+		</field>
+		<field name="Freight" class="java.lang.Float">
+			<description><![CDATA[Freight]]></description>
+		</field>
+		<field name="ShipCity" class="java.lang.String">
+			<description><![CDATA[ShipCity]]></description>
+		</field>
+		<field name="OrderDate" class="java.util.Date">
+			<description><![CDATA[OrderDate]]></description>
+		</field>
+		<variable name="TotalFreight" calculation="Sum" class="java.lang.Float">
+			<expression><![CDATA[$F{Freight}]]></expression>
+			<initialValueExpression><![CDATA[new Float(0)]]></initialValueExpression>
+		</variable>
+	</dataset>
+	<parameter name="XML_DATA_DOCUMENT" class="java.lang.Object"/>
+	<parameter name="XML_DATE_PATTERN" class="java.lang.Object"/>
+	<parameter name="XML_NUMBER_PATTERN" class="java.lang.Object"/>
+	<parameter name="XML_LOCALE" class="java.lang.Object"/>
+	<parameter name="XML_TIME_ZONE" class="java.lang.Object"/>
+	<parameter name="CustomerID" class="java.lang.String"/>
+	<title height="45">
+		<element kind="component" uuid="aff80ee2-497d-4421-b2fa-026ff84fc14a" x="0" y="0" width="500" height="40">
+			<component kind="table" whenNoDataType="AllSectionsNoDetail">
+				<datasetRun uuid="dffecc79-0bb0-46b2-8cb3-8b7565c7e367" subDataset="TableDataset">
+					<parameter name="XML_DATA_DOCUMENT">
+						<expression><![CDATA[$P{XML_DATA_DOCUMENT}]]></expression>
+					</parameter>
+					<parameter name="XML_DATE_PATTERN">
+						<expression><![CDATA[$P{XML_DATE_PATTERN}]]></expression>
+					</parameter>
+					<parameter name="XML_NUMBER_PATTERN">
+						<expression><![CDATA[$P{XML_NUMBER_PATTERN}]]></expression>
+					</parameter>
+					<parameter name="XML_LOCALE">
+						<expression><![CDATA[$P{XML_LOCALE}]]></expression>
+					</parameter>
+					<parameter name="XML_TIME_ZONE">
+						<expression><![CDATA[$P{XML_TIME_ZONE}]]></expression>
+					</parameter>
+					<parameter name="CustomerID">
+						<expression><![CDATA[$P{CustomerID}]]></expression>
+					</parameter>
+				</datasetRun>
+				<column kind="single" uuid="d6bb20d8-a8c0-48ae-b122-6e967e950487" width="55">
+					<columnHeader height="14">
+						<element kind="staticText" uuid="ac708cf0-bb3b-49ef-a7cd-2ab902769e04" x="0" y="0" width="48" height="10" backcolor="#CCFFFF" mode="Opaque" hTextAlign="Right" style="Sans_Bold">
+							<text><![CDATA[ID]]></text>
+						</element>
+					</columnHeader>
+					<tableFooter height="10">
+						<element kind="textField" uuid="a37fdf79-de7a-482b-9203-bbd46276ac47" x="0" y="0" width="51" height="10" backcolor="#33CCCC" mode="Opaque" hTextAlign="Right" style="Sans_Bold">
+							<expression><![CDATA["Total: " + $V{REPORT_COUNT}]]></expression>
+						</element>
+					</tableFooter>
+					<detailCell height="14">
+						<element kind="textField" uuid="dfa3d564-a669-45fe-b638-1425c64af349" x="0" y="0" width="51" height="10" hTextAlign="Right">
+							<expression><![CDATA[$F{Id}]]></expression>
+						</element>
+					</detailCell>
+				</column>
+				<column kind="single" uuid="3a5357a3-f9af-4f69-a894-ac22daf8e3f4" width="70">
+					<columnHeader height="14">
+						<element kind="staticText" uuid="db6340bf-90d0-48e8-a665-dae051570645" x="0" y="0" width="67" height="10" backcolor="#CCFFFF" mode="Opaque" hTextAlign="Center" style="Sans_Bold">
+							<text><![CDATA[Order Date]]></text>
+						</element>
+					</columnHeader>
+					<detailCell height="14">
+						<element kind="textField" uuid="ad56104e-7df9-4227-9b26-3f9b1bd4ae4a" x="0" y="2" width="67" height="10" positionType="Float" textAdjust="StretchHeight" pattern="yyyy, MMM dd" hTextAlign="Center">
+							<expression><![CDATA[$F{OrderDate}]]></expression>
+						</element>
+					</detailCell>
+				</column>
+				<column kind="single" uuid="97d3ebf1-bacf-4d6d-bd5b-8aa70b70cd2c" width="70">
+					<columnHeader height="14">
+						<element kind="staticText" uuid="0d0e41d2-b4ed-4ab5-9eb7-5d61e27c7ee0" x="0" y="0" width="67" height="10" backcolor="#CCFFFF" mode="Opaque" hTextAlign="Center" style="Sans_Bold">
+							<text><![CDATA[Ship Date]]></text>
+						</element>
+					</columnHeader>
+					<detailCell height="14">
+						<element kind="textField" uuid="c710bf5c-6413-40e3-807c-86995400f569" x="0" y="2" width="67" height="10" positionType="Float" textAdjust="StretchHeight" pattern="yyyy, MMM dd" blankWhenNull="true" hTextAlign="Center">
+							<expression><![CDATA[$F{ShippedDate}]]></expression>
+						</element>
+					</detailCell>
+				</column>
+				<column kind="single" uuid="d4a32849-94a7-4838-bcf7-a524db1cb8fc" width="55">
+					<columnHeader height="14">
+						<element kind="staticText" uuid="14597fd3-c77f-4e40-be89-5749bd45b78d" x="0" y="0" width="52" height="10" backcolor="#CCFFFF" mode="Opaque" hTextAlign="Right" style="Sans_Bold">
+							<text><![CDATA[Freight]]></text>
+						</element>
+					</columnHeader>
+					<tableFooter height="10">
+						<element kind="textField" uuid="9b6dc0b7-1121-4ced-9ceb-cb1069664dbf" x="0" y="0" width="52" height="10" backcolor="#33CCCC" mode="Opaque" pattern="#,##0.00" hTextAlign="Right" style="Sans_Bold">
+							<expression><![CDATA[$V{TotalFreight}]]></expression>
+						</element>
+					</tableFooter>
+					<detailCell height="14">
+						<element kind="textField" uuid="70e0b855-1356-4d09-a6c3-e503081847ae" x="0" y="2" width="52" height="10" positionType="Float" textAdjust="StretchHeight" pattern="#,##0.00" hTextAlign="Right">
+							<expression><![CDATA[$F{Freight}]]></expression>
+						</element>
+					</detailCell>
+				</column>
+				<column kind="single" uuid="535e9c46-5186-4454-95bc-3b6f82034394" width="105">
+					<columnHeader height="14">
+						<element kind="staticText" uuid="931cc529-9cfe-49d6-826a-e709dd3e6e68" x="0" y="0" width="100" height="10" backcolor="#CCFFFF" mode="Opaque" style="Sans_Bold">
+							<text><![CDATA[Ship to]]></text>
+						</element>
+					</columnHeader>
+					<detailCell height="14">
+						<element kind="textField" uuid="431ae950-52f7-4963-b317-8e042691b912" x="0" y="2" width="100" height="10" positionType="Float" textAdjust="StretchHeight">
+							<expression><![CDATA[$F{ShipName}]]></expression>
+						</element>
+					</detailCell>
+				</column>
+				<column kind="single" uuid="c91079ba-9d9d-42cf-8041-53149a7b9b86" width="150">
+					<columnHeader height="14">
+						<element kind="staticText" uuid="8ae6136c-d2a4-440b-b4e7-dbcb803bd01d" x="0" y="0" width="140" height="10" backcolor="#CCFFFF" mode="Opaque" style="Sans_Bold">
+							<text><![CDATA[Address]]></text>
+						</element>
+					</columnHeader>
+					<detailCell height="14">
+						<element kind="textField" uuid="9210a152-4841-4a0c-b43a-b734c036f2d9" x="0" y="2" width="145" height="10" positionType="Float" textAdjust="StretchHeight">
+							<expression><![CDATA[$F{ShipAddress} + "\n" + $F{ShipCity} + ", " + $F{ShipCountry}]]></expression>
+						</element>
+					</detailCell>
+				</column>
+			</component>
+		</element>
+	</title>
+</jasperReport>

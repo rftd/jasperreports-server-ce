@@ -86,14 +86,6 @@ __jrsConfigs__.calendar.i18n.module = "datepicker.i18n." + __jrsConfigs__.calend
 // TODO: check this with zh-CN and zh-TW
 __jrsConfigs__.calendar.i18n.module = "datepicker.i18n." + __jrsConfigs__.calendar.userLocale;
 
-//Heartbeat
-
-__jrsConfigs__.heartbeatInitOptions = {
-    baseUrl: "/jasperserver-pro",
-    showDialog: false,
-    sendClientInfo: false
-};
-
 __jrsConfigs__.localeSettings = {
     locale: "en_US",
     decimalSeparator: ".",

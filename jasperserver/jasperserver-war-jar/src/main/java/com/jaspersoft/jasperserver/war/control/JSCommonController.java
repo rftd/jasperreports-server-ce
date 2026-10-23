@@ -27,14 +27,11 @@ import com.jaspersoft.jasperserver.api.metadata.user.domain.impl.client.Metadata
 import com.jaspersoft.jasperserver.api.metadata.user.service.impl.UserAuthorityServiceImpl;
 import com.jaspersoft.jasperserver.api.security.SecurityConfiguration;
 import com.jaspersoft.jasperserver.api.security.externalAuth.ExternalAuthProperties;
-import com.jaspersoft.jasperserver.war.common.HeartbeatBean;
-import com.jaspersoft.jasperserver.war.common.HeartbeatClientInfo;
 import com.jaspersoft.jasperserver.war.common.JasperServerConstImpl;
 import com.jaspersoft.jasperserver.war.common.LocalesList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,7 +60,6 @@ public class JSCommonController extends JRBaseController {
 	public static final String IS_DEVELOPMENT_ENVIRONMENT_TYPE = "isDevelopmentEnvironmentType";
 	public static final String USERS_EXCEEDED = "usersExceeded";
 	public static final String BAN_USER = "banUser";
-	protected HeartbeatBean heartbeat;
 	private ExternalAuthProperties externalAuthPropertiesBean;
 
 	private LocalesList locales;
@@ -154,72 +150,6 @@ public class JSCommonController extends JRBaseController {
 
 
 	}
-	@RequestMapping("/heartbeat.html")
-	public ModelAndView heartbeat(HttpServletRequest req, HttpServletResponse res) throws ServletException {
-		boolean isCallPermitted = false;
-
-		String permit = req.getParameter("permit");
-		if (permit != null) {
-			isCallPermitted = Boolean.valueOf(permit);
-		}
-
-		heartbeat.permitCall(isCallPermitted);
-
-		return new ModelAndView("ajax/ajaxresponse");
-	}
-	@RequestMapping("/heartbeatInfo.html")
-	public ModelAndView heartbeatInfo(HttpServletRequest req, HttpServletResponse res) throws ServletException {
-		final HeartbeatClientInfo info = new HeartbeatClientInfo();
-
-		info.setNavigatorAppName(req.getParameter("navAppName"));
-		info.setNavigatorAppVersion(req.getParameter("navAppVersion"));
-		info.setNavigatorLocale(req.getLocale());
-		info.setUserLocale(LocaleContextHolder.getLocale());
-
-		String errorParam = null;
-		try {
-			info.setScreenWidth(getIntegerParameter(req, "scrWidth"));
-		} catch (NumberFormatException ex) {
-			errorParam = "scrWidth";
-		}
-		try {
-			info.setScreenHeight(getIntegerParameter(req, "scrHeight"));
-		} catch (NumberFormatException ex) {
-			errorParam = "scrHeight";
-		}
-		try {
-			info.setScreenColorDepth(getIntegerParameter(req, "scrColorDepth"));
-		} catch (NumberFormatException ex) {
-			errorParam = "scrColorDepth";
-		}
-		if (errorParam != null) {
-			try {
-				res.sendError(HttpStatus.BAD_REQUEST.BAD_REQUEST.value(), "Invalid value for " + errorParam + ": [" + req.getParameter(errorParam) + "]");
-				return null;
-			} catch (Exception ex2) {
-				log.error("Failed to send error response", ex2);
-			}
-		}
-
-		info.setUserAgent(req.getHeader("user-agent"));
-
-		new Thread(
-				new Runnable() {
-					public void run() {
-						heartbeat.updateClientInfo(info);
-					}
-				}
-		).start();
-
-		return new ModelAndView("ajax/ajaxresponse");
-	}
-
-	private Integer getIntegerParameter(HttpServletRequest req, String param) throws NumberFormatException {
-		if (req.getParameter(param) != null) {
-			return (new Integer(req.getParameter(param)));
-		} else return null;
-	}
-
 	@RequestMapping(value = "/exituser.html", method = {POST, GET})
 	public ModelAndView exitUser(HttpServletRequest req, HttpServletResponse res) {
 		String redirectURL = "/logout.html";
@@ -355,14 +285,6 @@ public class JSCommonController extends JRBaseController {
 
 	public void setPasswordExpirationInDays(String passwordExpirationInDays) {
 		this.passwordExpirationInDays = passwordExpirationInDays;
-	}
-
-	public HeartbeatBean getHeartbeat() {
-		return heartbeat;
-	}
-
-	public void setHeartbeat(HeartbeatBean heartbeat) {
-		this.heartbeat = heartbeat;
 	}
 
 	public String getAutoCompleteLoginForm() {

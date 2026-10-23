@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2005-2023. Cloud Software Group, Inc. All Rights Reserved.
+  ~ http://www.jaspersoft.com.
+  ~
+  ~ Unless you have purchased a commercial license agreement from Jaspersoft,
+  ~ the following license terms apply:
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+<!-- Created with Jaspersoft Studio -->
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="MapReport" dpi="72" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="a3e166b0-ea5d-4c04-a407-02c3288e5d43" summaryWithPageHeaderAndFooter="true">
+	<style name="Sans_Normal" default="true" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12.0" bold="true" italic="false" underline="false" strikeThrough="false"/>
+	<style name="Sans_Italic" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="true" underline="false" strikeThrough="false"/>
+	<parameter name="reqLatitude" class="java.lang.Float">
+		<defaultValueExpression><![CDATA[($P{REPORT_CONTEXT} == null || $P{REPORT_CONTEXT}.getParameterValue("latitude") == null || String.valueOf($P{REPORT_CONTEXT}.getParameterValue("latitude")).trim().isEmpty() ? null : Float.valueOf(String.valueOf($P{REPORT_CONTEXT}.getParameterValue("latitude")).trim()))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="reqLongitude" class="java.lang.Float">
+		<defaultValueExpression><![CDATA[($P{REPORT_CONTEXT} == null || $P{REPORT_CONTEXT}.getParameterValue("longitude") == null || String.valueOf($P{REPORT_CONTEXT}.getParameterValue("longitude")).trim().isEmpty() ? null : Float.valueOf(String.valueOf($P{REPORT_CONTEXT}.getParameterValue("longitude")).trim()))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="reqZoom" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[($P{REPORT_CONTEXT} == null || $P{REPORT_CONTEXT}.getParameterValue("zoom") == null || String.valueOf($P{REPORT_CONTEXT}.getParameterValue("zoom")).trim().isEmpty() ? null : Integer.valueOf(String.valueOf($P{REPORT_CONTEXT}.getParameterValue("zoom")).trim()))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="latitude" class="java.lang.Float">
+		<defaultValueExpression><![CDATA[$P{reqLatitude} == null ? Float.valueOf(44.435f) : $P{reqLatitude}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="longitude" class="java.lang.Float">
+		<defaultValueExpression><![CDATA[$P{reqLongitude} == null ? Float.valueOf(26.096f) : $P{reqLongitude}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="zoom" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$P{reqZoom} == null ? Integer.valueOf(12) : $P{reqZoom}]]></defaultValueExpression>
+	</parameter>
+	<title height="70">
+		<element kind="line" uuid="44c7d97e-9690-4550-bf7b-69df1d31fff6" x="0" y="0" width="515" height="1"/>
+		<element kind="textField" uuid="24bab0f8-5102-4f81-8411-ab734f22851c" x="0" y="10" width="515" height="30" fontSize="22.0" bookmarkLevel="1" blankWhenNull="true" hTextAlign="Center" style="Sans_Normal">
+			<expression><![CDATA["Map Report"]]></expression>
+			<anchorNameExpression><![CDATA["Title"]]></anchorNameExpression>
+		</element>
+		<element kind="textField" uuid="75393d0b-d659-47e0-991a-25e4d1582178" x="0" y="40" width="515" height="20" fontSize="14.0" blankWhenNull="true" hTextAlign="Center" style="Sans_Normal">
+			<expression><![CDATA["OpenStreetMap"]]></expression>
+		</element>
+	</title>
+	<pageFooter height="40">
+		<element kind="line" uuid="9aacfaa5-05df-492a-9629-567820dde42a" x="0" y="10" width="515" height="1"/>
+		<element kind="textField" uuid="4940636d-be61-400b-8562-047e5f671c3e" x="200" y="20" width="80" height="15" hTextAlign="Right">
+			<expression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></expression>
+		</element>
+		<element kind="textField" uuid="5f4f9baa-7346-4d11-a09e-d01f1fb1e03d" x="280" y="20" width="75" height="15" evaluationTime="Report">
+			<expression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></expression>
+		</element>
+	</pageFooter>
+	<summary height="377">
+		<element kind="component" uuid="5f027355-1918-484e-b665-21eea989f8d2" x="0" y="0" width="515" height="377">
+			<component kind="customvisualization">
+				<evaluationTime>Now</evaluationTime>
+				<onErrorType>Error</onErrorType>
+				<itemProperty name="script" value="org/openjrs/maps/openjrs-osm-map.js"/>
+				<itemProperty name="css" value="org/openjrs/maps/leaflet.css"/>
+				<itemProperty name="module" value="openjrs-osm-map"/>
+				<itemProperty name="renderAsPng" value="true"/>
+				<itemProperty name="tileUrl"><![CDATA[System.getProperty("openjrs.map.tile.url", "https://tile.openstreetmap.org/{z}/{x}/{y}.png")]]></itemProperty>
+				<itemProperty name="latitude"><![CDATA[$P{latitude}]]></itemProperty>
+				<itemProperty name="longitude"><![CDATA[$P{longitude}]]></itemProperty>
+				<itemProperty name="zoom"><![CDATA[$P{zoom}]]></itemProperty>
+			</component>
+		</element>
+	</summary>
+</jasperReport>

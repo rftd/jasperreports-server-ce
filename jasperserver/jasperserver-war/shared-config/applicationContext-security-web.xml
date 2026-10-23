@@ -516,7 +516,6 @@
                 <security:intercept-url pattern="/services/**" access="ROLE_USER,ROLE_ADMINISTRATOR" />
                 <security:intercept-url pattern="/reportimage/**" access="ROLE_USER,ROLE_ADMINISTRATOR" />
                 <security:intercept-url pattern="/reportresource**" access="ROLE_USER,ROLE_ADMINISTRATOR" />
-                <security:intercept-url pattern="/heartbeatInfo.html" access="ROLE_USER,ROLE_ADMINISTRATOR" />
                 <security:intercept-url pattern="/rest_v2/thumbnails/**" access="ROLE_USER,ROLE_ADMINISTRATOR" />
                 <security:intercept-url pattern="/rest_v2/keys/**" access="ROLE_ADMINISTRATOR" />
                 <security:intercept-url pattern="/rest_v2/discovery/**" access="ROLE_USER,ROLE_ADMINISTRATOR" />

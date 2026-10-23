@@ -15,6 +15,21 @@ from pathlib import Path
 # exact SHA-1 (not just names or versions). No wildcard drift is permitted.
 # These changes are expected consequences of moving JasperReports 6 -> 7.
 KNOWN_MIGRATION_ADDITIONS = {
+    # Native JR7 charts/Jackson alignment; exact Maven Central checksums in
+    # jasperserver/deps/jr7-native-reports-provenance.json.
+    ("jackson-annotations", "2.22"): "15C67F9498D6934CFF9510FC70C5A12E52290457",
+    ("jackson-core", "2.22.3"): "8695AAB38355C65B60E242EC62EDF13C52916D88",
+    ("jackson-databind", "2.22.3"): "D0D4B2CDB0A1440AC02178FC2FF01DFB05CD06A8",
+    ("jackson-dataformat-cbor", "2.22.3"): "57434BA014A75D95CF326121A0A6EF003B219E55",
+    ("jackson-dataformat-xml", "2.22.3"): "A9B438014867A6F65216E0E663FC92B72288B16D",
+    ("jackson-jaxrs-base", "2.22.3"): "4D883CDDF10FE042B996DAC09CF41A73799E0096",
+    ("jackson-jaxrs-json-provider", "2.22.3"): "4BDB5A175341F0D0715082BA37F9B480371F20AB",
+    ("jackson-module-jaxb-annotations", "2.22.3"): "5AFD74643ED931D52FA4A634007AEBB61B3C3C05",
+    ("jakarta.activation-api", "1.2.2"): "99F53ADBA383CB1BF7C3862844488574B559621F",
+    ("jfreechart", "1.5.6"): "561B4C7CEC7A562ACA8248111460EDA0B4ED24AF",
+    ("stax2-api", "4.3.0"): "59251773C44122E8D1366F68884E29DD784E141B",
+    ("woodstox-core", "7.2.0"): "EC9C97F566F812E249A7ABA6C76815369AC00864",
+
     ("commons-beanutils2", "2.0.0-M2"): "51A76B49BE5C57072805E46901ADF152E368336F",
     ("commons-collections4", "4.5.0"): "E5CF89F0C6E132FC970BD9A465FDCB8DBE94F75A",
     ("javax.xml.soap-api", "1.4.0"): "667EF2EEE594CA7E05A1CBE0B37A428F7B57778F",
@@ -24,6 +39,23 @@ KNOWN_MIGRATION_ADDITIONS = {
 }
 
 KNOWN_MIGRATION_REMOVALS = {
+    # Native JR7 charts/Jackson alignment; exact Maven Central checksums in
+    # jasperserver/deps/jr7-native-reports-provenance.json.
+    ("jackson-annotations", "2.13.4"): "858C6CC78E1F08A885B1613E1D817C829DF70A6E",
+    ("jackson-core", "2.13.4"): "0CF934C681294B97EF6D80082FAEEFBE1EDADF56",
+    ("jackson-databind", "2.13.4"): "98B0EDFA8E4084078F10B7B356C300DED4A71491",
+    ("jackson-dataformat-cbor", "2.13.4"): "CCAF21E6A02A20CAE6591A12D20BF310544CF3EE",
+    ("jackson-dataformat-xml", "2.13.4"): "B739978806FFC80967BA0EFE43B1296C29C4CFE8",
+    ("jackson-jaxrs-base", "2.13.4"): "5C6DD9E63E5827C5EFDF0E26D2E4709F858A75A3",
+    ("jackson-jaxrs-json-provider", "2.13.4"): "6157EC477436EAB0A557B09E685FE696197E6B5A",
+    ("jackson-module-jaxb-annotations", "2.13.4"): "DA90F334C1E752342F2DEDB59880D5D46B29FE03",
+    ("jakarta.activation-api", "1.2.1"): "562A587FACE36EC7EFF2DB7F2FC95425C6602BC1",
+    ("jakarta.xml.bind-api", "2.3.3"): "48E3B9CFC10752FBA3521D6511F4165BEA951801",
+    ("jcommon", "1.0.23"): "A316F336CA996E0C6BEC4E4FBD49BE8F5E1C3968",
+    ("jfreechart", "1.0.19"): "BA9EE7DBB2E4C57A6901C79F614ED2DEA9CC0E20",
+    ("stax2-api", "4.2.1"): "A3F7325C52240418C2BA257B103C3C550E140C83",
+    ("woodstox-core", "6.3.1"): "BF29B07CA4DD81EF3C0BC18C8BD5617510A81C5D",
+
     # Replaced by newer transitive dependencies during JasperReports migration.
     ("commons-collections4", "4.2"): "54EBEA0A5B653D3C680131E73FE807BB8F78C4ED",
     # Replaced by the exact OpenPDF Classic artifact required by JR 7.1.0.
@@ -109,8 +141,8 @@ def main():
             "The list of third-party JARs found in the WAR file:",
             "is different from the master list:",
             "The following 3 library(-ies) have been added:",
-            "The following 1 library(-ies) have been removed:",
-            "The following 3 library(-ies) have been changed:",
+            "The following 3 library(-ies) have been removed:",
+            "The following 15 library(-ies) have been changed:",
         )
         if args.build_exit == 0 or any(message not in log for message in expected_messages):
             raise ValueError("Ant failed for a reason other than the exact expected checksum drift")

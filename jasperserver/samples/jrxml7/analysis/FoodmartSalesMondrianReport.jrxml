@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2005-2023. Cloud Software Group, Inc. All Rights Reserved.
+  ~ http://www.jaspersoft.com.
+  ~
+  ~ Unless you have purchased a commercial license agreement from Jaspersoft,
+  ~ the following license terms apply:
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="MondrianFoodMartSalesReport" dpi="72" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="3b14b7c4-8902-4fdd-bf7b-b5fb1e6104a0">
+	<property name="net.sf.jasperreports.export.pdf.tagged" value="false"/>
+	<property name="net.sf.jasperreports.export.pdf.tag.language" value="EN-US"/>
+	<style name="Sans_Normal" default="true" fontName="SansSerif" fontSize="8.0" bold="false" italic="false" underline="false" strikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<style name="Sans_Bold" fontName="SansSerif" fontSize="8.0" bold="true" italic="false" underline="false" strikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<query language="mdx"><![CDATA[
+		select NON EMPTY {[Measures].[Unit Sales], [Measures].[Customer Count]} ON COLUMNS, NON EMPTY Crossjoin({[Store].[All Stores], [Store].[All Stores].[USA].[CA], [Store].[All Stores].[USA].[OR], [Store].[All Stores].[USA].[WA]}, Crossjoin({[Time].[Year].Members, [Time].[Quarter].Members}, {[Customers].[All Customers], [Customers].[All Customers].[USA].[CA], [Customers].[All Customers].[USA].[OR], [Customers].[All Customers].[USA].[WA]})) ON ROWS from [Sales]
+	]]></query>
+	<field name="StoreState" class="java.lang.String">
+		<description><![CDATA[Rows[Store][Store State]]]></description>
+	</field>
+	<field name="Quarter" class="java.lang.String">
+		<description><![CDATA[Rows[Time][Quarter]]]></description>
+	</field>
+	<field name="CustomerState" class="java.lang.String">
+		<description><![CDATA[Rows[Customers][State Province]]]></description>
+	</field>
+	<field name="UnitSales" class="java.lang.Number">
+		<description><![CDATA[Data(0,?)]]></description>
+	</field>
+	<field name="CustomerCount" class="java.lang.Number">
+		<description><![CDATA[Data(1,?)]]></description>
+	</field>
+	<field name="StoreStateUnitSales" class="java.lang.Number">
+		<description><![CDATA[Data(Rows[Store][Store State],Rows[Time][Year],Rows[Customers][(All)])(0,?)]]></description>
+	</field>
+	<field name="StoreStateCustCount" class="java.lang.Number">
+		<description><![CDATA[Data(Rows[Store][Store State],Rows[Time][Year],Rows[Customers][(All)])(1,?)]]></description>
+	</field>
+	<field name="TotalStoreStateUnitSales" class="java.lang.Number">
+		<description><![CDATA[Data(Rows[Store][(All)],Rows[Time][Year],Rows[Customers][(All)])(0,?)]]></description>
+	</field>
+	<field name="TotalStoreStateCustCount" class="java.lang.Number">
+		<description><![CDATA[Data(Rows[Store][(All)],Rows[Time][Year],Rows[Customers][(All)])(1,?)]]></description>
+	</field>
+	<group name="StoreState">
+		<expression><![CDATA[$F{StoreState}]]></expression>
+		<groupHeader>
+			<band height="16" splitType="Stretch">
+				<element kind="textField" uuid="07a36382-0671-4951-9e56-35ca31fee68f" x="10" y="0" width="150" height="15" evaluationTime="Group" evaluationGroup="StoreState" style="Sans_Bold">
+					<property name="net.sf.jasperreports.export.pdf.tag.tr" value="start"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+					<expression><![CDATA["Store " + $F{StoreState}]]></expression>
+				</element>
+				<element kind="textField" uuid="5731f22c-d7a7-4582-9363-a956f6ccdcc7" x="180" y="0" width="100" height="15" evaluationTime="Group" pattern="$#,##0.00" evaluationGroup="StoreState" hTextAlign="Right" style="Sans_Bold">
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+					<expression><![CDATA[$F{StoreStateUnitSales}]]></expression>
+				</element>
+				<element kind="textField" uuid="8ab28135-7a5e-4ff2-a770-9e07dec433aa" x="300" y="0" width="100" height="15" evaluationTime="Group" pattern="#,###" evaluationGroup="StoreState" hTextAlign="Right" style="Sans_Bold">
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.tr" value="end"/>
+					<expression><![CDATA[$F{StoreStateCustCount}]]></expression>
+				</element>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Time">
+		<expression><![CDATA[$F{Quarter}]]></expression>
+		<groupHeader>
+			<band height="16" splitType="Stretch">
+				<element kind="textField" uuid="cec3348c-9dfe-4abc-a8e8-5517ee2d8db1" x="10" y="0" width="150" height="15" evaluationTime="Group" evaluationGroup="Time" style="Sans_Bold">
+					<property name="net.sf.jasperreports.export.pdf.tag.tr" value="full"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.colspan" value="3"/>
+					<expression><![CDATA[$F{Quarter}]]></expression>
+				</element>
+			</band>
+		</groupHeader>
+	</group>
+	<title height="30" splitType="Stretch">
+		<element kind="staticText" uuid="9117cc76-64fe-4ed1-ab88-81c68e61523a" x="0" y="0" width="515" height="30" fontSize="12.0" hTextAlign="Center">
+			<text><![CDATA[FoodMart Sales]]></text>
+		</element>
+	</title>
+	<pageHeader height="16" splitType="Stretch">
+		<element kind="frame" uuid="fe5bd78d-e0a5-4002-a88a-5032eb5dc128" x="0" y="0" width="515" height="15" backcolor="#E0E0E0" mode="Opaque">
+			<property name="net.sf.jasperreports.export.pdf.tag.table" value="start"/>
+			<property name="net.sf.jasperreports.export.pdf.tag.tr" value="full"/>
+			<box>
+				<pen lineWidth="0.5" lineStyle="Solid"/>
+			</box>
+			<element kind="staticText" uuid="47b45667-ce51-432a-9ead-0fc190218cc2" x="20" y="0" width="150" height="15" vTextAlign="Middle">
+				<property name="net.sf.jasperreports.export.pdf.tag.th" value="full"/>
+				<text><![CDATA[Store State]]></text>
+			</element>
+			<element kind="staticText" uuid="2ce98b51-2c1d-47ad-a0af-b32758bec2fd" x="180" y="0" width="100" height="15" hTextAlign="Right" vTextAlign="Middle">
+				<property name="net.sf.jasperreports.export.pdf.tag.th" value="full"/>
+				<text><![CDATA[Unit Sales ($)]]></text>
+			</element>
+			<element kind="staticText" uuid="4ae8fb48-c089-4b51-8430-14a6c64e8ba0" x="300" y="0" width="100" height="15" hTextAlign="Right" vTextAlign="Middle">
+				<property name="net.sf.jasperreports.export.pdf.tag.th" value="full"/>
+				<text><![CDATA[# Customers]]></text>
+			</element>
+		</element>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<element kind="textField" uuid="2a1c2a06-dfc0-4fe9-b3d5-77bce4a4f388" x="20" y="0" width="150" height="15">
+				<property name="net.sf.jasperreports.export.pdf.tag.tr" value="start"/>
+				<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+				<expression><![CDATA["Customer " + $F{CustomerState}]]></expression>
+			</element>
+			<element kind="textField" uuid="ca6068b4-a8bf-4d94-9293-330712067898" x="180" y="0" width="100" height="15" pattern="$#,##0.00" hTextAlign="Right">
+				<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+				<expression><![CDATA[$F{UnitSales}]]></expression>
+			</element>
+			<element kind="textField" uuid="caaa4add-bc99-48b0-b013-d6dd8aa364b1" x="300" y="0" width="100" height="15" pattern="#,###" hTextAlign="Right">
+				<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+				<property name="net.sf.jasperreports.export.pdf.tag.tr" value="end"/>
+				<expression><![CDATA[$F{CustomerCount}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<pageFooter splitType="Stretch">
+		<element kind="frame" uuid="44de00b7-1057-478d-87a3-f7a9aeaef407" x="0" y="0" width="0" height="0" mode="Transparent">
+			<property name="net.sf.jasperreports.export.pdf.tag.table" value="end"/>
+		</element>
+	</pageFooter>
+	<summary height="16" splitType="Stretch">
+		<element kind="frame" uuid="f1fc4758-6667-4880-9933-f66fbf1ba0b3" x="0" y="0" width="515" height="15" backcolor="#E0E0E0" mode="Opaque">
+			<box>
+				<pen lineWidth="0.5" lineStyle="Solid"/>
+			</box>
+			<element kind="textField" uuid="ce22e442-9bca-4d98-93d3-b2dc162771fc" x="10" y="0" width="150" height="15" vTextAlign="Middle" style="Sans_Bold">
+				<expression><![CDATA["Totals"]]></expression>
+			</element>
+			<element kind="textField" uuid="c82a4efb-9002-45e3-b8e3-a06299401470" x="180" y="0" width="100" height="15" pattern="$#,##0.00" hTextAlign="Right" vTextAlign="Middle" style="Sans_Bold">
+				<expression><![CDATA[$F{TotalStoreStateUnitSales}]]></expression>
+			</element>
+			<element kind="textField" uuid="c48b0e28-2501-493b-9e38-84aab8895cbe" x="300" y="0" width="100" height="15" pattern="#,###" hTextAlign="Right" vTextAlign="Middle" style="Sans_Bold">
+				<expression><![CDATA[$F{TotalStoreStateCustCount}]]></expression>
+			</element>
+		</element>
+	</summary>
+</jasperReport>

@@ -1,0 +1,59 @@
+name: openjrs-local
+
+services:
+  postgres:
+    image: docker.io/library/postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${OPENJRS_DB_PASSWORD:-openjrs-local-only}
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  initialize:
+    image: openjrs-local-init:dev
+    build:
+      context: .
+      target: initializer
+    environment:
+      OPENJRS_DB_HOST: postgres
+      OPENJRS_DB_PASSWORD: ${OPENJRS_DB_PASSWORD:-openjrs-local-only}
+      ks: /var/openjrs/keys
+      ksp: /var/openjrs/keys
+    volumes:
+      - encryption-keys:/var/openjrs/keys
+      - runtime-config:/var/openjrs/config
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  openjrs:
+    image: openjrs-local:dev
+    build:
+      context: .
+      target: runtime
+    environment:
+      CATALINA_OPTS: ${OPENJRS_JAVA_OPTS:--Xms256m -Xmx2048m -Djava.awt.headless=true}
+    ports:
+      - "127.0.0.1:${OPENJRS_PORT:-8080}:8080"
+    volumes:
+      - encryption-keys:/var/openjrs/keys:ro
+      - runtime-config:/var/openjrs/config:ro
+    shm_size: 256mb
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=./docker/local/seccomp/chromium.json
+    depends_on:
+      initialize:
+        condition: service_completed_successfully
+
+volumes:
+  postgres-data:
+  encryption-keys:
+  runtime-config:

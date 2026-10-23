@@ -105,18 +105,6 @@ public class InstanceProductTypeResolver {
         return overriding;
     }
 
-    public String getAwsProductNameForHeartBeat(){
-        if (isEC2) {
-            if (isMpAmi()) {
-                return getProductPrefix() + getProductTypeName();
-            } else {
-                return EC2;
-            }
-        } else {
-            return NOT_EC2;
-        }
-    }
-
     protected void setOverrideProductType(String overrideProductType) {
         this.overrideProductType = overrideProductType;
         overriding=true;

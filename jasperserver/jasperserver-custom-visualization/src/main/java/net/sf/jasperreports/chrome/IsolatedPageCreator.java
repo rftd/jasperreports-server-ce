@@ -145,7 +145,7 @@ public class IsolatedPageCreator implements PageCreator
 
     protected ChromeDevToolsServiceImpl getBrowserDevToolsService(ChromeService chromeService)
     {
-        return getDevToolsService(chromeService.getVersion().getWebSocketDebuggerUrl());
+        return getDevToolsService(ChromeVersionReader.read(chromeService).getWebSocketDebuggerUrl());
     }
 
     protected ChromeDevToolsServiceImpl getDevToolsService(String webSocketUrl)
