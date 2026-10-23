@@ -7,6 +7,8 @@ Não é necessário instalar Java, Maven, Node ou PostgreSQL na máquina.
 ## Iniciar
 
 Instale Docker Engine com Compose v2 ou Docker Desktop e obtenha este repositório.
+O comando `docker` fornecido pelo pacote `podman-docker` usa outro runtime;
+nesse caso, consulte a seção de Podman abaixo antes de iniciar.
 Na raiz do checkout, execute:
 
 ```sh
@@ -82,6 +84,43 @@ docker compose up -d --build --wait --wait-timeout 900
 Essa remoção é definitiva para os volumes deste projeto Compose. Não a execute
 em um ambiente cujo conteúdo queira preservar. Não reutilize volumes de uma
 instalação existente como destino do bootstrap local.
+
+## Podman: erro ao abrir o perfil seccomp
+
+Se aparecer `opening seccomp profile failed: open {"defaultAction":...}: file name too long`
+e `executing /usr/local/bin/docker-compose`, o Docker Compose está sendo executado
+sobre a API de compatibilidade do Podman. O Compose lê o arquivo seccomp e envia
+seu conteúdo JSON; essa API do Podman tenta interpretar o JSON como um caminho.
+A falha acontece na criação do container, mesmo quando as imagens já compilaram.
+
+Para usar Podman, instale o **podman-compose 1.5.0** pelo método disponível na sua
+distribuição e execute-o diretamente, sem o provider `docker-compose`. Na raiz do
+checkout, usando o mesmo usuário e o mesmo projeto da tentativa anterior:
+
+```sh
+podman-compose --version
+# Usa o provider anterior apenas para remover os containers e a rede da tentativa.
+# Conserva as imagens e os volumes com o banco e as chaves.
+podman compose -p openjrs-local -f compose.yaml down
+podman-compose -p openjrs-local -f compose.yaml up -d --no-build
+podman-compose -p openjrs-local -f compose.yaml logs -f initialize openjrs
+```
+
+Esse procedimento reaproveita as imagens do build que terminou com sucesso. Se
+você usou outro nome de projeto, substitua `openjrs-local` pelo mesmo nome usado
+antes; não troque de usuário nem acrescente `sudo` entre as tentativas. Não use
+`down --volumes` para esta correção.
+
+O `podman-compose` passa o caminho do perfil diretamente ao Podman e mantém
+seccomp, `no-new-privileges` e o sandbox do Chromium. Os argumentos `--wait` e
+`--wait-timeout` do Docker Compose não fazem parte desse comando; acompanhe os
+logs até o inicializador terminar com código zero e o Tomcat iniciar, depois
+acesse a URL do login. Use `podman-compose -p openjrs-local -f compose.yaml ps -a`
+para consultar o estado dos containers.
+
+O CI valida a execução completa com **Docker Engine/Compose v2**. Este contorno
+do transporte do perfil não representa validação completa com Podman; políticas
+de SELinux, namespaces e execução rootless ainda podem exigir diagnóstico próprio.
 
 ## Limitações conhecidas
 
