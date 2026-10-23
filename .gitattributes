@@ -3,3 +3,4 @@ compose.yaml text eol=lf
 docker/local/* text eol=lf
 *.sh text eol=lf
 jasperserver/buildomatic/js-ant text eol=lf
+jasperserver/deps/master-war-deps-ce.txt text eol=lf
