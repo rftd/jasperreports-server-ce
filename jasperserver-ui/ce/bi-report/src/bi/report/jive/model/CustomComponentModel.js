@@ -13,7 +13,9 @@ import BaseComponentModel from './BaseComponentModel';
 import jiveTypes from '../enum/jiveTypes';
 import _ from 'underscore';
 
-var localResourceTemplate = _.template("{{=uri}}?noext");
+var localResourceTemplate = function (options) {
+    return options.uri + (options.uri.indexOf('?') === -1 ? '?' : '&') + 'noext';
+};
 
 export default BaseComponentModel.extend({
     defaults: function () {

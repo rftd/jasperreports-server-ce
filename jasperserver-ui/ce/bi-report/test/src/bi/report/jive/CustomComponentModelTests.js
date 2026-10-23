@@ -70,5 +70,15 @@ describe("CustomComponentModel", function() {
         });
     });
 
+    it("preserves existing query parameters for script and css resources", function(){
+        var attr = _.extend({}, attributes);
+        attr.instanceData.script_uri = "/jasperserver/reportresource?resource=org/openjrs/maps/openjrs-osm-map.js";
+        attr.instanceData.css_uri = "/jasperserver/reportresource?resource=org/openjrs/maps/leaflet.css";
+        var model = new CustomComponentModel(attr, options);
+
+        expect(model.get("script").href).toEqual(attr.instanceData.script_uri + "&noext");
+        expect(model.get("css").href).toEqual(attr.instanceData.css_uri + "&noext");
+    });
+
 
 });
