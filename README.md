@@ -26,8 +26,9 @@ This is a **work-in-progress modernization fork**, not a certified production-re
 | Legacy frontend build | Verified in CI with Node.js 14 and Yarn Classic |
 | Legacy backend build | Verified in CI with Java 8, Maven, and Ant; produces a WAR |
 | Runtime smoke test | Verified in CI with PostgreSQL 14 and Tomcat 9 |
+| Dependency integrity | Strict WAR inventory and reviewed SHA-256 pins; see [provenance and scope](jasperserver/deps/README.md) |
 | Functional smoke tests | CI verifies REST authentication, PDF/XLSX exports, viewer controls, interactive tables, Community visualizations and the OpenJRS interface |
-| Current reporting engine | **JasperReports Library 7.1.0, experimental**; broader compatibility and dependency integrity remain under review |
+| Current reporting engine | **JasperReports Library 7.1.0, experimental**; broader compatibility and legacy dependency security remain under review |
 
 The `master` branch includes the recovered baseline, OpenJRS identity, JR 7.1.0 engine, local Docker environment, vendor heartbeat removal and native JR7 Community reports from merged PRs #1–#6. See [integration history and verified coverage](MERGING.md). Integration does not constitute a production release. The original JR 6.20.3 baseline remains available on `feature/jasperreports-7-migration`.
 

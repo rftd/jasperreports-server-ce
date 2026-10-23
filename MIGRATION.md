@@ -29,12 +29,13 @@ the former Jackson 2.13.4 polymorphic plot merge. The auxiliary ChartPart book
 example uses a Community pie chart for customer counts by country in place of
 its commercial Highcharts component; title, bookmarks and book navigation remain.
 New JFreeChart no longer needs `jcommon`; Jackson's JAXB provider also removes
-the redundant `jakarta.xml.bind-api` path while `jaxb-api` remains. Twelve new
-artifact hashes, including the resolved Activation API version, were checked
-against Maven Central and recorded in
-[`jr7-native-reports-provenance.json`](jasperserver/deps/jr7-native-reports-provenance.json).
-The diagnostic allowance pins these exact replacements. The original strict
-Buildomatic inventory and the unresolved SiteMesh review remain unchanged.
+the redundant `jakarta.xml.bind-api` path while `jaxb-api` remains. The migration
+artifacts, current official SiteMesh binary and all bundled JR7 modules were
+downloaded independently and checked against published repository checksums.
+The promoted strict inventory and additional SHA-256 pins are documented in
+[dependency integrity](jasperserver/deps/README.md) and
+[`war-deps-provenance.json`](jasperserver/deps/war-deps-provenance.json).
+No diagnostic checksum-drift exception remains.
 
 **BREAKING CHANGE — PDF accessibility:** bundled examples/fixtures that requested
 tagged PDF now set
@@ -131,12 +132,12 @@ not a complete offline installation: public npm/Maven dependencies are still
 required. The bootstrap rejects archive links and path traversal and preserves
 original manifests for restoration.
 
-Both workflows exercise the combined engine and interface. Diagnostic CI accepts
-only the enumerated dependency coordinates and hashes after the original strict
-Buildomatic inventory reports its expected differences. This does not approve
-the SiteMesh discrepancy or other dependency changes for production. Production
-release review must also cover licensing, legacy dependency security and broader
-functional regression testing.
+Both workflows exercise the combined engine and interface. Buildomatic must pass
+the reviewed strict inventory, and the actual WAR must match the additional
+SHA-256 pins and complete library filename list. No failed build or checksum
+drift is accepted. See the [provenance review](jasperserver/deps/README.md) for the
+SiteMesh republication and its limits. Production release review must also cover
+licensing, legacy dependency security and broader functional regression testing.
 
 ## MongoDB connector removal (JasperReports 7 migration)
 
@@ -144,7 +145,7 @@ The legacy Jaspersoft MongoDB adapter (`com.jaspersoft.connectors.mongodb:js-mon
 
 OpenJRS removes the proprietary adapter dependency, its connector module, example classes, Spring bean registrations, and the temporary compatibility shims. **Do not assume that existing MongoDB-backed reports will work after upgrading.** MongoDB JDBC-related source code and configuration are separate from this adapter and remain for independent review; a driver might still be required for that path. The original baseline is preserved on its own branch.
 
-The historical WAR checksum inventory and diagnostic exception must be revisited deliberately after this dependency removal; a changed WAR inventory is not automatically a successful or production-approved build.
+The reviewed WAR inventory records this removal; adding the old connector again fails the strict dependency checks. Other inventory changes require their own provenance and compatibility review.
 
 ## JasperReports 7 interactive web API breaking change
 
@@ -180,5 +181,6 @@ separate PR; the current migration preserves this viewer.
 
 Native sample sources and the Community visualization port have their own
 scope and limitations documented in `jasperserver/samples/jrxml7/README.md` and
-`jasperserver/jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
-not approve the unresolved production WAR inventory differences.
+`jasperserver/jasperserver-custom-visualization/README.md`. Dependency enforcement
+and the limits of the provenance review are documented in
+`jasperserver/deps/README.md`.

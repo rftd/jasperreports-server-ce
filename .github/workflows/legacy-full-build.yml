@@ -9,7 +9,8 @@ on:
       - 'jasperserver-ui/**'
       - 'scripts/test-openjrs-branding.py'
       - 'scripts/prepare-legacy-frontend.py'
-      - 'scripts/verify-legacy-war-deps.py'
+      - 'scripts/verify-war-deps.py'
+      - 'scripts/tests/**'
       - 'scripts/verify-no-vendor-heartbeat.py'
       - 'scripts/verify-native-reports.py'
       - 'scripts/smoke-jasperserver.sh'
@@ -151,10 +152,11 @@ jobs:
           java -version
           mvn -version
           ant -version
-      - name: Check native JR7 sample catalogs
+      - name: Check native JR7 catalogs and dependency guard tests
         run: |
           python3 scripts/sync-jr7-samples.py
           python3 scripts/verify-native-reports.py
+          python3 -m unittest discover -s scripts/tests -v
       - name: Download frontend overlay
         uses: actions/download-artifact@v4
         with:
@@ -221,19 +223,14 @@ jobs:
           BUILDOMATIC_ENV: ci
         run: |
           set -o pipefail
-          set +e
           ./js-ant build-ce 2>&1 | tee "$RUNNER_TEMP/backend-build.log"
-          build_status=${PIPESTATUS[0]}
-          set -e
-          echo "BUILD_EXIT=$build_status" >> "$GITHUB_ENV"
-          # Preserve Maven/Ant's actual status for the strict diagnostic gate.
-      - name: Verify known checksum drift without weakening production baseline
+      - name: Verify strict WAR inventory and reviewed SHA-256 pins
         run: |
-          python3 scripts/verify-legacy-war-deps.py \
+          python3 scripts/verify-war-deps.py \
             --master jasperserver/deps/master-war-deps-ce.txt \
             --current jasperserver/target/deps/current-war-deps-ce.txt \
-            --build-exit "$BUILD_EXIT" \
-            --build-log "$RUNNER_TEMP/backend-build.log"
+            --war jasperserver/jasperserver-war/target/jasperserver.war \
+            --project-version ci
       - name: Verify WAR output
         run: |
           test -s jasperserver/jasperserver-war/target/jasperserver.war
