@@ -92,8 +92,11 @@ permanece rígida. A procedência do SiteMesh e a compatibilidade ampliada conti
 pendentes: esta imagem não é uma distribuição de produção aprovada.
 
 O Chromium usa seu sandbox; não acrescente `--no-sandbox` para contornar falhas.
-Políticas do kernel/Docker podem limitar a criação de namespaces exigida pelo
-browser. Os diagnósticos do container permitem identificar essa situação.
+O serviço usa o perfil seccomp padrão do Moby com uma regra adicional para os
+namespaces do browser, mantendo as demais restrições, usuário sem privilégios e
+`no-new-privileges`. A origem, licença e alteração estão em
+[seccomp/NOTICE.md](seccomp/NOTICE.md). Políticas adicionais do kernel/Docker
+podem limitar esses namespaces; consulte os diagnósticos do container.
 
 As versões legadas de Node/Java são mantidas para reproduzir a stack atual.
 Suporte a outras arquiteturas, principalmente ARM64, exige validação específica.

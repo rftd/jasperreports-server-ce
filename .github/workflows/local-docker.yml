@@ -60,6 +60,10 @@ jobs:
           python3 scripts/test-legacy-viewer.py
       - name: Check sandboxed Chromium in the runtime image
         run: docker compose exec -T openjrs chromium --headless --disable-gpu --dump-dom about:blank
+      - name: Export a Community visualization using Chromium inside Tomcat
+        run: |
+          docker compose cp jasperserver/jasperserver-custom-visualization/src/test/resources/cv-browser-smoke.js openjrs:/usr/local/tomcat/webapps/jasperserver/scripts/openjrs-cv-export.js
+          python3 docker/local/test-visualization.py
       - name: Capture diagnostics
         if: always()
         run: |
@@ -76,6 +80,7 @@ jobs:
             ${{ runner.temp }}/application-logs/**
             ${{ runner.temp }}/openjrs-branding/**
             ${{ runner.temp }}/viewer-smoke/**
+            ${{ runner.temp }}/docker-cv.pdf
           retention-days: 7
       - name: Remove disposable CI environment
         if: always()

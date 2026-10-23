@@ -46,6 +46,9 @@ services:
       - encryption-keys:/var/openjrs/keys:ro
       - runtime-config:/var/openjrs/config:ro
     shm_size: 256mb
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=./docker/local/seccomp/chromium.json
     depends_on:
       initialize:
         condition: service_completed_successfully
