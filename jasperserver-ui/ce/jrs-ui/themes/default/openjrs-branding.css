@@ -1,0 +1,43 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+ * Copyright (C) 2026 OpenJRS contributors.
+ * Identity styles also apply to existing repository-stored themes.
+ */
+#banner #logo.openjrs-wordmark {
+    background-image: none;
+    width: auto;
+    height: 30px;
+    margin: 4px 16px 0 12px;
+    color: #fff;
+    font-family: source_sans_prosemibold, Arial, sans-serif;
+    font-size: 22px;
+    line-height: 30px;
+    white-space: nowrap;
+}
+
+#logo.openjrs-wordmark .openjrs-edition {
+    font-family: source_sans_proregular, Arial, sans-serif;
+    font-size: 14px;
+}
+
+#loginPage #loginForm .devices.openjrs-login-brand {
+    background-image: none;
+    color: #0b2f5f;
+    font-family: source_sans_prosemibold, Arial, sans-serif;
+    font-size: 32px;
+    line-height: 50px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.openjrs-login-brand span {
+    font-family: source_sans_proregular, Arial, sans-serif;
+    font-size: 22px;
+}
+
+#loginPage #welcome .logo.openjrs-welcome-mark {
+    background-image: none;
+    width: auto;
+    height: auto;
+    font-size: 32px;
+    line-height: 1.3;
+}

@@ -1,4 +1,8 @@
-# JasperReports Server Community Edition Build Guide
+# OpenJRS Server — legacy backend build guide
+
+OpenJRS Server is an independent community fork of JasperReports Server CE. The instructions below document the **inherited build system** and retain its original internal paths and identifiers. See [project status, independence and AI-assisted maintenance](../README.md) before deploying.
+
+## Historical build instructions
 ## Build prerequisites
 - Install [Java 1.8](https://www.oracle.com/java/technologies/downloads) or higher. Open JDK 1.8 or higher is supported too.
 - Install [Apache Ant](https://ant.apache.org). Recommended version 1.10.2 or later.
@@ -98,7 +102,7 @@ js-ant.bat deploy-webapp-ce
 >After successful build the JasperReports server will be deployed as a **jasperserver** WAR file to the specified Application Server (_appServerDir_ location). In our case it will be _/opt/tomcat/webapps/jasperserver_
 
 ### Starting instance
-To start JasperReports Server:
+To start the inherited JasperReports Server runtime used by OpenJRS:
 - For **Tomcat** execute `<path-to-tomcat>/bin/startup.sh` (or `startup.bat` if you are on Windows)
 - For **JBoss** execute `<path-to-jboss>/bin/standalone.sh` (or `standalone.bat` for Windows)
 - Open Browser and navigate to `http://localhost:8080/jasperserver`

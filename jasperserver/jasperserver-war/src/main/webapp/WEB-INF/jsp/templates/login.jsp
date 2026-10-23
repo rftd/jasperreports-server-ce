@@ -59,7 +59,7 @@ Usage:
     <t:putAttribute name="containerID" value="login"/>
     <t:putAttribute name="containerTitle"><spring:message code='jsp.Login.title'/></t:putAttribute>
     <t:putAttribute name="bodyContent">
-        <div class="devices"></div>
+        <div class="devices openjrs-login-brand">OpenJRS <span>Server</span></div>
         <div class="inputSection">
             <section id="loginWarningSection" aria-hidden="true" aria-label="<spring:message code='jsp.login.warning.section'/>">
             ${warningMessages}
