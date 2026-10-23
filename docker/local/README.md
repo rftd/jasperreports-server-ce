@@ -85,6 +85,24 @@ Essa remoção é definitiva para os volumes deste projeto Compose. Não a execu
 em um ambiente cujo conteúdo queira preservar. Não reutilize volumes de uma
 instalação existente como destino do bootstrap local.
 
+## Podman: resolução de imagens
+
+O Compose e o Dockerfile usam referências completas `docker.io/library/...` para
+as imagens externas. Isso permite usar Podman sem configurar aliases de nomes
+curtos ou um registry de busca padrão.
+
+Se aparecer `short-name "postgres:14" did not resolve to an alias` (ou o mesmo
+erro para `eclipse-temurin`), atualize o checkout e reconstrua na raiz do projeto:
+
+```sh
+git pull --ff-only
+podman-compose -p openjrs-local -f compose.yaml up -d --build
+```
+
+Conserve o usuário, o nome do projeto e os volumes da instalação anterior.
+Mensagens `no such container` ou `no such pod` durante `down` indicam que esses
+recursos já não existem; não exigem apagar volumes.
+
 ## Podman: erro ao abrir o perfil seccomp
 
 Se aparecer `opening seccomp profile failed: open {"defaultAction":...}: file name too long`

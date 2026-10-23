@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1
+# syntax=docker.io/docker/dockerfile:1
 # Local development image. Dependency audit exceptions remain diagnostic only.
-FROM node:14.21.3-bullseye AS frontend
+FROM docker.io/library/node:14.21.3-bullseye AS frontend
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ zip \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
@@ -14,11 +14,11 @@ RUN yarn run clean && yarn run build \
     && cd jrs-ui && yarn run overlay \
     && cd build/overlay && zip -qr /tmp/jrs-ui-overlay.zip .
 
-FROM eclipse-temurin:8-jdk-jammy AS java8
-FROM maven:3.9.9-eclipse-temurin-8 AS maven-bin
-FROM tomcat:9.0-jdk8-temurin AS tomcat-bin
+FROM docker.io/library/eclipse-temurin:8-jdk-jammy AS java8
+FROM docker.io/library/maven:3.9.9-eclipse-temurin-8 AS maven-bin
+FROM docker.io/library/tomcat:9.0-jdk8-temurin AS tomcat-bin
 
-FROM debian:bookworm-slim AS build-tools
+FROM docker.io/library/debian:bookworm-slim AS build-tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ant ant-contrib ca-certificates curl fontconfig fonts-dejavu-core \
     postgresql-client python3 unzip util-linux \
@@ -45,7 +45,7 @@ RUN mkdir -p /root/.m2 && ln -s /opt/maven-repository /root/.m2/repository
 WORKDIR /src/jasperserver/buildomatic
 ENTRYPOINT ["bash", "/opt/openjrs-docker/initialize.sh"]
 
-FROM debian:bookworm-slim AS runtime
+FROM docker.io/library/debian:bookworm-slim AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates chromium chromium-sandbox curl fontconfig fonts-dejavu-core tini \
     && rm -rf /var/lib/apt/lists/* \
