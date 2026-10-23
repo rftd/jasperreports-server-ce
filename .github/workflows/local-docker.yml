@@ -70,6 +70,7 @@ jobs:
           docker compose logs --no-color > "$RUNNER_TEMP/docker-runtime.log" 2>&1 || true
           docker compose ps -a > "$RUNNER_TEMP/docker-status.txt" 2>&1 || true
           docker compose cp openjrs:/usr/local/tomcat/webapps/jasperserver/WEB-INF/logs "$RUNNER_TEMP/application-logs" || true
+          rg -n -A20 'ERROR|Caused by:' "$RUNNER_TEMP/application-logs/jasperserver.log" | tail -100 || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -35,7 +35,7 @@ def main():
         assert response.status in (200, 201), f'Create CV fixture: HTTP {response.status}'
         try:
             response = api.get(base + '/rest_v2/reports' + resource + '.pdf', timeout=150000)
-            assert response.status == 200, f'CV PDF export: HTTP {response.status}'
+            assert response.status == 200, f'CV PDF export: HTTP {response.status}: {response.text()[:2000]}'
             pdf = response.body()
             assert pdf.startswith(b'%PDF-') and len(pdf) > 1000, 'Invalid visualization PDF'
             (Path(os.environ.get('RUNNER_TEMP', '/tmp')) / 'docker-cv.pdf').write_bytes(pdf)
