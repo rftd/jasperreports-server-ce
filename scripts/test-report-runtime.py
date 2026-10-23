@@ -120,8 +120,10 @@ def validate_export(extension, data, expected_text):
                              for node in ET.fromstring(workbook.read(name)).iter()
                              if node.tag in ("{" + namespace["s"] + "}t", "{" + namespace["s"] + "}v"))
     elif extension == "csv":
-        rows = list(csv.reader(StringIO(data.decode("utf-8-sig"))))
+        rows = list(csv.reader(StringIO(data.decode("utf-8-sig")), strict=True))
         assert rows, "CSV contains no rows"
+        if expected_text == MARKER:
+            assert any(MARKER in row for row in rows), "CSV parameter is not an intact cell"
         text = "\n".join(cell for row in rows for cell in row)
     elif extension == "html":
         document = ReportHTML()
@@ -183,10 +185,12 @@ def run():
             # The original server 8.2 maps the legacy .xls endpoint to XLSX.
             actual_format = "xlsx" if extension == "xls" else extension
             (output / (label + "-" + extension + "." + actual_format)).write_bytes(data)
+            content_types = {"pdf": ("application/pdf",), "html": ("text/html",),
+                             "csv": ("text/csv", "application/vnd.ms-excel"),
+                             "xlsx": ("application/xlsx",
+                                      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
+            assert headers.get_content_type() in content_types[actual_format], "Unexpected export content type"
             validate_export(actual_format, data, expected_text)
-            if extension == "xls":
-                assert headers.get_content_type() in ("application/xlsx",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             if extension == "html":
                 document = ReportHTML()
                 document.feed(data.decode("utf-8"))

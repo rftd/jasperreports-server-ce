@@ -13,6 +13,8 @@ accepting HTTP 200 or a file extension alone.
   content type. This mapping already exists in the original 8.2 source
   (`applicationContext-remote-services.xml`); the test preserves that contract.
   It does **not** validate binary Excel 97–2003/XLS output or change the mapping.
+  The inherited CSV MIME type `application/vnd.ms-excel` is also preserved;
+  CSV bytes are parsed as UTF-8 with strict quoting and intact parameter cells.
 - A newly uploaded native JR7 report accepts a string input control containing
   accents, commas and quotes. PDF, XLSX, CSV and HTML must contain that exact
   parameter value; using the JRXML default instead is a failure.
