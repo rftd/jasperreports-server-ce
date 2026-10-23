@@ -39,6 +39,8 @@ See [MAINTENANCE.md](MAINTENANCE.md) for how contributions and AI-assisted chang
 
 ## Build and development
 
+For a local Docker Compose environment, see the [Docker guide](docker/local/README.md).
+
 The codebase still uses its **original internal directory names, Maven coordinates, Java packages, WAR name, and application context path** (for example, `jasperserver/` and `/jasperserver`). These are kept deliberately for compatibility while the public-facing brand is introduced in documentation, login, navigation and the About dialog. **Do not rename internal identifiers merely to change the public-facing name.**
 
 - [Backend build guide](jasperserver/README.md)

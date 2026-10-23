@@ -35,6 +35,8 @@ A manutenção é comunitária e realizada em regime de melhor esforço, sem gar
 
 ## Compatibilidade e compilação
 
+Para testar localmente com Docker, veja o [guia de Docker Compose](docker/local/README.md).
+
 Os nomes internos originais foram mantidos intencionalmente durante esta fase: pastas `jasperserver/`, pacotes Java, coordenadas Maven, nome do WAR e contexto web `/jasperserver`. A identidade pública aparece na documentação, no login, no cabeçalho e na janela Sobre. As APIs e os identificadores técnicos permanecem compatíveis.
 
 - [Guia do backend](jasperserver/README.md)
