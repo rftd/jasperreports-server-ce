@@ -11,6 +11,12 @@
     <name>Legacy JRXML compatibility</name>
     <dependencies>
         <dependency>
+            <groupId>com.jaspersoft.jasperserver</groupId>
+            <artifactId>jasperserver-custom-visualization</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <scope>provided</scope>

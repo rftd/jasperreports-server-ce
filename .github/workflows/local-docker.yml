@@ -12,6 +12,7 @@ on:
       - 'jasperserver-ui/**'
       - 'scripts/test-openjrs-branding.py'
       - 'scripts/test-legacy-viewer.py'
+      - 'scripts/test-sample-map-table.py'
       - 'scripts/verify-no-vendor-heartbeat.py'
       - 'docker/local/**'
       - '.github/workflows/local-docker.yml'
@@ -33,6 +34,7 @@ jobs:
       JRS_BASE_URL: http://127.0.0.1:18080/jasperserver
       JRS_SMOKE_USER: jasperadmin
       JRS_SMOKE_PASSWORD: jasperadmin
+      OPENJRS_JAVA_OPTS: -Xms256m -Xmx2048m -Djava.awt.headless=true -Dopenjrs.map.tile.url=http://127.0.0.1:8080/jasperserver/scripts/openjrs-map-test-tile.png
     steps:
       - uses: actions/checkout@v4
       - name: Validate Compose and shell scripts
@@ -63,6 +65,12 @@ jobs:
         run: |
           python3 scripts/test-openjrs-branding.py
           python3 scripts/test-legacy-viewer.py
+      - name: Check shipped table, OpenStreetMap, drilldown and image exports
+        env:
+          JRS_MAP_EXPORT: '1'
+        run: |
+          docker compose cp jasperserver/jasperserver-custom-visualization/src/test/resources/map-test-tile.png openjrs:/usr/local/tomcat/webapps/jasperserver/scripts/openjrs-map-test-tile.png
+          python3 scripts/test-sample-map-table.py
       - name: Check sandboxed Chromium in the runtime image
         run: docker compose exec -T openjrs chromium --headless --disable-gpu --dump-dom about:blank
       - name: Export a Community visualization using Chromium inside Tomcat
@@ -87,6 +95,7 @@ jobs:
             ${{ runner.temp }}/openjrs-branding/**
             ${{ runner.temp }}/viewer-smoke/**
             ${{ runner.temp }}/docker-cv.pdf
+            ${{ runner.temp }}/map-table-tests/**
           retention-days: 7
       - name: Remove disposable CI environment
         if: always()

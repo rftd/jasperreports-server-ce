@@ -14,6 +14,7 @@ on:
       - 'scripts/smoke-jasperserver.sh'
       - 'scripts/test-legacy-rest-reports.sh'
       - 'scripts/test-legacy-viewer.py'
+      - 'scripts/test-sample-map-table.py'
   push:
     branches:
       - feature/jasperreports-7-migration
@@ -331,7 +332,9 @@ jobs:
         env:
           JRS_SMOKE_USER: jasperadmin
           JRS_SMOKE_PASSWORD: jasperadmin
-        run: python3 scripts/test-legacy-viewer.py
+        run: |
+          python3 scripts/test-legacy-viewer.py
+          python3 scripts/test-sample-map-table.py
       - name: Render Community visualization SVG and PDF in Chrome
         run: |
           chrome_path=$(command -v google-chrome)
@@ -368,6 +371,7 @@ jobs:
             ${{ runner.temp }}/jrs-login-smoke.html
             ${{ runner.temp }}/jrs-login-headers.txt
             ${{ runner.temp }}/viewer-smoke/**
+            ${{ runner.temp }}/map-table-tests/**
             jasperserver/jasperserver-custom-visualization/target/cv-browser/**
           if-no-files-found: ignore
           retention-days: 7

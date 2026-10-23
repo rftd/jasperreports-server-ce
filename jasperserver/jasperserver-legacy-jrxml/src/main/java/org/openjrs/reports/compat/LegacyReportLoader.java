@@ -44,7 +44,7 @@ public final class LegacyReportLoader implements ReportLoader {
     private static final Set<String> COMMON_WRAPPERS = set("reportElement", "textElement", "graphicElement");
     private static final Set<String> EXPRESSION_NAMES = set("textFieldExpression", "imageExpression",
             "subreportExpression", "groupExpression", "variableExpression", "subreportParameterExpression",
-            "datasetParameterExpression", "tableParameterExpression");
+            "datasetParameterExpression", "tableParameterExpression", "hyperlinkParameterExpression");
 
     private static Set<String> set(String... values) {
         return new HashSet<String>(Arrays.asList(values));
@@ -177,14 +177,21 @@ public final class LegacyReportLoader implements ReportLoader {
             if (child instanceof Element) {
                 Element element = (Element) child;
                 String childTag = name(element);
-                if ((reportElement && COMMON_WRAPPERS.contains(childTag))
+                if ("itemProperty".equals(tag) && "valueExpression".equals(childTag)) {
+                    result.appendChild(document.createCDATASection(element.getTextContent()));
+                } else if ((reportElement && COMMON_WRAPPERS.contains(childTag))
                         || ("conditionalStyle".equals(tag) && "style".equals(childTag))
                         || (SINGLE_BANDS.contains(tag) && "band".equals(childTag))) {
                     flatten(element, result, tag, document);
                 } else if (reportElement && "componentElement".equals(tag)) {
-                    Element component = convertElement(element, document);
-                    component = (Element) document.renameNode(component, null, "component");
-                    component.setAttribute("kind", childTag);
+                    Element component;
+                    if ("map".equals(childTag)) {
+                        component = LegacyOpenStreetMap.convert(element, document);
+                    } else {
+                        component = convertElement(element, document);
+                        component = (Element) document.renameNode(component, null, "component");
+                        component.setAttribute("kind", childTag);
+                    }
                     result.appendChild(component);
                 } else if (reportElement && "font".equals(childTag)) {
                     copyFont(element, result);
@@ -192,6 +199,11 @@ public final class LegacyReportLoader implements ReportLoader {
                     result.appendChild(convertElement(element, document));
                 }
             } else if (child.getNodeType() == Node.TEXT_NODE || child.getNodeType() == Node.CDATA_SECTION_NODE) {
+                if ("defaultValueExpression".equals(tag) || "textFieldExpression".equals(tag)
+                        || "hyperlinkParameterExpression".equals(tag)) {
+                    result.appendChild(document.createCDATASection(LegacyOpenStreetMap.sampleExpression(old)));
+                    break;
+                }
                 result.appendChild(document.importNode(child, true));
             }
         }
@@ -232,7 +244,20 @@ public final class LegacyReportLoader implements ReportLoader {
                 if (Boolean.parseBoolean(attr.getValue())) to.setAttribute("textAdjust", "StretchHeight");
                 continue;
             }
-            to.setAttribute(renameAttribute(key, owner), attr.getValue());
+            String value = attr.getValue();
+            if ("hyperlinkParameter".equals(owner) && "name".equals(key) && "jr.uri".equals(value)
+                    && "TableReport".equals(from.getOwnerDocument().getDocumentElement().getAttribute("name"))) {
+                // The shipped sample uses the old library alias; the server's
+                // reportExecutionHyperlinkProducer expects _report.
+                value = "_report";
+            }
+            if ("stretchType".equals(key)) {
+                // Official JR7 StretchTypeEnum.getByName retains these JR6 aliases;
+                // Jackson's enum binding requires their current names instead.
+                if ("RelativeToBandHeight".equals(value)) value = "ContainerHeight";
+                if ("RelativeToTallestObject".equals(value)) value = "ElementGroupHeight";
+            }
+            to.setAttribute(renameAttribute(key, owner), value);
         }
     }
 

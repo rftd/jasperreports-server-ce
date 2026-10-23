@@ -1,5 +1,38 @@
 # OpenJRS Server — JasperReports Server CE migration baseline
 
+## Table Report and OpenStreetMap example
+
+The shipped legacy Table Report now converts hyperlink parameter expressions
+and deprecated stretch aliases using JR7's corresponding contracts. Its city
+drilldown points to `/reports/interactive/MapReport` and retains coordinates.
+
+Basic legacy map components are rendered through the Community visualization
+integration using bundled Leaflet 1.9.4 and OpenStreetMap tiles. Google Maps and
+its API key are no longer used for these maps. The shipped Map Report keeps its
+default center and accepts latitude, longitude and numeric zoom parameters;
+missing/blank request parameters use its defaults. Old repository JRXML is
+adapted on load, so existing local volumes need not be reset or reimported.
+
+**Compatibility change:** this adapter covers latitude/longitude/zoom maps.
+Advanced Google map features (markers/datasets, routes, custom styles, and map
+attributes) require their own migration. Unsupported content fails explicitly
+instead of being discarded. This does not establish complete JR6 map compatibility.
+
+The browser can pan and zoom the map; PDF/XLSX images use sandboxed Chromium,
+configured through `chrome.path` as for other Community visualizations. Export
+waits for tile loading; missing tiles do not silently produce a successful blank
+map. Runtime network access to the tile provider is required. The default public
+OSM endpoint is for light interactive use; follow its tile policy and use an
+appropriate provider for sustained traffic. JVM option
+`-Dopenjrs.map.tile.url=https://your-provider/{z}/{x}/{y}.png` selects another tile
+endpoint. Preserve the attribution required by the provider and map data.
+
+CI uses deterministic local tiles to test the renderer, coordinates, pan/zoom,
+table drilldown and image exports without crawling a public map service. It does
+not verify availability of the public OSM service from each deployment network.
+Leaflet's provenance/license and OSM policy links are packaged in
+`org/openjrs/maps/NOTICE.md` in the Community visualization module.
+
 ## Vendor heartbeat removal — BREAKING CHANGE
 
 OpenJRS removes the Jaspersoft heartbeat subsystem: outbound HTTP client,

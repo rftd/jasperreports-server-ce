@@ -98,6 +98,95 @@ public class LegacyReportLoaderTest {
     }
 
     @Test
+    public void loadsShippedTableWithDrilldownParameters() throws Exception {
+        try (ZipFile zip = new ZipFile(Paths.get("..", "buildomatic", "install_resources", "export", "js-catalog-postgresql-ce.zip").toFile());
+             InputStream stream = zip.getInputStream(zip.getEntry("resources/reports/interactive/TableReport_files/TableReport.data"))) {
+            JasperDesign design = JRXmlLoader.load(stream);
+            assertEquals("TableReport", design.getName());
+            assertEquals(8, design.getDatasets()[0].getFields().length);
+            net.sf.jasperreports.components.table.TableComponent table =
+                    (net.sf.jasperreports.components.table.TableComponent) ((JRComponentElement)
+                    design.getSummary().getElements()[0]).getComponent();
+            net.sf.jasperreports.components.table.StandardColumnGroup group =
+                    (net.sf.jasperreports.components.table.StandardColumnGroup) table.getColumns().get(0);
+            JRTextField drilldown = (JRTextField) group.getGroupHeaders().get(0).getCell().getElements()[0];
+            assertEquals(3, drilldown.getHyperlinkParameters().length);
+            assertEquals("_report", drilldown.getHyperlinkParameters()[0].getName());
+            assertEquals("\"/reports/interactive/MapReport\"", drilldown.getHyperlinkParameters()[0].getValueExpression().getText());
+            assertEquals("$V{latitude}", drilldown.getHyperlinkParameters()[1].getValueExpression().getText());
+            assertEquals("$V{longitude}", drilldown.getHyperlinkParameters()[2].getValueExpression().getText());
+            assertNotNull(JasperCompileManager.compileReport(design));
+        }
+    }
+
+    @Test
+    public void fillsShippedMapWithDefaultAndRequestedCoordinates() throws Exception {
+        try (ZipFile zip = new ZipFile(Paths.get("..", "buildomatic", "install_resources", "export", "js-catalog-postgresql-ce.zip").toFile());
+             InputStream stream = zip.getInputStream(zip.getEntry("resources/reports/interactive/MapReport_files/MapReport.data"))) {
+            JasperDesign design = JRXmlLoader.load(stream);
+            assertEquals("MapReport", design.getName());
+            assertTrue(((JRComponentElement) design.getSummary().getElements()[0]).getComponent()
+                    instanceof net.sf.jasperreports.customvisualization.CVComponent);
+            JasperReport report = JasperCompileManager.compileReport(design);
+            for (int mode : new int[] {0, 1, 2}) {
+                boolean supplied = mode == 1;
+                HashMap<String,Object> parameters = new HashMap<String,Object>();
+                if (mode != 0) {
+                    SimpleReportContext request = new SimpleReportContext();
+                    request.setParameterValue("latitude", supplied ? "-20.4697" : " ");
+                    request.setParameterValue("longitude", supplied ? "-54.6201" : "");
+                    request.setParameterValue("zoom", supplied ? "9" : "");
+                    parameters.put(JRParameter.REPORT_CONTEXT, request);
+                }
+                JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource(0));
+                JRGenericPrintElement map = null;
+                for (JRPrintElement element : print.getPages().get(0).getElements()) {
+                    if (element instanceof JRGenericPrintElement) map = (JRGenericPrintElement) element;
+                }
+                assertNotNull(map);
+                java.util.Map<?,?> config = (java.util.Map<?,?>) map.getParameterValue("configuration");
+                assertNotNull(config);
+                assertEquals("openjrs-osm-map", config.get("module"));
+                assertEquals(supplied ? -20.4697 : 44.435, Double.parseDouble(config.get("latitude").toString()), 0.0001);
+                assertEquals(supplied ? -54.6201 : 26.096, Double.parseDouble(config.get("longitude").toString()), 0.0001);
+                assertEquals(supplied ? 9 : 12, Integer.parseInt(config.get("zoom").toString()));
+            }
+        }
+    }
+
+    @Test
+    public void preservesLegacyDynamicVisualizationItemProperty() throws Exception {
+        String xml = "<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" name=\"dynamicCV\">"
+                + "<title><band height=\"100\"><componentElement><reportElement x=\"0\" y=\"0\" width=\"100\" height=\"100\"/>"
+                + "<c:customvisualization xmlns:c=\"http://www.jaspersoft.com/cvcomponent\">"
+                + "<c:itemProperty name=\"module\" value=\"test\"/>"
+                + "<c:itemProperty name=\"latitude\"><c:valueExpression><![CDATA[42.21f]]></c:valueExpression></c:itemProperty>"
+                + "</c:customvisualization></componentElement></band></title></jasperReport>";
+        net.sf.jasperreports.customvisualization.CVComponent cv =
+                (net.sf.jasperreports.customvisualization.CVComponent) ((JRComponentElement) load(xml).getTitle().getElements()[0]).getComponent();
+        assertEquals("42.21f", cv.getItemProperties().get(1).getValueExpression().getText());
+    }
+
+    @Test(expected = JRException.class)
+    public void rejectsUnsupportedMapContentInsteadOfDroppingIt() throws Exception {
+        String xml = "<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" name=\"advancedMap\">"
+                + "<title><band height=\"100\"><componentElement><reportElement x=\"0\" y=\"0\" width=\"100\" height=\"100\"/>"
+                + "<c:map xmlns:c=\"http://jasperreports.sourceforge.net/jasperreports/components\">"
+                + "<c:markerData/></c:map></componentElement></band></title></jasperReport>";
+        load(xml);
+    }
+
+    @Test
+    public void preservesDeprecatedStretchAliases() throws Exception {
+        for (String[] mapping : new String[][] {{"RelativeToBandHeight", "ContainerHeight"},
+                {"RelativeToTallestObject", "ElementGroupHeight"}}) {
+            JasperDesign design = load(OLD.replace("isRemoveLineWhenBlank=\"true\"",
+                    "stretchType=\"" + mapping[0] + "\" isRemoveLineWhenBlank=\"true\""));
+            assertEquals(mapping[1], design.getDetailSection().getBands()[0].getElements()[0].getStretchType().getName());
+        }
+    }
+
+    @Test
     public void compilesWithWebappLibrariesOutsideTheJvmClasspath() throws Exception {
         String classpath = System.getProperty("java.class.path");
         ClassLoader original = Thread.currentThread().getContextClassLoader();
