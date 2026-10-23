@@ -1,4 +1,6 @@
-# JasperReports Server CE – migration baseline
+# OpenJRS Server — JasperReports Server CE migration baseline
+
+> Historical build-recovery notes. See the [project README](README.md#current-status) for current branch status and verified tests. The JasperReports 7.1.0 migration is maintained separately in [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2).
 
 This branch starts with **build recovery**, not a JasperReports 7 runtime upgrade. The current application and its saved reports must remain unchanged until the original build is reproducible.
 

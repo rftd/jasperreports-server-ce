@@ -7,6 +7,7 @@ on:
       - '.github/workflows/legacy-full-build.yml'
       - 'jasperserver/**'
       - 'jasperserver-ui/**'
+      - 'scripts/test-openjrs-branding.py'
       - 'scripts/prepare-legacy-frontend.py'
       - 'scripts/smoke-jasperserver.sh'
       - 'scripts/test-legacy-rest-reports.sh'
@@ -296,6 +297,13 @@ jobs:
             tomcat:9.0-jdk8-temurin
       - name: Check JasperReports Server login endpoint
         run: bash scripts/smoke-jasperserver.sh
+      - name: Install branding browser test dependencies
+        run: python3 -m pip install playwright==1.62.0 greenlet==3.5.5 pyee==13.0.1
+      - name: Check OpenJRS identity, locales, attribution and report viewer
+        env:
+          JRS_SMOKE_USER: jasperadmin
+          JRS_SMOKE_PASSWORD: jasperadmin
+        run: python3 scripts/test-openjrs-branding.py
       - name: REST login and PDF/XLSX report exports
         env:
           JRS_SMOKE_USER: jasperadmin
@@ -319,6 +327,14 @@ jobs:
             ${{ runner.temp }}/tomcat-inspect.json
             ${{ runner.temp }}/jrs-login-smoke.html
             ${{ runner.temp }}/jrs-login-headers.txt
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload branding browser results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openjrs-branding-browser
+          path: ${{ runner.temp }}/openjrs-branding/**
           if-no-files-found: ignore
           retention-days: 7
       - name: Upload backend diagnostic logs

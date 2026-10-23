@@ -26,7 +26,11 @@
 <t:insertTemplate template="/WEB-INF/jsp/templates/aboutBox.jsp">
     <t:putAttribute name="containerClass" value="hidden centered_vert centered_horz"/>
     <t:putAttribute name="bodyContent">
-        <p class="message"><spring:message code="dialog.aboutBox.productVersion"/>: <span class="emphasis"><spring:message code='JS_VERSION'/></span></p>
+        <p class="message openjrs-origin"><spring:message code="openjrs.about.origin"/></p>
+        <p class="message"><spring:message code="openjrs.about.independence"/></p>
+        <p class="message"><a href="https://github.com/rftd/jasperreports-server-ce" target="_blank" rel="noopener noreferrer"><spring:message code="openjrs.links.source"/></a></p>
+        <p class="message"><spring:message code="decorators.main.copyright"/></p>
+        <p class="message"><spring:message code="openjrs.about.upstreamVersion"/>: <span class="emphasis"><spring:message code='JS_VERSION'/></span></p>
         <p class="message"><spring:message code="dialog.aboutBox.build"/>: <span class="emphasis"><spring:message code='OS_BUILD_DATE_STAMP'/>_<spring:message code='OS_BUILD_TIME_STAMP'/></span></p>
     </t:putAttribute>
 </t:insertTemplate>

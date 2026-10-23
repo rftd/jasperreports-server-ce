@@ -33,10 +33,10 @@
 
 <html>
 <head>
-    <title>JasperServer: <decorator:title /></title>
+    <title>OpenJRS Server: <decorator:title /></title>
         <meta http-equiv="Content-Type" content="text/html; charset=${requestScope['com.jaspersoft.ji.characterEncoding']}">
 		<meta http-equiv="X-UA-Compatible" content="IE=8"/>
-		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/runtime/${not empty runtimeHash ? runtimeHash : jsOptimizationProperties.runtimeHash}/themes/default/openjrs-favicon.svg"/>
 
         <decorator:head />
     </head>

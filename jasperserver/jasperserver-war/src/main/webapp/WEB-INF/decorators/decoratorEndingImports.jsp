@@ -18,4 +18,5 @@
   --%>
 
 <%-- this is page header section printed after document specific header content. overrides_custom css should be loaded at the end --%>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/runtime/${not empty runtimeHash ? runtimeHash : jsOptimizationProperties.runtimeHash}/themes/default/openjrs-branding.css" type="text/css" media="screen,print"/>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/<spring:theme code="overrides_custom.css"/>" type="text/css" media="screen"/>
