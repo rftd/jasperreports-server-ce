@@ -22,17 +22,6 @@ public class JSCommonControllerTest {
     private final JSCommonController jsCommonController = new JSCommonController();
 
     @Test
-    public void heartbeatInfo() throws Exception {
-        HttpServletRequest req = mock(HttpServletRequest.class);
-        when(req.getParameter("scrWidth")).thenReturn("ABC");
-
-        HttpServletResponse res = mock(HttpServletResponse.class);
-        jsCommonController.heartbeatInfo(req, res);
-
-        verify(res).sendError(HttpStatus.BAD_REQUEST.value(), "Invalid value for scrWidth: [ABC]");
-    }
-
-    @Test
     public void test_buildRedirectURL_showPassTrue_weakFalse() {
         final String URL = "/bear";
         JSCommonController jcc = new JSCommonController();

@@ -30,7 +30,6 @@
         <constructor-arg index="0" type="java.util.Collection">
             <list>
                 <ref bean="logPurgerTrigger"/>
-                <ref bean="heartbeatTrigger"/>
                 <ref bean="accessEventPurgerTrigger"/>
                 <ref bean="importExportTaskRemoverTrigger"/>
             </list>
@@ -40,7 +39,6 @@
         <constructor-arg index="0" type="java.util.Collection">
             <list>
                 <ref bean="logPurgerJob"/>
-                <ref bean="heartbeatJob"/>
                 <ref bean="accessEventPurgerJob"/>
                 <ref bean="importExportTaskRemoverJob"/>
             </list>

@@ -144,9 +144,6 @@
                 true  = user can use saved data for the login form
                 false = user cannot use saved login form data; user must type it in -->
 		<property name="autoCompleteLoginForm" value="true" />
-        <property name="heartbeat">
-            <ref bean="concreteHeartbeatBean"/>
-        </property>
     </bean>
 
     <!-- Controller for login success -->

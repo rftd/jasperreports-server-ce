@@ -169,6 +169,20 @@ import {Template} from 'prototype';
                     rawReportParameters :
                     Report.inputControlValuesFromRequest;
 
+                // The shipped map has no input-control resources. Preserve only
+                // its three public coordinate parameters when the viewer starts
+                // a REST execution, including city drilldowns from Table Report.
+                if (!Report.hasInputControls && Report.reportUnitURI === '/reports/interactive/MapReport') {
+                    finalReportParameters = _.extend({}, finalReportParameters);
+                    const requestParameters = Report.getAllRequestParameters();
+                    ['latitude', 'longitude', 'zoom'].forEach(function (name) {
+                        const values = requestParameters[name];
+                        if (values && values.length && String(values[0]).trim() !== '') {
+                            finalReportParameters[name] = [String(values[0])];
+                        }
+                    });
+                }
+
                 if (Report.hasInvisibleICValidationErrors) {
                     Report.showInvisibleICValidationMessages();
                     return jQuery.Deferred().resolve();

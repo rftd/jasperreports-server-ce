@@ -130,7 +130,7 @@
 
     <context-param>
         <param-name>sessionPublishedBeans</param-name>
-        <param-value>configurationBean,concreteHeartbeatBean,concreteNavigationActionModelSupport</param-value>
+        <param-value>configurationBean,concreteNavigationActionModelSupport</param-value>
     </context-param>
 
 

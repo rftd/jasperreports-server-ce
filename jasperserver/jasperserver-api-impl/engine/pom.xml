@@ -40,11 +40,6 @@
             <artifactId>jasperreports-jdt</artifactId>
             <version>${jasperreports.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.jaspersoft.jasperserver</groupId>
-            <artifactId>jasperserver-legacy-jrxml</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- JasperReports 7 extracted adapters and export formats from the core library. -->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>

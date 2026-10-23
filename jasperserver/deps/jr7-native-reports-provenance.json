@@ -1,0 +1,101 @@
+{
+  "purpose": "Artifacts required by JR7 native charts and coherent Jackson XML/REST serialization. Historical Buildomatic inventory remains unchanged.",
+  "artifacts": [
+    {
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-annotations",
+      "version": "2.22",
+      "sha1": "15C67F9498D6934CFF9510FC70C5A12E52290457",
+      "sha256": "21ddb598807d3a51a876704eb979d9296e1c6a6f47ab1826ff88c6d6a127a2d0",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.22/jackson-annotations-2.22.jar"
+    },
+    {
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-core",
+      "version": "2.22.3",
+      "sha1": "8695AAB38355C65B60E242EC62EDF13C52916D88",
+      "sha256": "8a501126a385b25841915d839508f8a66e2a0dbc8a6709d055ef3b3e852b094c",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.22.3/jackson-core-2.22.3.jar"
+    },
+    {
+      "groupId": "com.fasterxml.jackson.core",
+      "artifactId": "jackson-databind",
+      "version": "2.22.3",
+      "sha1": "D0D4B2CDB0A1440AC02178FC2FF01DFB05CD06A8",
+      "sha256": "556db5439e206114346043f68d200497dc96a0bca62a360a81784092ebd0e0a9",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.22.3/jackson-databind-2.22.3.jar"
+    },
+    {
+      "groupId": "com.fasterxml.jackson.dataformat",
+      "artifactId": "jackson-dataformat-xml",
+      "version": "2.22.3",
+      "sha1": "A9B438014867A6F65216E0E663FC92B72288B16D",
+      "sha256": "8b99f4a11761246f2d721f02d2865dcca32dd8101082ebfbc3c16133b6c0d3e0",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-xml/2.22.3/jackson-dataformat-xml-2.22.3.jar"
+    },
+    {
+      "groupId": "com.fasterxml.jackson.dataformat",
+      "artifactId": "jackson-dataformat-cbor",
+      "version": "2.22.3",
+      "sha1": "57434BA014A75D95CF326121A0A6EF003B219E55",
+      "sha256": "0ed7167fdc432a409459602fba668eeb9a8d3623353439433970ee916336fc2b",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.22.3/jackson-dataformat-cbor-2.22.3.jar"
+    },
+    {
+      "groupId": "com.fasterxml.jackson.jaxrs",
+      "artifactId": "jackson-jaxrs-base",
+      "version": "2.22.3",
+      "sha1": "4D883CDDF10FE042B996DAC09CF41A73799E0096",
+      "sha256": "d13b5b6255258e9650123042cb33d50c3faf52afe15c0a3f89b43308c2800f40",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.22.3/jackson-jaxrs-base-2.22.3.jar"
+    },
+    {
+      "groupId": "com.fasterxml.jackson.jaxrs",
+      "artifactId": "jackson-jaxrs-json-provider",
+      "version": "2.22.3",
+      "sha1": "4BDB5A175341F0D0715082BA37F9B480371F20AB",
+      "sha256": "96108c66309b42f618c07237f62e8c9a1555871dd7494c4c3eb9f0b41a761aae",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.22.3/jackson-jaxrs-json-provider-2.22.3.jar"
+    },
+    {
+      "groupId": "com.fasterxml.jackson.module",
+      "artifactId": "jackson-module-jaxb-annotations",
+      "version": "2.22.3",
+      "sha1": "5AFD74643ED931D52FA4A634007AEBB61B3C3C05",
+      "sha256": "cdf7277e57e6aeb8414acdc1ca2b5de61e158db9c96d2a55f6f02285b87dda85",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.22.3/jackson-module-jaxb-annotations-2.22.3.jar"
+    },
+    {
+      "groupId": "org.jfree",
+      "artifactId": "jfreechart",
+      "version": "1.5.6",
+      "sha1": "561B4C7CEC7A562ACA8248111460EDA0B4ED24AF",
+      "sha256": "be7ae6310ca005ac98eceb74fa514af88cad098c808845786f762ca08a5b4bb3",
+      "source": "https://repo.maven.apache.org/maven2/org/jfree/jfreechart/1.5.6/jfreechart-1.5.6.jar"
+    },
+    {
+      "groupId": "com.fasterxml.woodstox",
+      "artifactId": "woodstox-core",
+      "version": "7.2.0",
+      "sha1": "EC9C97F566F812E249A7ABA6C76815369AC00864",
+      "sha256": "689f5be95f9bb369d6c0e8db99a99f930b0c48d6a69b46151782b5816c7ea820",
+      "source": "https://repo.maven.apache.org/maven2/com/fasterxml/woodstox/woodstox-core/7.2.0/woodstox-core-7.2.0.jar"
+    },
+    {
+      "groupId": "org.codehaus.woodstox",
+      "artifactId": "stax2-api",
+      "version": "4.3.0",
+      "sha1": "59251773C44122E8D1366F68884E29DD784E141B",
+      "sha256": "7c805f36129ea9fa42b696093b7ae1eb20bb6ccec65c8280d6f33db5609ca5e1",
+      "source": "https://repo.maven.apache.org/maven2/org/codehaus/woodstox/stax2-api/4.3.0/stax2-api-4.3.0.jar"
+    },
+    {
+      "groupId": "jakarta.activation",
+      "artifactId": "jakarta.activation-api",
+      "version": "1.2.2",
+      "sha1": "99F53ADBA383CB1BF7C3862844488574B559621F",
+      "sha256": "a187a939103aef5849a7af84bd7e27be2d120c410af291437375ffe061f4f09d",
+      "source": "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar"
+    }
+  ]
+}
