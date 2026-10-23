@@ -41,7 +41,7 @@
         <!--
         <meta http-equiv="X-UA-Compatible" content="IE=8"/>
         -->
-        <link rel="shortcut icon" href='${pageContext.request.contextPath}/runtime/${not empty runtimeHash ? runtimeHash : jsOptimizationProperties.runtimeHash}/themes/openjrs-favicon.svg' />
+        <link rel="shortcut icon" href='${pageContext.request.contextPath}/runtime/${not empty runtimeHash ? runtimeHash : jsOptimizationProperties.runtimeHash}/themes/default/openjrs-favicon.svg' />
 
         <!--
             <link rel="shortcut icon" href="favicon.ico" />

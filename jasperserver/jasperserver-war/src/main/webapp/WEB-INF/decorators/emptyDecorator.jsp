@@ -36,7 +36,7 @@
     <title>OpenJRS Server: <decorator:title /></title>
         <meta http-equiv="Content-Type" content="text/html; charset=${requestScope['com.jaspersoft.ji.characterEncoding']}">
 		<meta http-equiv="X-UA-Compatible" content="IE=8"/>
-		<link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/runtime/${not empty runtimeHash ? runtimeHash : jsOptimizationProperties.runtimeHash}/themes/openjrs-favicon.svg"/>
+		<link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/runtime/${not empty runtimeHash ? runtimeHash : jsOptimizationProperties.runtimeHash}/themes/default/openjrs-favicon.svg"/>
 
         <decorator:head />
     </head>
