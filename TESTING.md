@@ -34,7 +34,7 @@ accepting HTTP 200 or a file extension alone.
 ## Running locally
 
 Use a disposable local installation with the bundled sample data. The script
-creates a uniquely named folder under `/public`, a report and a temporary user;
+creates a uniquely named folder under `/reports`, a report and a temporary user;
 it changes ACLs only inside that folder and generates a random test password.
 Existing reports, users, global roles, database volumes and encryption keys are
 not modified. The account running the test needs the standard Jasper admin

@@ -141,7 +141,7 @@ def run():
     admin = Client(base, os.environ["JRS_SMOKE_USER"], os.environ["JRS_SMOKE_PASSWORD"])
     anonymous = Client(base)
     token = uuid4().hex
-    folder = "/public/openjrs_runtime_" + token
+    folder = "/reports/openjrs_runtime_" + token
     report, destination = folder + "/Report", folder + "/Output"
     username = "openjrs_rt_" + token[:20]
     credential = secrets.token_urlsafe(30)
@@ -224,7 +224,7 @@ def run():
         created_user = True
         permissions(False)
         anonymous.request("GET", resource(report), expected=(401, 403))
-        reader.request("GET", resource("/public"))  # Credential is valid independently of the private ACL.
+        reader.request("GET", resource("/reports"))  # Credential is valid independently of the private ACL.
         reader.request("GET", resource(report), expected=(403, 404))
         checks.append("anonymous access and private report access denied")
         exports(admin, "/reports/interactive/CustomersReport", "customers", "Alfreds")
