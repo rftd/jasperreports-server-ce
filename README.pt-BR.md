@@ -52,6 +52,7 @@ foram retirados; veja a [mudança de compatibilidade](MIGRATION.md#vendor-heartb
 - [Guia do backend](jasperserver/README.md)
 - [Guia do frontend](jasperserver-ui/ce/README.md)
 - [Plano e limitações da migração](MIGRATION.md)
+- [Testes de regressão e cobertura](TESTING.md)
 
 A presença de ferramentas legadas sem suporte e a aprovação no CI **não equivalem a uma auditoria de segurança**.
 

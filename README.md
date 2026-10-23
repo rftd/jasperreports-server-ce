@@ -56,6 +56,7 @@ The codebase still uses its **original internal directory names, Maven coordinat
 - [Backend build guide](jasperserver/README.md)
 - [Frontend build guide](jasperserver-ui/ce/README.md)
 - [Migration notes and constraints](MIGRATION.md)
+- [Runtime regression tests and coverage](TESTING.md)
 - [GitHub Actions — legacy full build](.github/workflows/legacy-full-build.yml)
 
 The legacy build toolchain contains obsolete or unsupported components. Its successful CI tests are **not a security audit** or a recommendation to deploy it unmodified on the public internet.
