@@ -301,7 +301,7 @@ jobs:
               username="postgres" password="postgres" maxTotal="20"/>
             <Resource name="jdbc/sugarcrm" auth="Container" type="javax.sql.DataSource"
               factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
-              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/jasperserver"
+              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/sugarcrm"
               username="postgres" password="postgres" maxTotal="10"/>
             <Resource name="jdbc/foodmart" auth="Container" type="javax.sql.DataSource"
               factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
