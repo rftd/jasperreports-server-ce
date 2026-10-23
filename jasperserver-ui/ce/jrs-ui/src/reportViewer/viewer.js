@@ -889,7 +889,10 @@ Viewer.publicMethods = {
     loadReport: function({ executionId, params, onReportCompleted }) {
         var self = this;
         var reportConfig = {};
-        $(window).on("beforeunload", _.bind(ReportViewRuntime.deleteReportExecution, ReportViewRuntime));
+        $(window).on("beforeunload", function() {
+            // The browser event is not the optional navigation callback.
+            ReportViewRuntime.deleteReportExecution();
+        });
 
         if (executionId != null) {
             Object.assign(reportConfig, {

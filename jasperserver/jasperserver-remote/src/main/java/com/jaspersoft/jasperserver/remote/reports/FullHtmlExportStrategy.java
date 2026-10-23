@@ -30,7 +30,8 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.export.AbstractHtmlExporter;
 import net.sf.jasperreports.engine.export.HtmlResourceHandler;
-import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+import net.sf.jasperreports.export.SimpleHtmlExporterConfiguration;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 
 import org.springframework.stereotype.Service;
@@ -76,15 +77,25 @@ public class FullHtmlExportStrategy extends AbstractHtmlExportStrategy {
         for (String currentInclude : htmlReportHeaderIncludes) {
             htmlHeader.append(currentInclude.replaceAll("\\{contextPath\\}", contextPath));
         }
-        exporter.setParameter(JRHtmlExporterParameter.HTML_HEADER, htmlHeader.toString());
+        SimpleHtmlExporterConfiguration config = new SimpleHtmlExporterConfiguration();
+        config.setHtmlHeader(htmlHeader.toString());
+        exporter.setConfiguration(config);
 
+
+        return exporter;
+    }
+
+    @Override
+    protected void configureOutputResources(ReportExecution reportExecution, ExportExecution exportExecution,
+            String contextPath, SimpleHtmlExporterOutput output) {
+        JasperReportsContext jasperReportsContext = getJasperReportsContext();
         String resourcesPath = jasperReportsContext.getProperty("net.sf.jasperreports.web.resources.base.path");
         String reportUnitUri = reportExecution.getReportUnitResult().getReportUnitURI();
         ExecutionContext executionContext = ExecutionContextImpl.getRuntimeExecutionContext();
         com.jaspersoft.jasperserver.api.metadata.common.domain.Resource reportUnitResource = repositoryService.getResource(
                 executionContext, reportUnitUri);
 
-        exporter.setParameter(JRHtmlExporterParameter.RESOURCE_HANDLER, new HtmlResourceHandler() {
+        output.setResourceHandler(new HtmlResourceHandler() {
             @Override
             public String getResourcePath(String id) {
                 if (!isUrl(id)) {
@@ -103,9 +114,7 @@ public class FullHtmlExportStrategy extends AbstractHtmlExportStrategy {
                 //NOOP
             }
         });
-        exporter.setFontHandler(new WebHtmlResourceHandler(contextPath + "/reportresource?&font={0}"));
 
-        return exporter;
     }
 
     private boolean isUrl(String id) {

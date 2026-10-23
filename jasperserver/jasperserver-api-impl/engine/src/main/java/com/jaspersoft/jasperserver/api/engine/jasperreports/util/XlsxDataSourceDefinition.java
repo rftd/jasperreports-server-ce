@@ -26,7 +26,7 @@ import com.jaspersoft.jasperserver.api.metadata.jasperreports.domain.CustomDomai
 import com.jaspersoft.jasperserver.api.metadata.jasperreports.domain.CustomReportDataSource;
 import net.sf.jasperreports.data.xlsx.XlsxDataAdapter;
 import net.sf.jasperreports.data.xlsx.XlsxDataAdapterImpl;
-import net.sf.jasperreports.engine.data.JRXlsxDataSource;
+import net.sf.jasperreports.poi.data.JRXlsxDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 
 import java.util.ArrayList;

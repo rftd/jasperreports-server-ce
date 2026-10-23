@@ -77,11 +77,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.jaspersoft.jasperserver</groupId>
-            <artifactId>jrs-mongodb-datasource</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.jaspersoft.jasperserver.core.util</groupId>
             <artifactId>jasperserver-core-util</artifactId>
             <version>${project.version}</version>

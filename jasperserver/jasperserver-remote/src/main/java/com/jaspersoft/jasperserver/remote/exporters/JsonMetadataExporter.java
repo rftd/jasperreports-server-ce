@@ -24,7 +24,6 @@ import java.util.HashMap;
 
 import javax.annotation.Resource;
 
-import net.sf.jasperreports.engine.JRExporter;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -56,12 +55,14 @@ public class JsonMetadataExporter extends AbstractExporter {
     }
 
     @Override
-    public JRExporter createExporter() throws Exception {
-        return new net.sf.jasperreports.engine.export.JsonMetadataExporter(getJasperReportsContext());
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
+        return new net.sf.jasperreports.json.export.JsonMetadataExporter(getJasperReportsContext());
     }
 
     @Override
-    public void configureExporter(JRExporter exporter, HashMap exportParameters) throws Exception {
+    public void configureExporter(net.sf.jasperreports.engine.JRAbstractExporter exporter, HashMap exportParameters,
+            net.sf.jasperreports.export.SimpleReportExportConfiguration config,
+            net.sf.jasperreports.export.ExporterOutput output, java.util.Map<String, Object> results) throws Exception {
     }
 
     @Override

@@ -21,7 +21,7 @@
  
 package example.cdspro;
 
-import net.sf.jasperreports.data.AbstractClasspathAwareDataAdapterService;
+import net.sf.jasperreports.dataadapters.AbstractClasspathAwareDataAdapterService;
 import net.sf.jasperreports.data.jdbc.JdbcDataAdapter;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRClassLoader;

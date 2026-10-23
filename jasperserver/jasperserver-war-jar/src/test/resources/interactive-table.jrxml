@@ -1,0 +1,27 @@
+<jasperReport name="InteractiveTableSmoke" dpi="72" pageWidth="360" pageHeight="300" whenNoDataType="AllSectionsNoDetail" columnWidth="320" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e49bf599-a876-4f25-a9ea-52a8c05a5531">
+	<dataset name="Rows" uuid="a412280c-39fb-42b3-8430-b5e59bec073f">
+		<field name="value" class="java.lang.String"/>
+	</dataset>
+	<title height="140">
+		<element kind="component" uuid="78192e43-c770-4bc6-80c5-fc180d6e8744" x="0" y="0" width="240" height="130">
+			<property name="net.sf.jasperreports.components.table.interactive" value="true"/>
+			<component kind="table">
+				<datasetRun uuid="8160a8a9-ee99-4045-b810-40821fc3ac19" subDataset="Rows">
+					<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource(java.util.Arrays.asList(java.util.Collections.singletonMap("value", "zeta"), java.util.Collections.singletonMap("value", "alpha"), java.util.Collections.singletonMap("value", "beta")))]]></dataSourceExpression>
+				</datasetRun>
+				<column kind="single" uuid="835bf21c-074a-4afd-9031-11bb79b4c0e2" width="240">
+					<columnHeader height="30">
+						<element kind="staticText" uuid="0dbad686-03f7-4c44-ba2d-45295b141934" x="0" y="0" width="240" height="30">
+							<text><![CDATA[Value]]></text>
+						</element>
+					</columnHeader>
+					<detailCell height="25">
+						<element kind="textField" uuid="7455b6bd-54e0-485a-a87f-86b7dbca40ab" x="0" y="0" width="240" height="25">
+							<expression><![CDATA[$F{value}]]></expression>
+						</element>
+					</detailCell>
+				</column>
+			</component>
+		</element>
+	</title>
+</jasperReport>

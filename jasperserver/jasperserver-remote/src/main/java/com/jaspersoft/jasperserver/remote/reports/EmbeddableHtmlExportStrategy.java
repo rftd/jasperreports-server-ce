@@ -26,12 +26,13 @@ import com.jaspersoft.jasperserver.remote.services.*;
 import com.jaspersoft.jasperserver.api.engine.export.HyperlinkProducerFactoryFlowFactory;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.AbstractHtmlExporter;
-import net.sf.jasperreports.engine.export.GenericElementJsonHandler;
-import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
-import net.sf.jasperreports.engine.export.JsonExporter;
+import net.sf.jasperreports.json.export.GenericElementJsonHandler;
+import net.sf.jasperreports.json.export.JsonExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleJsonExporterOutput;
-import net.sf.jasperreports.export.SimpleJsonReportConfiguration;
+import net.sf.jasperreports.json.export.SimpleJsonExporterOutput;
+import net.sf.jasperreports.json.export.SimpleJsonReportConfiguration;
+import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
+import net.sf.jasperreports.export.SimpleHtmlExporterConfiguration;
 import net.sf.jasperreports.web.servlets.JasperPrintAccessor;
 import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 import org.springframework.stereotype.Service;
@@ -82,12 +83,23 @@ public class EmbeddableHtmlExportStrategy extends AbstractHtmlExportStrategy {
     @Override
     protected AbstractHtmlExporter prepareExporter(final ReportExecution reportExecution, ExportExecution exportExecution, String contextPath) {
         final AbstractHtmlExporter exporter = super.prepareExporter(reportExecution, exportExecution, contextPath);
-        exporter.setParameter(JRHtmlExporterParameter.HTML_HEADER, "");
-        exporter.setParameter(JRHtmlExporterParameter.HTML_FOOTER, "");
-        // there is no valid request and response in the async export context.
-        // Let's proxy request to forward required parameters to hyperlink producers
+        SimpleHtmlExporterConfiguration htmlConfig = new SimpleHtmlExporterConfiguration();
+        htmlConfig.setHtmlHeader("");
+        htmlConfig.setHtmlFooter("");
+        exporter.setConfiguration(htmlConfig);
         HttpServletRequest requestProxy = createRequestProxy(reportExecution, contextPath);
-        exporter.setParameter(JRExporterParameter.HYPERLINK_PRODUCER_FACTORY, hyperlinkProducerFactory.getHyperlinkProducerFactory(requestProxy, null));
+        SimpleHtmlReportConfiguration reportConfig = new SimpleHtmlReportConfiguration();
+        ReportOutputPages pageOptions = exportExecution.getOptions().getPages();
+        if (pageOptions != null) {
+            if (pageOptions.getPage() != null) reportConfig.setPageIndex(pageOptions.getPage() - 1);
+            else if (pageOptions.getStartPage() != null && pageOptions.getEndPage() != null) {
+                reportConfig.setStartPageIndex(pageOptions.getStartPage() - 1);
+                reportConfig.setEndPageIndex(pageOptions.getEndPage() - 1);
+            }
+        }
+        reportConfig.setHyperlinkProducerFactory(
+                hyperlinkProducerFactory.getHyperlinkProducerFactory(requestProxy, null));
+        exporter.setConfiguration(reportConfig);
 
         ReportUnitResult reportUnitResult;
         Boolean ignoreCancelledReportExecution = exportExecution.getOptions().getIgnoreCancelledReportExecution();

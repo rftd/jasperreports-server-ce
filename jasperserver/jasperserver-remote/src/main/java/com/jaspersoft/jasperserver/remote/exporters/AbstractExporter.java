@@ -28,11 +28,14 @@ import com.jaspersoft.jasperserver.api.engine.jasperreports.domain.impl.Paginati
 import com.jaspersoft.jasperserver.api.metadata.xml.domain.impl.Argument;
 import com.jaspersoft.jasperserver.remote.ReportExporter;
 import com.jaspersoft.jasperserver.remote.services.ReportOutputPages;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRAbstractExporter;
+import net.sf.jasperreports.export.*;
+import net.sf.jasperreports.engine.export.*;
+import net.sf.jasperreports.engine.export.ooxml.*;
+import net.sf.jasperreports.engine.export.oasis.*;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.SimpleExporterInputItem;
@@ -63,52 +66,79 @@ public abstract class AbstractExporter implements ReportExporter {
     	this.paginatedProperty = paginatedProperty;
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
-    public Map<JRExporterParameter, Object> exportReport(JasperPrint jasperPrint, OutputStream output, EngineService engineService, HashMap exportParameters, ExecutionContext executionContext, String reportUnitURI) throws Exception {
-    	return exportReport(Collections.singletonList(new SimpleExporterInputItem(jasperPrint)), 
-    			output, engineService, exportParameters, executionContext, reportUnitURI);
+    @Override
+    public Map<String, Object> exportReport(JasperPrint jasperPrint, OutputStream output,
+            EngineService engineService, HashMap exportParameters, ExecutionContext executionContext,
+            String reportUnitURI) throws Exception {
+        return exportReport(Collections.singletonList(new SimpleExporterInputItem(jasperPrint)),
+                output, engineService, exportParameters, executionContext, reportUnitURI);
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
-    public Map<JRExporterParameter, Object> exportReport(List<ExporterInputItem> inputItems, OutputStream output, EngineService engineService, HashMap exportParameters, ExecutionContext executionContext, String reportUnitURI) throws Exception {
+    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public Map<String, Object> exportReport(List<ExporterInputItem> inputItems, OutputStream output,
+            EngineService engineService, HashMap exportParameters, ExecutionContext executionContext,
+            String reportUnitURI) throws Exception {
+        JRAbstractExporter exporter = createExporter();
+        SimpleReportExportConfiguration config = createReportConfiguration(exporter);
+        Map<String, Object> results = new HashMap<>();
+        exporter.setExporterInput(new SimpleExporterInput(inputItems));
 
-        final JRExporter exporter = createExporter();
-
-        // Handle generic parameters....
-        exporter.setParameter(JRExporterParameter.INPUT_ITEM_LIST, inputItems);
-        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, output);
-
-        // Be sure the page number is correctly set, so PAGE 1 is PAGE 1...
-        // JasperReports uses a 0 based page system, while we prefer a 1 based page system
         if (exportParameters.get(Argument.RUN_OUTPUT_PAGE) != null) {
-            int pageIndex = Integer.parseInt((String) exportParameters.get(Argument.RUN_OUTPUT_PAGE));
-            pageIndex--; // transform a 1 index page to 0 indexed page...
-            exporter.setParameter(JRExporterParameter.PAGE_INDEX, pageIndex);
-        }else if(exportParameters.get(Argument.RUN_OUTPUT_PAGES) != null){
-            // cast is safe because of known key
-            @SuppressWarnings("unchecked")
+            config.setPageIndex(Integer.parseInt(String.valueOf(
+                    getSingleParameterValue(Argument.RUN_OUTPUT_PAGE, exportParameters))) - 1);
+        } else if (exportParameters.get(Argument.RUN_OUTPUT_PAGES) != null) {
             ReportOutputPages pages = (ReportOutputPages) exportParameters.get(Argument.RUN_OUTPUT_PAGES);
-            if(pages.getPage() != null){
-                exporter.setParameter(JRExporterParameter.PAGE_INDEX, pages.getPage() - 1);
-            } else if(pages.getStartPage() != null && pages.getEndPage() != null) {
-                exporter.setParameter(JRExporterParameter.START_PAGE_INDEX, pages.getStartPage() - 1);
-                exporter.setParameter(JRExporterParameter.END_PAGE_INDEX, pages.getEndPage() - 1);
+            if (pages.getPage() != null) config.setPageIndex(pages.getPage() - 1);
+            else if (pages.getStartPage() != null && pages.getEndPage() != null) {
+                config.setStartPageIndex(pages.getStartPage() - 1);
+                config.setEndPageIndex(pages.getEndPage() - 1);
             }
         }
 
-        // Give the opportunity to each exporter to better configure itself...
-        configureExporter(exporter, exportParameters);
-
+        ExporterOutput exporterOutput;
+        if (exporter instanceof AbstractHtmlExporter) {
+            exporterOutput = new SimpleHtmlExporterOutput(output, "UTF-8");
+        } else if (exporter instanceof JRAbstractCsvExporter || exporter instanceof JRRtfExporter
+                || exporter.getClass().getName().endsWith(".JsonMetadataExporter")) {
+            exporterOutput = new SimpleWriterExporterOutput(output, "UTF-8");
+        } else if (exporter instanceof JRXmlExporter) {
+            exporterOutput = new SimpleXmlExporterOutput(output, "UTF-8");
+        } else {
+            exporterOutput = new SimpleOutputStreamExporterOutput(output);
+        }
+        exporter.setExporterOutput(exporterOutput);
+        configureExporter(exporter, exportParameters, config, exporterOutput, results);
+        exporter.setConfiguration((ReportExportConfiguration) config);
         exporter.exportReport();
-        return exporter.getParameters();
+        return results;
     }
 
-    public abstract JRExporter createExporter() throws Exception;
+    public abstract JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception;
 
-    public void configureExporter(JRExporter exporter, HashMap exportParameters) throws Exception {
-        // do nothing by default
+    protected SimpleReportExportConfiguration createReportConfiguration(JRAbstractExporter exporter) {
+        if (exporter instanceof JRCsvMetadataExporter) return new SimpleCsvMetadataReportConfiguration();
+        if (exporter instanceof JRCsvExporter) return new SimpleCsvReportConfiguration();
+        if (exporter instanceof AbstractHtmlExporter) return new SimpleHtmlReportConfiguration();
+        if (exporter instanceof net.sf.jasperreports.engine.export.ooxml.XlsxMetadataExporter)
+            return new SimpleXlsxMetadataReportConfiguration();
+        if (exporter instanceof JRXlsxExporter) return new SimpleXlsxReportConfiguration();
+        if (exporter instanceof net.sf.jasperreports.poi.export.JRXlsExporter) return new SimpleXlsReportConfiguration();
+        if (exporter instanceof JROdsExporter) return new SimpleOdsReportConfiguration();
+        if (exporter instanceof JROdtExporter) return new SimpleOdtReportConfiguration();
+        if (exporter instanceof JRPptxExporter) return new SimplePptxReportConfiguration();
+        if (exporter instanceof JRDocxExporter) return new SimpleDocxReportConfiguration();
+        if (exporter instanceof JRRtfExporter) return new SimpleRtfReportConfiguration();
+        if (exporter instanceof JRXmlExporter) return new SimpleReportExportConfiguration();
+        if (exporter.getClass().getName().endsWith(".JsonMetadataExporter"))
+            return new net.sf.jasperreports.json.export.SimpleJsonMetadataReportConfiguration();
+        throw new IllegalArgumentException("Unsupported JasperReports 7 exporter: " + exporter.getClass());
+    }
+
+    public void configureExporter(JRAbstractExporter exporter, HashMap exportParameters,
+            SimpleReportExportConfiguration config, ExporterOutput output,
+            Map<String, Object> results) throws Exception {
+        // Specialized exporters configure their format-specific options.
     }
 
     protected Object getSingleParameterValue(String parameterName, Map<String, Object> exportParameters) {

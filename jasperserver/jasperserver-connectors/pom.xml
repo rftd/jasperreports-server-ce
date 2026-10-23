@@ -34,7 +34,6 @@
     <artifactId>jasperserver-connectors</artifactId>
     <name>Jasperserver Connectors</name>
     <modules>
-       <module>mongodb-connector</module>
        <!--  module>cassandra-connector</module -->
     </modules>
 

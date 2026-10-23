@@ -46,3 +46,48 @@ python3 scripts/prepare-legacy-frontend.py --restore
 5. Only then move JasperReports and platform upgrades in separate reviewable changes.
 
 **No build, deployment or functional smoke test has been executed by this initial preflight patch.**
+
+## MongoDB connector removal (JasperReports 7 migration)
+
+The legacy Jaspersoft MongoDB adapter (`com.jaspersoft.connectors.mongodb:js-mongodb-datasource:3.10.2`) is **not included** in this OpenJRS migration. Jaspersoft clarified in [jasperreports#578](https://github.com/Jaspersoft/jasperreports/issues/578) that the MongoDB connector is no longer included with the Community Edition from version 7 onward. The legacy connector is incompatible with the moved JasperReports 7 adapter APIs.
+
+The experimental branch removes the proprietary adapter dependency, its connector module, example classes, Spring bean registrations, and the temporary compatibility shims. **Do not assume that existing MongoDB-backed reports will work after upgrading.** MongoDB JDBC-related source code and configuration are separate from this adapter and remain for independent review; a driver might still be required for that path. The original baseline is preserved on its own branch.
+
+The historical WAR checksum inventory and diagnostic exception must be revisited deliberately after this dependency removal; a changed WAR inventory is not automatically a successful or production-approved build.
+
+## JasperReports 7 interactive web API breaking change
+
+The JasperReports 7.1.0 library removed several types used directly by the 8.2.0 server web UI, including `net.sf.jasperreports.web.WebReportContext`, `net.sf.jasperreports.web.actions.Action` / `AbstractAction` / `MultiAction`, `net.sf.jasperreports.web.commands.CommandStack`, and legacy web-resource handling APIs. These types are not present in the JasperReports 7.1.0 source tree; adding another normal JasperReports module does not restore the old interactive viewer protocol.
+
+The migration therefore requires an explicit plan to port or replace the interactive report context/actions/commands/asset-serving integration, including compatibility tests for drill-down, interactive actions, pagination and viewer rendering. This work must not be bypassed by stubbing out actions or deleting core interactive features. The JSON exporter and Jackson helper were moved to `jasperreports-json` and `net.sf.jasperreports.jackson.util`; their dependency/import corrections are handled separately.
+
+The migration branch now retains the Community viewer compatibility classes and
+registers their action subtypes through JR7's
+`JacksonMappingExtensionsRegistryFactory`. This restores `saveZoom`, search,
+save and undo/redo deserialization. Image/font/default web-resource handlers
+are registered separately. The action resource bundle is recovered from the
+LGPL JasperReports 6.21.5 source archive; existing copyright notices remain intact.
+
+The table/crosstab action implementations, JSON metadata handlers and table
+filter/style contributors are also ported from the LGPL Community source.
+See `jasperserver-war-jar/README-viewer-compatibility.md` for provenance and the
+JR7 API changes, including its concrete crosstab order-model contract.
+
+`ViewerActionMappingsTest` checks the engine mapper and resource registration.
+`scripts/test-legacy-viewer.py` exercises UI authentication, HTML rendering,
+pagination, zoom, highlighted search matches, a real reference hyperlink and
+a Community custom visualization using a controlled AMD script fixture.
+It also sorts and filters an interactive table and validates undo/redo through
+the actual browser controls. `InteractiveTableActionsTest` executes actions
+against the design cache and checks the filled output, resizing validation
+and the JR7 crosstab order-model loading contract.
+The browser test requires Playwright and a sandbox-capable Chrome executable;
+it creates and deletes uniquely named reports in the disposable CI repository.
+It does not establish full coverage of formatting, save, crosstab interactions,
+drill-down or every report/component type. A replacement viewer belongs in a
+separate PR; the current migration preserves this viewer.
+
+The JR7 legacy XML loader and Community visualization port have their own
+scope and limitations documented in `jasperserver-legacy-jrxml/README.md` and
+`jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
+not approve the unresolved production WAR inventory differences.

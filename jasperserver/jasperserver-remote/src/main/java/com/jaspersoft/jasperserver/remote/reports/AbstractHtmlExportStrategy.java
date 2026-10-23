@@ -53,8 +53,7 @@ import com.jaspersoft.jasperserver.remote.services.ReportOutputResource;
 import com.jaspersoft.jasperserver.remote.services.RunReportService;
 import com.jaspersoft.jasperserver.remote.utils.AuditHelper;
 
-import net.sf.jasperreports.engine.JRAbstractExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
+import com.jaspersoft.jasperserver.remote.utils.JasperReportsExceptionKeys;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -62,8 +61,10 @@ import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 import net.sf.jasperreports.engine.export.AbstractHtmlExporter;
 import net.sf.jasperreports.engine.export.HtmlResourceHandler;
-import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.MapHtmlResourceHandler;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.engine.type.ImageTypeEnum;
 import net.sf.jasperreports.engine.util.JRTypeSniffer;
 import net.sf.jasperreports.renderers.util.RendererUtil;
@@ -106,12 +107,11 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
             contextPath = (reportExecutionOptions.getContextPath() != null ? reportExecutionOptions.getContextPath() : "");
         }
         final AbstractHtmlExporter exporter = prepareExporter(reportExecution, exportExecution, contextPath);
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
-        exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, encodingProvider.getCharacterEncoding());
-        // collecting the images into a map
-        Map<String, byte[]> imagesMap = new LinkedHashMap<String, byte[]>();
-        exporter.setParameter(JRHtmlExporterParameter.IMAGES_MAP, imagesMap);
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        SimpleHtmlExporterOutput exporterOutput =
+                new SimpleHtmlExporterOutput(outputStream, encodingProvider.getCharacterEncoding());
+        exporter.setExporterOutput(exporterOutput);
+        Map<String, byte[]> imagesMap = new LinkedHashMap<>();
 
         String attachmentsPrefix = exportExecutionOptions.getAttachmentsPrefix() != null ?
                 exportExecutionOptions.getAttachmentsPrefix() : reportExecutionOptions.getDefaultAttachmentsPrefixTemplate();
@@ -128,8 +128,10 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
                         new WebHtmlResourceHandler(resourcePattern),
                         imagesMap
                 );
-        exporter.setImageHandler(resourceHandler);
-        exporter.setResourceHandler(resourceHandler);
+        exporterOutput.setImageHandler(resourceHandler);
+        exporterOutput.setResourceHandler(resourceHandler);
+        exporterOutput.setFontHandler(new WebHtmlResourceHandler(contextPath + "/reportresource?&font={0}"));
+        configureOutputResources(reportExecution, exportExecution, contextPath, exporterOutput);
         final ReportOutputPages pages = exportExecutionOptions.getPages();
         try {
             exporter.exportReport();
@@ -137,9 +139,7 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
             auditHelper.addExceptionToAllAuditEvents(e);
             throw e;
         } catch (JRRuntimeException e) {
-            if (JRAbstractExporter.EXCEPTION_MESSAGE_KEY_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())
-            		|| JRAbstractExporter.EXCEPTION_MESSAGE_KEY_START_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())
-            		|| JRAbstractExporter.EXCEPTION_MESSAGE_KEY_END_PAGE_INDEX_OUT_OF_RANGE.equals(e.getMessageKey())) {
+            if (JasperReportsExceptionKeys.isPageIndexOutOfRange(e.getMessageKey())) {
                 final String pagesString = pages.toString();
                 throw new ErrorDescriptorException(new ErrorDescriptor().setMessage(
                         "Page number out of range : " + pagesString + " of "
@@ -165,7 +165,7 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
         }
         exportExecution.setOutputResource(new ReportOutputResource().setContentType("text/html")
                 .setData(outputStream.toByteArray()).setPages(pages != null ? pages.toString() : null));
-        putImages(exporter.getParameters(), exportExecution.getAttachments());
+        putImages(imagesMap, exportExecution.getAttachments());
     }
 
     protected AbstractHtmlExporter prepareExporter(ReportExecution reportExecution, ExportExecution exportExecution, final String contextPath) {
@@ -175,14 +175,15 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
         final AbstractHtmlExporter exporter = ExportUtil.getInstance(context).createHtmlExporter();
         final ExportExecutionOptions exportExecutionOptions = exportExecution.getOptions();
         ReportOutputPages pages = exportExecutionOptions.getPages();
-        if(pages != null) {
-            if (pages.getPage() != null) {
-                exporter.setParameter(JRExporterParameter.PAGE_INDEX, pages.getPage() - 1);
-            } else if (pages.getStartPage() != null && pages.getEndPage() != null) {
-                exporter.setParameter(JRExporterParameter.START_PAGE_INDEX, pages.getStartPage() - 1);
-                exporter.setParameter(JRExporterParameter.END_PAGE_INDEX, pages.getEndPage() - 1);
+        SimpleHtmlReportConfiguration config = new SimpleHtmlReportConfiguration();
+        if (pages != null) {
+            if (pages.getPage() != null) config.setPageIndex(pages.getPage() - 1);
+            else if (pages.getStartPage() != null && pages.getEndPage() != null) {
+                config.setStartPageIndex(pages.getStartPage() - 1);
+                config.setEndPageIndex(pages.getEndPage() - 1);
             }
         }
+        exporter.setConfiguration(config);
         // JR requires HttpServletRequest instance to get contextPath from it.
         // Seems it's the only field queried from the request object.
         // We need to do the trick with proxy to send contextPath to JR without having real request object.
@@ -199,8 +200,6 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
                         return result;
                     }
                 });
-        exporter.setParameter(ExportUtil.PARAMETER_HTTP_REQUEST, proxy);
-        exporter.setFontHandler(new WebHtmlResourceHandler(contextPath + "/reportresource?&font={0}"));
 
         ReportUnitResult reportUnitResult;
         Boolean ignoreCancelledReportExecution = exportExecution.getOptions().getIgnoreCancelledReportExecution();
@@ -226,11 +225,9 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
      * @param outputContainer  - output container to fill with images
      * @throws ErrorDescriptorException if any error occurs
      */
-    protected void putImages(Map<JRExporterParameter, Object> exportParameters, Map<String, ReportOutputResource> outputContainer) throws ErrorDescriptorException {
+    protected void putImages(Map<String, byte[]> imagesMap, Map<String, ReportOutputResource> outputContainer) throws ErrorDescriptorException {
         try {
             // cast is safe because of known parameter key
-            @SuppressWarnings("unchecked")
-            Map<String, byte[]> imagesMap = (Map<String, byte[]>) exportParameters.get(JRHtmlExporterParameter.IMAGES_MAP);
             if (imagesMap != null && !imagesMap.isEmpty()) {
                 if (log.isDebugEnabled()) {
                     log.debug("imagesMap : " + Arrays.asList(imagesMap.keySet().toArray()));
@@ -262,6 +259,11 @@ public abstract class AbstractHtmlExportStrategy implements HtmlExportStrategy {
 		}
 		return mimeType;
 	}
+
+    protected void configureOutputResources(ReportExecution reportExecution, ExportExecution exportExecution,
+            String contextPath, SimpleHtmlExporterOutput output) {
+        // Subclasses can configure external HTML resources without altering image attachments.
+    }
 
     protected JasperReportsContext getJasperReportsContext() {
         return this.jasperReportsContext;

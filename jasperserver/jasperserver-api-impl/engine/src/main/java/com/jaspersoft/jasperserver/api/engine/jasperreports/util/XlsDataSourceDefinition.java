@@ -28,7 +28,7 @@ import net.sf.jasperreports.data.xls.XlsDataAdapter;
 import net.sf.jasperreports.data.xls.XlsDataAdapterImpl;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.data.XlsDataSource;
+import net.sf.jasperreports.poi.data.XlsDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 
 import java.util.ArrayList;

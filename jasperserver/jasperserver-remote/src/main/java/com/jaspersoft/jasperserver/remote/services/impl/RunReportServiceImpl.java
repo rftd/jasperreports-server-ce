@@ -1207,7 +1207,7 @@ public class RunReportServiceImpl implements RunReportService, Serializable, Dis
                 }
                 HashMap<String, Object> exportParameters = new HashMap<String, Object>(reportExecution.getRawParameters());
                 if (pages != null) exportParameters.put(Argument.RUN_OUTPUT_PAGES, pages);
-                Map<JRExporterParameter, Object> exporterParams;
+                Map<String, Object> exporterParams;
                 final String reportURI = reportExecution.getReportURI();
                 auditHelper.createAuditEvent(EXPORT.toString());
                 auditHelper.addPropertyToAuditEvent(EXPORT.toString(), "uris", reportURI);

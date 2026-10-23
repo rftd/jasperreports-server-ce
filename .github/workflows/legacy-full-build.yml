@@ -9,8 +9,10 @@ on:
       - 'jasperserver-ui/**'
       - 'scripts/test-openjrs-branding.py'
       - 'scripts/prepare-legacy-frontend.py'
+      - 'scripts/verify-legacy-war-deps.py'
       - 'scripts/smoke-jasperserver.sh'
       - 'scripts/test-legacy-rest-reports.sh'
+      - 'scripts/test-legacy-viewer.py'
   push:
     branches:
       - feature/jasperreports-7-migration
@@ -192,6 +194,13 @@ jobs:
           test -s "$ksp/.jrsksp"
           test -s keystore.init.properties
           echo "CI keystore generated in runner temporary storage."
+      - name: Test JR7 component registration, legacy XML and exports
+        run: |
+          mvn -B -ntp -f jasperserver/pom.xml \
+            -DbuildArtifactVersionName=ci \
+            -Dji-repo-releases=https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts \
+            -Dji-repo-snapshots=https://jaspersoft.jfrog.io/jaspersoft/jr-ce-snapshots \
+            -pl jasperserver-custom-visualization,jasperserver-legacy-jrxml -am test
       - name: Build original Community WAR
         working-directory: jasperserver/buildomatic
         env:
@@ -219,6 +228,11 @@ jobs:
         run: |
           test -s jasperserver/jasperserver-war/target/jasperserver.war
           unzip -t jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
+      - name: Test legacy viewer action and resource registration
+        run: |
+          mvn -B -ntp -f jasperserver/jasperserver-war-jar/pom.xml \
+            -s jasperserver/buildomatic/build_conf/default/maven_settings_community.xml \
+            -DskipTests=false -Dtest=ViewerActionMappingsTest,InteractiveTableActionsTest test
       - name: Upload compiled WAR
         uses: actions/upload-artifact@v4
         with:
@@ -309,12 +323,35 @@ jobs:
           JRS_SMOKE_USER: jasperadmin
           JRS_SMOKE_PASSWORD: jasperadmin
         run: bash scripts/test-legacy-rest-reports.sh
+      - name: Install pinned browser test dependencies
+        run: python3 -m pip install playwright==1.62.0 greenlet==3.5.5 pyee==13.0.1
+      - name: Browser login, viewer controls and hyperlinks
+        env:
+          JRS_SMOKE_USER: jasperadmin
+          JRS_SMOKE_PASSWORD: jasperadmin
+        run: python3 scripts/test-legacy-viewer.py
+      - name: Render Community visualization SVG and PDF in Chrome
+        run: |
+          chrome_path=$(command -v google-chrome)
+          mvn -B -ntp -f jasperserver/pom.xml \
+            -DbuildArtifactVersionName=ci \
+            -Dji-repo-releases=https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts \
+            -Dji-repo-snapshots=https://jaspersoft.jfrog.io/jaspersoft/jr-ce-snapshots \
+            -pl jasperserver-custom-visualization -am \
+            -Dtest=CVBrowserIT -Dopenjrs.chrome.path="$chrome_path" test
       - name: Capture Tomcat diagnostics
         if: always()
         run: |
+          # Docker stdout does not include the servlet-context listener stack
+          # traces: Tomcat JULI writes those to localhost.*.log in its logs dir.
           docker logs jrs-tomcat > "$RUNNER_TEMP/tomcat.log" 2>&1 || true
           docker inspect jrs-tomcat > "$RUNNER_TEMP/tomcat-inspect.json" 2>&1 || true
-          grep -E 'SEVERE|ERROR|Caused by:' "$RUNNER_TEMP/tomcat.log" | tail -10 | cut -c1-400 || true
+          mkdir -p "$RUNNER_TEMP/tomcat-internal-logs"
+          docker cp jrs-tomcat:/usr/local/tomcat/logs/. "$RUNNER_TEMP/tomcat-internal-logs/" 2>/dev/null || true
+          echo "Tomcat container stderr/stdout errors:"
+          grep -E 'SEVERE|ERROR|Caused by:' "$RUNNER_TEMP/tomcat.log" | tail -15 | cut -c1-400 || true
+          echo "Tomcat JULI listener and Spring context errors:"
+          find "$RUNNER_TEMP/tomcat-internal-logs" -type f -name '*.log' -exec grep -HnE             'SEVERE|Caused by:|ClassNotFoundException|NoClassDefFoundError|BeanCreationException|Error starting' {} +             | tail -70 | cut -c1-750 || true
       - name: Upload runtime diagnostic logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -324,9 +361,12 @@ jobs:
             ${{ runner.temp }}/database-init.log
             ${{ runner.temp }}/sample-data.log
             ${{ runner.temp }}/tomcat.log
+            ${{ runner.temp }}/tomcat-internal-logs/**
             ${{ runner.temp }}/tomcat-inspect.json
             ${{ runner.temp }}/jrs-login-smoke.html
             ${{ runner.temp }}/jrs-login-headers.txt
+            ${{ runner.temp }}/viewer-smoke/**
+            jasperserver/jasperserver-custom-visualization/target/cv-browser/**
           if-no-files-found: ignore
           retention-days: 7
       - name: Upload branding browser results

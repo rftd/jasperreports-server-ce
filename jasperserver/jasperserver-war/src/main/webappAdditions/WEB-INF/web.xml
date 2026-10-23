@@ -104,9 +104,15 @@
         <listener-class>com.jaspersoft.jasperserver.war.util.SpringBeanServletContextPlublisher</listener-class>
     </listener>
 
-    <listener>
-        <listener-class>net.sf.jasperreports.phantomjs.PhantomJSServletContextListener</listener-class>
-    </listener>
+    <!--
+      JasperReports 7 removed its legacy PhantomJS process pool and
+      PhantomJSServletContextListener. In 6.20.3 this listener did nothing at
+      startup and only called PhantomJS.disposePhantom() on shutdown.
+      Do not register the unavailable class: Tomcat fails the whole webapp
+      startup with ClassNotFoundException. This does not disable the HTML
+      report viewer; custom visualization rendering remains subject to its
+      separate JasperReports 7 functional compatibility tests.
+    -->
 
     <listener>
         <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>

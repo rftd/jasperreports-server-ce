@@ -21,7 +21,6 @@
 
 package com.jaspersoft.jasperserver.remote.exporters;
 
-import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class RtfExporter extends AbstractExporter {
 	}
 
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
         return new JRRtfExporter(getJasperReportsContext());
     }
 

@@ -32,8 +32,8 @@ import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ParameterContributorContext;
-import net.sf.jasperreports.engine.data.JaxenXmlDataSource;
-import net.sf.jasperreports.engine.data.JsonQLDataSource;
+import net.sf.jasperreports.jaxen.data.JaxenXmlDataSource;
+import net.sf.jasperreports.json.data.JsonQLDataSource;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;

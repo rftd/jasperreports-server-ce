@@ -101,7 +101,7 @@ public class ReportExecutionHyperlinkProducerFactory extends BaseReportExecution
 
 		@Override
 		protected void appendAdditionalParameters(JRPrintHyperlink hyperlink, URLParameters urlParams) {
-			if (hyperlink.getHyperlinkTargetValue() == HyperlinkTargetEnum.SELF) {
+			if (hyperlink.getHyperlinkTarget() == HyperlinkTargetEnum.SELF) {
 				appendSubflowParams(hyperlink, urlParams);
 			}
 			

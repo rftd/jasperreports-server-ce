@@ -64,6 +64,13 @@ public interface EngineService
 	 * This is done in a queryManipulator if you want value queries to be cacheable
 	 */
 	public static final String JS_DATASOURCE_URI = "datasourceURI";
+
+	/** Keys for the JasperReports 7 PDF export input/output map. */
+	public static final String PDF_JASPER_PRINT = "pdf.jasperPrint";
+	public static final String PDF_OUTPUT_STREAM = "pdf.outputStream";
+	public static final String PDF_START_PAGE_INDEX = "pdf.startPageIndex";
+	public static final String PDF_END_PAGE_INDEX = "pdf.endPageIndex";
+	public static final String PDF_OVERRIDE_REPORT_HINTS = "pdf.overrideReportHints";
 	
 	/**
 	 * Executes a report.
@@ -167,10 +174,9 @@ public interface EngineService
 	 * 
      * @param context the caller execution context
 	 * @param reportUnitURI the repository path of the report unit
-	 * @param exportParameters a map of PDF exporter parameter values index by
-	 * <code>net.sf.jasperreports.engine.export.JRPdfExporterParameter</code>
-	 * instances.  The map should include the filled report as parameter and a
-	 * parameter that defines the exporter output. 
+	 * @param exportParameters a map keyed by the PDF_* constants on this interface;
+	 * must contain a filled {@code JasperPrint} and an {@code OutputStream}.
+	 * Optional start/end page indexes preserve page-range exports.
 	 */
 	public void exportToPdf(ExecutionContext context, String reportUnitURI, Map exportParameters);
 

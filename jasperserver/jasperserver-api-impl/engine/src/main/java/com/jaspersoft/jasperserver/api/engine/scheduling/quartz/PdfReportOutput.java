@@ -35,7 +35,7 @@ import com.jaspersoft.jasperserver.api.engine.jasperreports.common.PdfExportPara
 import com.jaspersoft.jasperserver.api.metadata.common.domain.ContentResource;
 import com.jaspersoft.jasperserver.api.metadata.common.domain.DataContainer;
 
-import net.sf.jasperreports.engine.JRExporterParameter;
+
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -59,10 +59,10 @@ public class PdfReportOutput extends AbstractReportOutput
 	protected DataContainer export(ReportJobContext jobContext, JasperPrint jasperPrint,
 			Integer startPageIndex, Integer endPageIndex) {
 		Map params = new HashMap();
-		params.put(JRExporterParameter.JASPER_PRINT, jasperPrint);
+		params.put(EngineService.PDF_JASPER_PRINT, jasperPrint);
 		if (startPageIndex != null) {
-			params.put(JRExporterParameter.START_PAGE_INDEX, startPageIndex);
-			params.put(JRExporterParameter.END_PAGE_INDEX, endPageIndex);
+			params.put(EngineService.PDF_START_PAGE_INDEX, startPageIndex);
+			params.put(EngineService.PDF_END_PAGE_INDEX, endPageIndex);
 		}
 		
 		boolean close = true;
@@ -70,7 +70,7 @@ public class PdfReportOutput extends AbstractReportOutput
 		OutputStream pdfDataOut = pdfData.getOutputStream();
 		
 		try {
-			params.put(JRExporterParameter.OUTPUT_STREAM, pdfDataOut);
+			params.put(EngineService.PDF_OUTPUT_STREAM, pdfDataOut);
 			
 			EngineService engineService = jobContext.getEngineService();
 			engineService.exportToPdf(jobContext.getExecutionContext(), jobContext.getReportUnitURI(), params);

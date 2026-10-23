@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.data.JsonDataSource;
+import net.sf.jasperreports.json.data.JsonDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 
 import java.io.InputStream;

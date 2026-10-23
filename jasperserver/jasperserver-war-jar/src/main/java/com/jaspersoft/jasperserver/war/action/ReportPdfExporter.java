@@ -53,11 +53,11 @@ public class ReportPdfExporter extends AbstractReportExporter
 	public void export(RequestContext context, ExecutionContext executionContext, JasperPrint jasperPrint, OutputStream outputStream) throws JRException
 	{
 		Map baseParameters = new HashMap();
-		baseParameters.put(net.sf.jasperreports.engine.JRExporterParameter.JASPER_PRINT, jasperPrint);
-		baseParameters.put(net.sf.jasperreports.engine.JRExporterParameter.OUTPUT_STREAM, outputStream);
+		baseParameters.put(EngineService.PDF_JASPER_PRINT, jasperPrint);
+		baseParameters.put(EngineService.PDF_OUTPUT_STREAM, outputStream);
 		
 		if (exportParameters.isOverrideReportHints()) {
-			baseParameters.put(net.sf.jasperreports.engine.JRExporterParameter.PARAMETERS_OVERRIDE_REPORT_HINTS, Boolean.TRUE);
+			baseParameters.put(EngineService.PDF_OVERRIDE_REPORT_HINTS, Boolean.TRUE);
 		}
 
 		AttributeMap flowAttrs = context.getFlowScope();

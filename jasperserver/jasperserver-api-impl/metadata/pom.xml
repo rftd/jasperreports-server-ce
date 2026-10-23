@@ -34,6 +34,28 @@
         <version>${buildArtifactVersionName}</version>
     </parent>
     <dependencies>
+        <!-- JasperReports 7 separates OLAP integration, but its transitive
+             Mondrian and olap4j artifacts conflict with the JasperReports
+             Server 8.2 OLAP APIs. Keep the server's original engine and API. -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-olap</artifactId>
+            <version>${jasperreports.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>mondrian</groupId>
+                    <artifactId>mondrian</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.olap4j</groupId>
+                    <artifactId>olap4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>mondrian</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.jaspersoft.jasperserver.api.common.impl</groupId>
             <artifactId>jasperserver-api-common-impl</artifactId>

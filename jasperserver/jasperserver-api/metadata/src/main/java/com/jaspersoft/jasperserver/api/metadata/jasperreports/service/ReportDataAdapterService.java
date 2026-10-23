@@ -28,9 +28,9 @@ import org.apache.commons.logging.LogFactory;
 
 import com.jaspersoft.jasperserver.api.metadata.common.service.RepositoryService;
 
-import net.sf.jasperreports.data.DataAdapter;
-import net.sf.jasperreports.data.DataAdapterService;
-import net.sf.jasperreports.data.DefaultDataAdapterServiceFactory;
+import net.sf.jasperreports.dataadapters.DataAdapter;
+import net.sf.jasperreports.dataadapters.DataAdapterService;
+import net.sf.jasperreports.dataadapters.DefaultDataAdapterServiceFactory;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ParameterContributorContext;

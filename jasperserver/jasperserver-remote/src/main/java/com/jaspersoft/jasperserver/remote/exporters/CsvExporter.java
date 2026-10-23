@@ -21,9 +21,7 @@
 package com.jaspersoft.jasperserver.remote.exporters;
 
 import com.jaspersoft.jasperserver.api.engine.jasperreports.common.CsvExportParametersBean;
-import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.export.JRCsvExporterParameter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -59,14 +57,19 @@ public class CsvExporter extends AbstractExporter {
     }
 
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
         return new JRCsvExporter(getJasperReportsContext());
     }
 
     @Override
-    public void configureExporter(JRExporter exporter, HashMap exportParameters) throws Exception {
+    public void configureExporter(net.sf.jasperreports.engine.JRAbstractExporter exporter, HashMap exportParameters,
+            net.sf.jasperreports.export.SimpleReportExportConfiguration config,
+            net.sf.jasperreports.export.ExporterOutput output, java.util.Map<String, Object> results) throws Exception {
         if (exportParams != null && exportParams.getFieldDelimiter() != null) {
-            exporter.setParameter(JRCsvExporterParameter.FIELD_DELIMITER, exportParams.getFieldDelimiter());
+            net.sf.jasperreports.export.SimpleCsvExporterConfiguration csv =
+                new net.sf.jasperreports.export.SimpleCsvExporterConfiguration();
+            csv.setFieldDelimiter(exportParams.getFieldDelimiter());
+            exporter.setConfiguration((net.sf.jasperreports.export.ExporterConfiguration) csv);
         }
     }
 

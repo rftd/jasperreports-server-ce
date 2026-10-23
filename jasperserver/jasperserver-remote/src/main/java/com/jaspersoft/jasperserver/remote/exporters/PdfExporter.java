@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -68,7 +67,7 @@ public class PdfExporter implements ReportExporter {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Map<JRExporterParameter, Object> exportReport(
+	public Map<String, Object> exportReport(
 			JasperPrint jasperPrint,
 			OutputStream output,
 			EngineService engineService,
@@ -82,7 +81,7 @@ public class PdfExporter implements ReportExporter {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Map<JRExporterParameter, Object> exportReport(
+	public Map<String, Object> exportReport(
 			List<ExporterInputItem> inputItems,
 			OutputStream output,
 			EngineService engineService,
@@ -91,41 +90,31 @@ public class PdfExporter implements ReportExporter {
 			String reportUnitURI
 			) throws Exception
 	{
-		//set the input/output parameters in the map
-		exportParameters.put(JRExporterParameter.INPUT_ITEM_LIST, inputItems);
-		exportParameters.put(JRExporterParameter.OUTPUT_STREAM, output);
+        if (inputItems == null || inputItems.size() != 1) {
+            throw new IllegalArgumentException("PDF export requires a single JasperPrint");
+        }
+        HashMap<String, Object> pdfParameters = new HashMap<>();
+        pdfParameters.put(EngineService.PDF_JASPER_PRINT, inputItems.get(0).getJasperPrint());
+        pdfParameters.put(EngineService.PDF_OUTPUT_STREAM, output);
+        if (exportParams != null && exportParams.isOverrideReportHints())
+            pdfParameters.put(EngineService.PDF_OVERRIDE_REPORT_HINTS, Boolean.TRUE);
+        if (exportParameters.get(Argument.RUN_OUTPUT_PAGE) != null) {
+            int pageIndex = Integer.parseInt(String.valueOf(exportParameters.get(Argument.RUN_OUTPUT_PAGE))) - 1;
+            pdfParameters.put(EngineService.PDF_START_PAGE_INDEX, pageIndex);
+            pdfParameters.put(EngineService.PDF_END_PAGE_INDEX, pageIndex);
+        } else if (exportParameters.get(Argument.RUN_OUTPUT_PAGES) != null) {
+            ReportOutputPages pages = (ReportOutputPages) exportParameters.get(Argument.RUN_OUTPUT_PAGES);
+            if (pages.getPage() != null) {
+                pdfParameters.put(EngineService.PDF_START_PAGE_INDEX, pages.getPage() - 1);
+                pdfParameters.put(EngineService.PDF_END_PAGE_INDEX, pages.getPage() - 1);
+            } else if (pages.getStartPage() != null && pages.getEndPage() != null) {
+                pdfParameters.put(EngineService.PDF_START_PAGE_INDEX, pages.getStartPage() - 1);
+                pdfParameters.put(EngineService.PDF_END_PAGE_INDEX, pages.getEndPage() - 1);
+            }
+        }
+        engineService.exportToPdf(executionContext, reportUnitURI, pdfParameters);
 
-		//use the PDF export params bean
-		if (exportParams != null) {
-//			String printLocaleCode = jasperPrint.getLocaleCode();
-//			Locale printLocale = LocaleHelper.getInstance().getLocale(printLocaleCode);
-		}
-
-                // For this implementation, we have to check most of the parameters by our self, we
-                // cannot relais on the benefit of using the AbstractExporter...
-
-		//Check for a RUN_OUTPUT_PAGE key and transform it in a PAGE_INDEX export parameter
-                if (exportParameters.get(Argument.RUN_OUTPUT_PAGE) != null)
-                {
-                    int pageIndex = Integer.parseInt( (String)exportParameters.get(Argument.RUN_OUTPUT_PAGE));
-                    pageIndex--; // transform a 1 index page to 0 indexed page...
-                    exportParameters.put(JRExporterParameter.PAGE_INDEX, pageIndex );
-                }else if(exportParameters.get(Argument.RUN_OUTPUT_PAGES) != null){
-                    // cast is safe because of known key
-                    @SuppressWarnings("unchecked")
-                    ReportOutputPages pages = (ReportOutputPages) exportParameters.get(Argument.RUN_OUTPUT_PAGES);
-                    if(pages.getPage() != null){
-                        exportParameters.put(JRExporterParameter.PAGE_INDEX, pages.getPage() - 1);
-                    } else if(pages.getStartPage() != null && pages.getEndPage() != null) {
-                        exportParameters.put(JRExporterParameter.START_PAGE_INDEX, pages.getStartPage() - 1);
-                        exportParameters.put(JRExporterParameter.END_PAGE_INDEX, pages.getEndPage() - 1);
-                    }
-                }
-
-                engineService.exportToPdf(executionContext,
-				reportUnitURI, exportParameters);
-
-		return exportParameters;
+		return java.util.Collections.emptyMap();
 
 	}
 

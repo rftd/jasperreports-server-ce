@@ -295,8 +295,8 @@ public abstract class AbstractReportExporter extends MultiAction {
 		export(
 			context, 
 			executionContext, 
-			(JasperPrint)baseParameters.get(net.sf.jasperreports.engine.JRExporterParameter.JASPER_PRINT), 
-			(OutputStream)baseParameters.get(net.sf.jasperreports.engine.JRExporterParameter.OUTPUT_STREAM)
+			(JasperPrint)baseParameters.get(com.jaspersoft.jasperserver.api.engine.common.service.EngineService.PDF_JASPER_PRINT), 
+			(OutputStream)baseParameters.get(com.jaspersoft.jasperserver.api.engine.common.service.EngineService.PDF_OUTPUT_STREAM)
 			);
 	}
 	

@@ -25,7 +25,6 @@ import java.util.HashMap;
 
 import javax.annotation.Resource;
 
-import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.export.PptxReportConfiguration;
@@ -51,21 +50,20 @@ public class PptxExporter extends AbstractExporter {
 	}
     
     @Override
-    public JRExporter createExporter() throws Exception {
+    public net.sf.jasperreports.engine.JRAbstractExporter<?, ?, ?, ?> createExporter() throws Exception {
     	SimpleJasperReportsContext localContext = new SimpleJasperReportsContext(getJasperReportsContext());
         return new JRPptxExporter(localContext);
     }
 
     @Override
-    public void configureExporter(JRExporter exporter, HashMap exportParameters) throws Exception {
-		if(exportParams != null)
-		{
-			if(exportParams.getIgnoreHyperlink() != null) {
-				//this local context trick should be removed when new JR exporter API is adopted in JRS
-				SimpleJasperReportsContext localContext = (SimpleJasperReportsContext)((JRPptxExporter)exporter).getJasperReportsContext();
-				localContext.setProperty(PptxReportConfiguration.PROPERTY_IGNORE_HYPERLINK, exportParams.getIgnoreHyperlink().toString());
-			}
-		}	
+    public void configureExporter(net.sf.jasperreports.engine.JRAbstractExporter exporter, HashMap exportParameters,
+            net.sf.jasperreports.export.SimpleReportExportConfiguration config,
+            net.sf.jasperreports.export.ExporterOutput output,
+            java.util.Map<String, Object> results) throws Exception {
+        if (exportParams != null && exportParams.getIgnoreHyperlink() != null) {
+            ((net.sf.jasperreports.export.SimplePptxReportConfiguration) config)
+                    .setIgnoreHyperlink(exportParams.getIgnoreHyperlink());
+        }
     }
 
     /**

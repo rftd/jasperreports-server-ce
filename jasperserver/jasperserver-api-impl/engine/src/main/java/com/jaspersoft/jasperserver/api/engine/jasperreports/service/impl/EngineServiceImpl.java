@@ -129,7 +129,7 @@ import net.sf.ehcache.pool.impl.DefaultSizeOfEngine;
 import net.sf.jasperreports.data.cache.DataSnapshotException;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.pdf.JRPdfExporter;
 import net.sf.jasperreports.engine.fill.*;
 import net.sf.jasperreports.engine.query.JRQueryExecuter;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -620,9 +620,22 @@ public class EngineServiceImpl implements EngineService, ReportExecuter,
 			OrigContextClassLoader origContext = setContextClassLoader(context, reportUnit, false, 
 					repositoryContextHandle);
 			try {
-				exportParameters.put(JRExporterParameter.URL_HANDLER_FACTORY, RepositoryURLHandlerFactory.getInstance());
 				JRPdfExporter exporter = createPdfExporter(context);
-				exporter.setParameters(exportParameters);
+				exporter.setExporterInput(new net.sf.jasperreports.export.SimpleExporterInput(
+						(JasperPrint) exportParameters.get(EngineService.PDF_JASPER_PRINT)));
+				exporter.setExporterOutput(new net.sf.jasperreports.export.SimpleOutputStreamExporterOutput(
+						(java.io.OutputStream) exportParameters.get(EngineService.PDF_OUTPUT_STREAM)));
+				Integer firstPage = (Integer) exportParameters.get(EngineService.PDF_START_PAGE_INDEX);
+				Integer lastPage = (Integer) exportParameters.get(EngineService.PDF_END_PAGE_INDEX);
+				Boolean overrideHints = (Boolean) exportParameters.get(EngineService.PDF_OVERRIDE_REPORT_HINTS);
+				if (firstPage != null || lastPage != null || overrideHints != null) {
+					net.sf.jasperreports.pdf.SimplePdfReportConfiguration configuration =
+							new net.sf.jasperreports.pdf.SimplePdfReportConfiguration();
+					configuration.setStartPageIndex(firstPage);
+					configuration.setEndPageIndex(lastPage);
+					configuration.setOverrideHints(overrideHints);
+					exporter.setConfiguration(configuration);
+				}
 				exporter.exportReport();
 			} finally {
 				revert(origContext);
