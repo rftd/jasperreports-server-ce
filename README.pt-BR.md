@@ -25,7 +25,7 @@ O OpenJRS Server **ainda não é uma substituição pronta para produção**.
 | Testes funcionais | CI valida autenticação REST, PDF/XLSX, controles do viewer, tabelas interativas, visualizações Community e a interface OpenJRS |
 | Motor atual | **JasperReports Library 7.1.0, experimental**; compatibilidade ampliada e integridade das dependências seguem em revisão |
 
-Esta árvore de desenvolvimento reúne a recuperação da base do [PR #1](https://github.com/rftd/jasperreports-server-ce/pull/1), a identidade OpenJRS do [PR #3](https://github.com/rftd/jasperreports-server-ce/pull/3) e a migração experimental do motor do [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2). A integração não constitui uma versão de produção. A base original com JR 6.20.3 permanece na branch `feature/jasperreports-7-migration`.
+A branch `master` reúne a base recuperada, a identidade OpenJRS, o motor JR 7.1.0, o ambiente Docker local, a remoção do heartbeat e os exemplos Community nativos do JR7 dos PRs #1–#6, já mesclados. Veja o [histórico de integração e a cobertura validada](MERGING.md). A integração não constitui uma versão de produção. A base original com JR 6.20.3 permanece na branch `feature/jasperreports-7-migration`.
 
 ## Manutenção assistida por IA
 
@@ -58,7 +58,7 @@ A presença de ferramentas legadas sem suporte e a aprovação no CI **não equi
 
 O código é derivado de um projeto existente. **Os avisos de copyright, autoria e licença originais devem ser preservados.** Os cabeçalhos de arquivos originais identificam a licença GNU AGPL, versão 3 ou posterior, salvo licenciamento comercial separado. Componentes de terceiros podem ter outras licenças e exigências de redistribuição.
 
-O nome OpenJRS Server **não modifica nem elimina** essas obrigações. Veja [BRANDING.md](BRANDING.md) e a [ordem de integração dos PRs](MERGING.md).
+O nome OpenJRS Server **não modifica nem elimina** essas obrigações. Veja [BRANDING.md](BRANDING.md) e o [histórico de integração e as pendências para lançamento](MERGING.md).
 
 ## Contribuições
 

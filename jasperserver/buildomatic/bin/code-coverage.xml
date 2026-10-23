@@ -437,19 +437,6 @@
                     </sourcefiles>
                 </group>
 
-                <group name="ce:jasperserver-connectors/mongodb-connector">
-                    <classfiles>
-                        <fileset dir="${js-path}/jasperserver-connectors/mongodb-connector">
-                            <include name="target/classes/com/jaspersoft/**/*.class"/>
-                        </fileset>
-                    </classfiles>
-                    <sourcefiles encoding="UTF-8">
-                        <fileset dir="${js-path}/jasperserver-connectors/mongodb-connector">
-                            <include name="src/main/java/com/jaspersoft/**/*.java"/>
-                        </fileset>
-                    </sourcefiles>
-                </group>
-
                 <group name="ce:jasperserver-action-model">
                     <classfiles>
                         <fileset dir="${js-path}/jasperserver-action-model">

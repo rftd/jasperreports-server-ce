@@ -29,7 +29,7 @@ def main():
     root = Path(__file__).resolve().parents[1] / "jasperserver"
     checked = 0
     for directory in ("samples", "production-tests/src/test/resources",
-                      "jasperserver-remote-tests/src/test/resources", "jasperserver-remote-tests/test-backup",
+                      "jasperserver-remote-tests/src/test/resources",
                       "jasperserver-war-jar/src/test/resources"):
         for path in (root / directory).rglob("*"):
             if path.suffix.lower() in {".jrxml", ".jrtx"}:

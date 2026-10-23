@@ -84,10 +84,6 @@
     </listener>
 
     <listener>
-        <listener-class>net.sf.jasperreports.phantomjs.PhantomJSServletContextListener</listener-class>
-    </listener>
-
-    <listener>
         <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
     </listener>
 

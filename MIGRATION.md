@@ -107,58 +107,42 @@ general audit of every possible external connection or third-party extension.
 
 Upstream copyright and license notices remain in place.
 
-> Historical build-recovery notes. See the [project README](README.md#current-status) for current branch status and verified tests. The JasperReports 7.1.0 migration is maintained separately in [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2).
+## Build and dependency integrity
 
-This branch starts with **build recovery**, not a JasperReports 7 runtime upgrade. The current application and its saved reports must remain unchanged until the original build is reproducible.
+The historical JR 6.20.3 baseline and the JR 7.1.0 migration are integrated into
+`master`; see [integration history and release checks](MERGING.md). The current
+build still uses Java 8, Maven/Ant, Node.js 14, Yarn Classic, Tomcat 9 and
+PostgreSQL 14. Use the [Docker guide](docker/local/README.md) for the tested local
+setup and the [backend guide](jasperserver/README.md) for inherited manual tasks.
 
-## Baseline observed in the source
-
-- Server parent: `jasperserver/pom.xml` (24 Maven modules); Java compiler targets 8.
-- JasperReports engine: 6.20.3; Spring 5.3.26; Spring Security 5.7.2; Hibernate 5.6.11.Final.
-- Web UI: `jasperserver-ui/ce`, Lerna 3 / Yarn Classic, with archived Git dependencies.
-- Original build flow requires publishing the web UI overlay into the local Maven repository before `buildomatic/js-ant build-all-ce`.
-- `jasperserver/settings.xml` configures an HTTP Maven mirror, which needs separate verification and remediation.
-
-## Restore historical private frontend dependencies
-
-The UI manifests reference `git@git.jaspersoft.com` (no longer assumed accessible). The source tree also has ten corresponding archived source snapshots in `jasperserver-ui/ce/yarn-offline-mirror`. The bootstrap below validates and extracts those snapshots locally, then temporarily rewrites only the matching `package.json` references to local `file:` paths.
-
-From the **repository root**:
+The frontend still depends on archived source snapshots of former private Git
+packages. From the repository root, the bootstrap verifies and prepares them:
 
 ```bash
 python3 scripts/prepare-legacy-frontend.py --check
 python3 scripts/prepare-legacy-frontend.py --prepare
-cd jasperserver-ui/ce
-yarn install --no-lockfile
-# Once dependencies resolve: yarn run clean && yarn run build
-cd ../..
-python3 scripts/prepare-legacy-frontend.py --restore
 ```
 
-**Important limitations:**
+Build with the pinned Node/Yarn toolchain and publish the UI overlay before the
+backend build, as shown in the Dockerfile and CI workflows. Restore the temporary
+manifest rewrites with `python3 scripts/prepare-legacy-frontend.py --restore`;
+do not commit rewritten manifests or generated dependencies. These archives are
+not a complete offline installation: public npm/Maven dependencies are still
+required. The bootstrap rejects archive links and path traversal and preserves
+original manifests for restoration.
 
-- The archived snapshots cover the historical private Git dependencies only. Other packages still require access to public npm registries or an existing Yarn cache; this is **not a complete offline installation**.
-- Use Python 3.9+ and a legacy-compatible Node/Yarn toolchain (the original UI README identifies Node 14 and Yarn Classic 1.22). This is for build recovery only; do not deploy an unsupported Node version to production.
-- `--no-lockfile` avoids changing the original Yarn lockfile during this diagnostic run. Do not commit generated lockfiles or temporarily rewritten manifests.
-- `--restore` restores byte-for-byte manifest backups; the generated `.legacy-private-deps` directory is ignored by Git.
-- The archive verifier rejects links and path traversal. Review the vendor packages and their licenses before redistribution. The script does not imply that they are security-patched.
-- If the bootstrap fails, stop and record the error; do not proceed to JasperReports 7 or Jakarta EE migration yet.
-
-## Build gates for the next phases
-
-1. Verify the historical frontend install and compile (and publish its `jrs-ui` overlay).
-2. Resolve the legacy Maven artifact repositories and compile all original server modules without changing engine versions.
-3. Provision a disposable PostgreSQL/Tomcat 9 environment and run smoke tests for authentication, repository navigation, PDF/XLSX exports, parameters, schedules, REST endpoints, and security.
-4. Establish tests and a compatibility matrix for JasperReports 6 → 7 report compilation, import/export and persistence.
-5. Only then move JasperReports and platform upgrades in separate reviewable changes.
-
-**No build, deployment or functional smoke test has been executed by this initial preflight patch.**
+Both workflows exercise the combined engine and interface. Diagnostic CI accepts
+only the enumerated dependency coordinates and hashes after the original strict
+Buildomatic inventory reports its expected differences. This does not approve
+the SiteMesh discrepancy or other dependency changes for production. Production
+release review must also cover licensing, legacy dependency security and broader
+functional regression testing.
 
 ## MongoDB connector removal (JasperReports 7 migration)
 
 The legacy Jaspersoft MongoDB adapter (`com.jaspersoft.connectors.mongodb:js-mongodb-datasource:3.10.2`) is **not included** in this OpenJRS migration. Jaspersoft clarified in [jasperreports#578](https://github.com/Jaspersoft/jasperreports/issues/578) that the MongoDB connector is no longer included with the Community Edition from version 7 onward. The legacy connector is incompatible with the moved JasperReports 7 adapter APIs.
 
-The experimental branch removes the proprietary adapter dependency, its connector module, example classes, Spring bean registrations, and the temporary compatibility shims. **Do not assume that existing MongoDB-backed reports will work after upgrading.** MongoDB JDBC-related source code and configuration are separate from this adapter and remain for independent review; a driver might still be required for that path. The original baseline is preserved on its own branch.
+OpenJRS removes the proprietary adapter dependency, its connector module, example classes, Spring bean registrations, and the temporary compatibility shims. **Do not assume that existing MongoDB-backed reports will work after upgrading.** MongoDB JDBC-related source code and configuration are separate from this adapter and remain for independent review; a driver might still be required for that path. The original baseline is preserved on its own branch.
 
 The historical WAR checksum inventory and diagnostic exception must be revisited deliberately after this dependency removal; a changed WAR inventory is not automatically a successful or production-approved build.
 

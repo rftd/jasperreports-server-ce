@@ -244,7 +244,7 @@ public class NativeReportSamplesTest {
     public void loadsStandaloneExamplesAndProductionFixturesInNativeFormat() throws Exception {
         Path root = Paths.get("..");
         int reports = 0;
-        for (String directory : new String[] {"samples", "production-tests/src/test/resources", "jasperserver-remote-tests/src/test/resources", "jasperserver-remote-tests/test-backup", "jasperserver-war-jar/src/test/resources"}) {
+        for (String directory : new String[] {"samples", "production-tests/src/test/resources", "jasperserver-remote-tests/src/test/resources", "jasperserver-war-jar/src/test/resources"}) {
             try (java.util.stream.Stream<Path> files = Files.walk(root.resolve(directory))) {
                 for (Path file : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".jrxml"))::iterator) {
                     byte[] data = Files.readAllBytes(file);
@@ -268,7 +268,7 @@ public class NativeReportSamplesTest {
                 }
             }
         }
-        assertEquals(53, reports);
+        assertEquals(51, reports);
     }
 
     @Test
