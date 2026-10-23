@@ -49,11 +49,6 @@
   "instructionCoveredRatio" : 0.0,
   "branchCoveredRatio" : 0.0
 }, {
-  "moduleName" : "jasperserver-connectors/mongodb-connector",
-  "jrsVersion" : "ce",
-  "instructionCoveredRatio" : 0.0,
-  "branchCoveredRatio" : 0.0
-}, {
   "moduleName" : "jasperserver-core-util",
   "jrsVersion" : "ce",
   "instructionCoveredRatio" : 0.48,

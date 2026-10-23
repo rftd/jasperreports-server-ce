@@ -29,7 +29,7 @@ This is a **work-in-progress modernization fork**, not a certified production-re
 | Functional smoke tests | CI verifies REST authentication, PDF/XLSX exports, viewer controls, interactive tables, Community visualizations and the OpenJRS interface |
 | Current reporting engine | **JasperReports Library 7.1.0, experimental**; broader compatibility and dependency integrity remain under review |
 
-This development tree includes the baseline recovered in [PR #1](https://github.com/rftd/jasperreports-server-ce/pull/1), the OpenJRS identity from [PR #3](https://github.com/rftd/jasperreports-server-ce/pull/3), and the experimental engine migration from [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2). Integration does not constitute a production release. The original JR 6.20.3 baseline remains available on `feature/jasperreports-7-migration`.
+The `master` branch includes the recovered baseline, OpenJRS identity, JR 7.1.0 engine, local Docker environment, vendor heartbeat removal and native JR7 Community reports from merged PRs #1–#6. See [integration history and verified coverage](MERGING.md). Integration does not constitute a production release. The original JR 6.20.3 baseline remains available on `feature/jasperreports-7-migration`.
 
 ### AI-assisted maintenance
 
@@ -65,7 +65,7 @@ OpenJRS Server builds on pre-existing code. **Original copyright and license not
 
 The independent name **OpenJRS Server does not remove or replace any upstream copyright, license, trademark, or attribution obligations**. This README is not a substitute for the licenses associated with individual files or dependencies.
 
-See [BRANDING.md](BRANDING.md) for identity and attribution conventions, and [MERGING.md](MERGING.md) for the PR integration order and outstanding release gates.
+See [BRANDING.md](BRANDING.md) for identity and attribution conventions, and [MERGING.md](MERGING.md) for integration history and outstanding release gates.
 
 ## Contributions and support
 
