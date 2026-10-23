@@ -69,14 +69,14 @@ jobs:
         run: |
           python3 scripts/test-openjrs-branding.py
           python3 scripts/test-legacy-viewer.py
+      - name: Check native JR7 employee samples and drilldown
+        run: python3 scripts/test-native-samples.py
       - name: Check shipped table, OpenStreetMap, drilldown and image exports
         env:
           JRS_MAP_EXPORT: '1'
         run: |
           docker compose cp jasperserver/jasperserver-custom-visualization/src/test/resources/map-test-tile.png openjrs:/usr/local/tomcat/webapps/jasperserver/scripts/openjrs-map-test-tile.png
           python3 scripts/test-sample-map-table.py
-      - name: Check native JR7 employee samples and drilldown
-        run: python3 scripts/test-native-samples.py
       - name: Check sandboxed Chromium in the runtime image
         run: docker compose exec -T openjrs chromium --headless --disable-gpu --dump-dom about:blank
       - name: Export a Community visualization using Chromium inside Tomcat
@@ -89,7 +89,19 @@ jobs:
           docker compose logs --no-color > "$RUNNER_TEMP/docker-runtime.log" 2>&1 || true
           docker compose ps -a > "$RUNNER_TEMP/docker-status.txt" 2>&1 || true
           docker compose cp openjrs:/usr/local/tomcat/webapps/jasperserver/WEB-INF/logs "$RUNNER_TEMP/application-logs" || true
-          rg -n -A20 'ERROR|Caused by:' "$RUNNER_TEMP/application-logs/jasperserver.log" | tail -100 || true
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          log = Path(os.environ['RUNNER_TEMP']) / 'application-logs/jasperserver.log'
+          if log.exists():
+              lines = log.read_text(errors='replace').splitlines()
+              selected = set()
+              for index, line in enumerate(lines):
+                  if 'ERROR' in line or 'Caused by:' in line:
+                      selected.update(range(index, min(index + 21, len(lines))))
+              for index in sorted(selected)[-150:]:
+                  print(str(index + 1) + ': ' + lines[index])
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
