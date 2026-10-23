@@ -1,5 +1,26 @@
 # OpenJRS Server — JasperReports Server CE migration baseline
 
+## Vendor heartbeat removal — BREAKING CHANGE
+
+OpenJRS removes the Jaspersoft heartbeat subsystem: outbound HTTP client,
+system/database/browser collectors, weekly Quartz job, opt-in dialog, and the
+`/heartbeat.html` and `/heartbeatInfo.html` handlers. These handlers now return
+HTTP 404. Extensions that imported the removed `war.common.Heartbeat*` classes
+or injected `concreteHeartbeatBean` must remove that integration.
+
+Legacy `heartbeat.*` and `jrs.config.enable.heartbeat*` settings no longer enable
+collection or transmission. Previously persisted consent/cache files are not
+read. No repository data or encryption keys need to be deleted for this change;
+rebuild and recreate the application container to replace an existing image.
+
+The WAR verification checks the packaged backend and frontend for the removed
+client and wiring. Browser tests check that the dialog/configuration is absent,
+the former handlers return 404, and no heartbeat browser requests occur during
+login and report viewing. This change addresses the vendor heartbeat, not a
+general audit of every possible external connection or third-party extension.
+
+Upstream copyright and license notices remain in place.
+
 > Historical build-recovery notes. See the [project README](README.md#current-status) for current branch status and verified tests. The JasperReports 7.1.0 migration is maintained separately in [PR #2](https://github.com/rftd/jasperreports-server-ce/pull/2).
 
 This branch starts with **build recovery**, not a JasperReports 7 runtime upgrade. The current application and its saved reports must remain unchanged until the original build is reproducible.

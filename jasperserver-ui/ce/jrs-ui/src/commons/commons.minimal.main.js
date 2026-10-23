@@ -20,7 +20,6 @@
  */
 
 import './commons.bare.main';
-import heartbeat from '../components/components.heartbeat';
 import jrsConfigs from 'js-sdk/src/jrs.configs';
 import aboutDialog from '../components/components.about';
 import webHelp from '../components/components.webHelp';
@@ -46,9 +45,6 @@ import stdnavPluginToolbarV2 from '../stdnav/plugins/stdnavPluginToolbarV2';
 import stdnavPluginWorkflowCard from 'js-sdk/src/common/stdnav/plugins/stdnavPluginWorkflowCard';
 import '../config/dateAndTimeSettings';
 
-//Heartbeat
-heartbeat.initialize(jrsConfigs.heartbeatInitOptions);
-heartbeat.start();
 jrsConfigs.initAdditionalUIComponents && aboutDialog.initialize();    //Web help
 //Web help
 var helpLink = $('#helpLink');

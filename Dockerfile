@@ -33,6 +33,7 @@ FROM build-tools AS builder
 WORKDIR /src
 COPY jasperserver jasperserver
 COPY scripts/verify-legacy-war-deps.py scripts/verify-legacy-war-deps.py
+COPY scripts/verify-no-vendor-heartbeat.py scripts/verify-no-vendor-heartbeat.py
 COPY docker/local /opt/openjrs-docker
 COPY --from=frontend /tmp/jrs-ui-overlay.zip /tmp/jrs-ui-overlay.zip
 RUN --mount=type=cache,id=openjrs-maven,target=/root/.m2,sharing=locked \

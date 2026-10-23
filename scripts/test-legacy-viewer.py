@@ -66,10 +66,8 @@ def main():
             page.locator("#submitButton").click()
             page.wait_for_url(lambda url: "login.html" not in str(url), timeout=60000)
             page.wait_for_load_state("networkidle")
-            if page.locator("#heartbeatOptin").is_visible():
-                page.locator("#heartbeatCheck").uncheck()
-                page.locator("#heartbeatOptin button").filter(has_text="OK").click()
-                page.locator("#heartbeatOptin").wait_for(state="hidden")
+            assert page.locator("#heartbeatOptin").count() == 0, "Vendor heartbeat dialog remains"
+            assert page.evaluate("typeof window.__jrsConfigs__.heartbeatInitOptions") == "undefined"
             checks.append("UI login")
             report("/reports/interactive/CustomersReport")
             checks.append("HTML report")

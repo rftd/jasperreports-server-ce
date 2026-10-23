@@ -96,7 +96,6 @@ Hidden iframe for ajax uploads
 <iframe id="ajax-upload-iframe" style="display:none" src="about:blank" ></iframe>
 
 <%--heat beat info--%>
-<jsp:include page="../jsp/modules/heartbeat/heartbeat.jsp"/>
 
 <%-- about dialog --%>
 <jsp:include page="../jsp/modules/about/about.jsp"/>

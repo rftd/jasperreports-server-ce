@@ -4,7 +4,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 from playwright.sync_api import sync_playwright
 
@@ -17,9 +17,12 @@ def main():
     output = Path(os.environ.get("RUNNER_TEMP", "/tmp")) / "openjrs-branding"
     output.mkdir(parents=True, exist_ok=True)
     checks, errors, failed_requests = [], [], []
+    heartbeat_requests = []
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(executable_path=chrome, headless=True, chromium_sandbox=True)
         context = browser.new_context(viewport={"width": 1440, "height": 1000})
+        context.on("request", lambda request: heartbeat_requests.append(request.url)
+                   if "heartbeat" in urlsplit(request.url).path.lower() else None)
         page = context.new_page()
         page.set_default_timeout(30000)
         page.on("pageerror", lambda error: errors.append(error.stack or str(error)))
@@ -65,10 +68,12 @@ def main():
             page.locator("#submitButton").click()
             page.wait_for_url(lambda url: "login.html" not in str(url), timeout=60000)
             page.wait_for_load_state("networkidle")
-            if page.locator("#heartbeatOptin").is_visible():
-                page.locator("#heartbeatCheck").uncheck()
-                page.locator("#heartbeatOptin button").filter(has_text="OK").click()
-                page.locator("#heartbeatOptin").wait_for(state="hidden")
+            assert page.locator("#heartbeatOptin").count() == 0, "Vendor heartbeat dialog remains"
+            assert page.evaluate("typeof window.__jrsConfigs__.heartbeatInitOptions") == "undefined"
+            for endpoint in ("heartbeat.html", "heartbeatInfo.html"):
+                response = context.request.get(base + "/" + endpoint, max_redirects=0)
+                assert response.status == 404, f"Removed {endpoint}: HTTP {response.status}"
+            checks.append("vendor heartbeat dialog, browser configuration and endpoints removed")
             assert page.locator("#logo").inner_text() == "OpenJRS Server"
             assert page.locator("#logo").evaluate("element => getComputedStyle(element).backgroundImage") == "none"
             page.screenshot(path=str(output / "home.png"), full_page=True)
@@ -94,6 +99,7 @@ def main():
             checks.append("report viewer identity")
             assert not errors, errors
             assert not failed_requests, failed_requests
+            assert not heartbeat_requests, heartbeat_requests
         except Exception:
             page.screenshot(path=str(output / "failure.png"), full_page=True)
             raise

@@ -41,6 +41,10 @@ See [MAINTENANCE.md](MAINTENANCE.md) for how contributions and AI-assisted chang
 
 For a local Docker Compose environment, see the [Docker guide](docker/local/README.md).
 
+The Jaspersoft heartbeat has been removed, including vendor data collection,
+scheduled transmission and the opt-in dialog. Its internal handlers and classes
+are removed; see the [compatibility change](MIGRATION.md#vendor-heartbeat-removal--breaking-change).
+
 The codebase still uses its **original internal directory names, Maven coordinates, Java packages, WAR name, and application context path** (for example, `jasperserver/` and `/jasperserver`). These are kept deliberately for compatibility while the public-facing brand is introduced in documentation, login, navigation and the About dialog. **Do not rename internal identifiers merely to change the public-facing name.**
 
 - [Backend build guide](jasperserver/README.md)

@@ -25,8 +25,9 @@ python3 /src/scripts/verify-legacy-war-deps.py \
   --build-exit "$build_status" --build-log /tmp/backend-build.log
 mvn -B -ntp -f /src/jasperserver/jasperserver-war-jar/pom.xml \
   -s build_conf/default/maven_settings_community.xml \
-  -DskipTests=false -Dtest=ViewerActionMappingsTest,InteractiveTableActionsTest test
+  -DskipTests=false -Dtest=JSCommonControllerTest,ViewerActionMappingsTest,InteractiveTableActionsTest test
 unzip -t /src/jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
+python3 /src/scripts/verify-no-vendor-heartbeat.py /src/jasperserver/jasperserver-war/target/jasperserver.war
 mkdir -p /opt/openjrs-webapp
 unzip -q /src/jasperserver/jasperserver-war/target/jasperserver.war -d /opt/openjrs-webapp
 rm -rf "$ks"

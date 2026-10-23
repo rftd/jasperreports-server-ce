@@ -46,7 +46,6 @@
  *   16. Edit Label
  *   17. Export
  *   18. File Chooser
- *   19. Heartbeat
  *   20. Input Controls
  *   21. Loading
  *   22. Login Help
@@ -872,23 +871,6 @@
     margin-right: 0;
     padding-right: 50px;
     width: 100%;
-}
-
-
-/* ----------------- */
-/*  19. Heartbeat    */
-/* ----------------- */
-.heartbeatOptin .message {
-    margin: auto 5px 20px;
-}
-
-.heartbeatOptin > .content > .body {
-    margin-bottom: 10px;
-    padding: 20px 20px 10px;
-}
-
-.heartbeatOptin > .content {
-    max-width: 550px;
 }
 
 

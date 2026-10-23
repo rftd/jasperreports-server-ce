@@ -8,6 +8,11 @@ on:
       - '.dockerignore'
       - '.gitattributes'
       - 'compose.yaml'
+      - 'jasperserver/**'
+      - 'jasperserver-ui/**'
+      - 'scripts/test-openjrs-branding.py'
+      - 'scripts/test-legacy-viewer.py'
+      - 'scripts/verify-no-vendor-heartbeat.py'
       - 'docker/local/**'
       - '.github/workflows/local-docker.yml'
 

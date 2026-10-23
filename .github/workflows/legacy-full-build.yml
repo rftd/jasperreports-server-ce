@@ -10,6 +10,7 @@ on:
       - 'scripts/test-openjrs-branding.py'
       - 'scripts/prepare-legacy-frontend.py'
       - 'scripts/verify-legacy-war-deps.py'
+      - 'scripts/verify-no-vendor-heartbeat.py'
       - 'scripts/smoke-jasperserver.sh'
       - 'scripts/test-legacy-rest-reports.sh'
       - 'scripts/test-legacy-viewer.py'
@@ -228,11 +229,12 @@ jobs:
         run: |
           test -s jasperserver/jasperserver-war/target/jasperserver.war
           unzip -t jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
+          python3 scripts/verify-no-vendor-heartbeat.py jasperserver/jasperserver-war/target/jasperserver.war
       - name: Test legacy viewer action and resource registration
         run: |
           mvn -B -ntp -f jasperserver/jasperserver-war-jar/pom.xml \
             -s jasperserver/buildomatic/build_conf/default/maven_settings_community.xml \
-            -DskipTests=false -Dtest=ViewerActionMappingsTest,InteractiveTableActionsTest test
+            -DskipTests=false -Dtest=JSCommonControllerTest,ViewerActionMappingsTest,InteractiveTableActionsTest test
       - name: Upload compiled WAR
         uses: actions/upload-artifact@v4
         with:

@@ -101,14 +101,6 @@
         dateFormat: "<spring:message code="calendar.date.format" javaScriptEscape="true"/>",
         timestampSeparator: "<spring:message code="calendar.datetime.separator" javaScriptEscape="true"/>"
     };
-    //Heartbeat
-
-    __jrsConfigs__.heartbeatInitOptions = {
-        baseUrl: "${pageContext.request.contextPath}",
-        showDialog: false,
-        sendClientInfo: false
-    };
-
     <c:choose>
         <c:when test="${param['decorate'] == 'no' || param['viewAsDashboardFrame'] == 'true' || param['sessionDecorator'] == 'no' || sessionScope['sessionDecorator'] == 'no'}">
             __jrsConfigs__.initAdditionalUIComponents = false;
@@ -117,31 +109,6 @@
             __jrsConfigs__.initAdditionalUIComponents = true;
         </c:otherwise>
     </c:choose>
-
-    <%
-     com.jaspersoft.jasperserver.war.common.HeartbeatBean heartbeat =
-           (com.jaspersoft.jasperserver.war.common.HeartbeatBean) application.getAttribute("concreteHeartbeatBean");
-    %>
-    <authz:authorize access="hasRole('ROLE_ADMINISTRATOR')">
-    <%
-        if (heartbeat != null && heartbeat.haveToAskForPermissionNow()) {
-    %>
-    __jrsConfigs__.heartbeatInitOptions.showDialog = true;
-    <%
-    }
-    %>
-    </authz:authorize>
-    <authz:authorize access="hasAnyRole('ROLE_USER','ROLE_ADMINISTRATOR')">
-    <%
-        if (heartbeat != null && heartbeat.isMakingCalls()
-                && session != null && session.getAttribute("jsHeartbeatSentClientInfo") == null) {
-            session.setAttribute("jsHeartbeatSentClientInfo", Boolean.TRUE);
-    %>
-    __jrsConfigs__.heartbeatInitOptions.sendClientInfo = true;
-    <%
-        }
-    %>
-    </authz:authorize>
 
     __jrsConfigs__.flowExecutionKey = "${flowExecutionKey}";
 
