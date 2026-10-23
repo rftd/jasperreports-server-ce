@@ -1,46 +1,71 @@
 # OpenJRS Server — JasperReports Server CE migration baseline
 
-## Native JR7 employee samples
+## Native JR7 reports — BREAKING CHANGE
 
-The bundled `/analysis/reports/Employees` and `EmployeeAccounts` definitions now
-use native JasperReports 7.1.0 XML. This fixes the obsolete image `hAlign` attribute
-and text-element line spacing while retaining data queries, styles,
-logo and EmployeeID drilldown. Both are loaded directly by the official Jackson
-loader, without the legacy report adapter. PostgreSQL/MySQL CE catalogs contain
-the native definitions; other samples and user reports retain compatibility support.
+OpenJRS accepts **native JasperReports 7.1.0 JRXML/JRTX only**. The automatic
+JR6 XML conversion module, its dependency and its extension registration have
+been removed. JR6 sources must be migrated before import; JR6 compiled `.jasper`
+files must be regenerated with JR7. Keeping a database volume or rebuilding
+an image does not migrate the reports stored in that database.
 
-**BREAKING CHANGE — PDF accessibility:** these two sample definitions now set
+All seven JRXML definitions in the PostgreSQL/MySQL Community catalogs are native:
+Employees, EmployeeAccounts, FoodmartSalesMondrianReport, CustomersReport,
+OrdersReport (subreport), TableReport and MapReport. Standalone Community examples
+and production/remote-test fixtures have also been rewritten with the official
+JR7 writer. Source copyright/license comments are retained. Historical `*-pro.zip`
+archives are outside the Community bootstrap and this migration.
+
+For user reports, use [Jaspersoft Studio 7 or later](https://github.com/Jaspersoft/jasperreports/blob/7.1.0/changes.txt)
+to migrate source files and style templates, review renamed APIs/component modules,
+recompile with JR7, and validate data sources, subreports, interactions and exports
+before import. There is no JR6 runtime or automatic fallback. The existing web
+viewer and the Community visualization implementation retain their JR7 integration.
+
+The parent aligns Jackson with JR7's declared versions (2.22.3, annotations 2.22)
+and JFreeChart with 1.5.6. Even the official native JR7 pie example fails with
+the former Jackson 2.13.4 polymorphic plot merge. The auxiliary ChartPart book
+example uses a Community pie chart for customer counts by country in place of
+its commercial Highcharts component; title, bookmarks and book navigation remain.
+New JFreeChart no longer needs `jcommon`; Jackson's JAXB provider also removes
+the redundant `jakarta.xml.bind-api` path while `jaxb-api` remains. Twelve new
+artifact hashes, including the resolved Activation API version, were checked
+against Maven Central and recorded in
+[`jr7-native-reports-provenance.json`](jasperserver/deps/jr7-native-reports-provenance.json).
+The diagnostic allowance pins these exact replacements. The original strict
+Buildomatic inventory and the unresolved SiteMesh review remain unchanged.
+
+**BREAKING CHANGE — PDF accessibility:** Employees, EmployeeAccounts and the
+Foodmart MDX example (including its source fixtures) now set
 `net.sf.jasperreports.export.pdf.tagged=false` and export ordinary, untagged PDF.
 JasperReports 7.1.0 Community's default PDF tagger rejects tagged export; the
 official silent factory also produces untagged output. This is not accessible
 tagged PDF or a PDF/UA compliance claim. PDF accessibility is deferred to separate
 work. Existing structural tag properties remain in the JRXML for that work but
-have no effect while tagging is disabled. This changes only these two samples:
+have no effect while tagging is disabled. This changes only these sample definitions:
 there is no global silent tagger or override of users' report settings.
 
 Existing databases preserve their stored reports on image rebuild. From an updated
 checkout with the local server running, `python3 scripts/update-native-samples.py`
 previews the upgrade and `--apply` backs up and updates only known unmodified
-originals. Customized files are refused, versions are checked and volumes are
+originals among all seven catalog JRXML files. Customized files are refused, versions are checked and volumes are
 preserved. See [native sample sources and upgrade instructions](jasperserver/samples/jrxml7/README.md).
 
 ## Table Report and OpenStreetMap example
 
-The shipped legacy Table Report now converts hyperlink parameter expressions
-and deprecated stretch aliases using JR7's corresponding contracts. Its city
+The shipped Table Report stores native JR7 hyperlink parameters and current
+stretch aliases directly in its JRXML. Its city
 drilldown points to `/reports/interactive/MapReport` and retains coordinates.
 
-Basic legacy map components are rendered through the Community visualization
+The native MapReport renders through the Community visualization
 integration using bundled Leaflet 1.9.4 and OpenStreetMap tiles. Google Maps and
 its API key are no longer used for these maps. The shipped Map Report keeps its
 default center and accepts latitude, longitude and numeric zoom parameters;
-missing/blank request parameters use its defaults. Old repository JRXML is
-adapted on load, so existing local volumes need not be reset or reimported.
+missing/blank request parameters use its defaults. An existing database needs
+the explicit sample update described above before the old adapter is removed.
 
-**Compatibility change:** this adapter covers latitude/longitude/zoom maps.
-Advanced Google map features (markers/datasets, routes, custom styles, and map
-attributes) require their own migration. Unsupported content fails explicitly
-instead of being discarded. This does not establish complete JR6 map compatibility.
+**Compatibility change:** MapReport now uses OpenStreetMap/Leaflet directly.
+User reports with Google map components require their own explicit component
+migration; no automatic map conversion remains.
 
 The browser can pan and zoom the map; PDF/XLSX images use sandboxed Chromium,
 configured through `chrome.path` as for other Community visualizations. Export
@@ -165,7 +190,7 @@ It does not establish full coverage of formatting, save, crosstab interactions,
 drill-down or every report/component type. A replacement viewer belongs in a
 separate PR; the current migration preserves this viewer.
 
-The JR7 legacy XML loader and Community visualization port have their own
-scope and limitations documented in `jasperserver-legacy-jrxml/README.md` and
+Native sample sources and the Community visualization port have their own
+scope and limitations documented in `samples/jrxml7/README.md` and
 `jasperserver-custom-visualization/README.md`. Passing the diagnostic CI does
 not approve the unresolved production WAR inventory differences.

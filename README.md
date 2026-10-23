@@ -41,6 +41,11 @@ See [MAINTENANCE.md](MAINTENANCE.md) for how contributions and AI-assisted chang
 
 For a local Docker Compose environment, see the [Docker guide](docker/local/README.md).
 
+**BREAKING CHANGE:** report sources and style templates must use native JasperReports
+7 XML. The automatic JR6 adapter has been removed. All bundled Community catalog
+reports are migrated; existing databases and user reports require explicit migration.
+See [the migration procedure](MIGRATION.md#native-jr7-reports--breaking-change).
+
 The Jaspersoft heartbeat has been removed, including vendor data collection,
 scheduled transmission and the opt-in dialog. Its internal handlers and classes
 are removed; see the [compatibility change](MIGRATION.md#vendor-heartbeat-removal--breaking-change).

@@ -17,6 +17,7 @@ on:
       - 'scripts/update-native-samples.py'
       - 'scripts/test-native-samples.py'
       - 'scripts/verify-no-vendor-heartbeat.py'
+      - 'scripts/verify-native-reports.py'
       - 'docker/local/**'
       - '.github/workflows/local-docker.yml'
 
@@ -46,6 +47,7 @@ jobs:
           bash -n docker/local/*.sh
           python3 -m py_compile docker/local/configure.py
           python3 scripts/sync-jr7-samples.py
+          python3 scripts/verify-native-reports.py
       - name: Build frontend, backend, initializer and runtime images
         run: |
           set -o pipefail

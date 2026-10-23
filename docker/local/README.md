@@ -160,10 +160,11 @@ Suporte a outras arquiteturas, principalmente ARM64, exige validação específi
 O rebuild de uma imagem não implementa migração automática de schema ou de
 relatórios compilados antigos; consulte [MIGRATION.md](../../MIGRATION.md).
 
-Os exemplos Employees/EmployeeAccounts agora possuem JRXML nativo do JasperReports
-7. Para atualizar as cópias originais em um banco local já inicializado, execute
+**BREAKING CHANGE:** o servidor aceita somente JRXML/JRTX nativos do JasperReports
+7; o conversor automático de relatórios JR6 foi removido. Todos os sete JRXML dos
+exemplos Community já foram migrados. Para atualizar as cópias originais em um banco local já inicializado, execute
 `python3 scripts/update-native-samples.py` na raiz do checkout e, após conferir a
 prévia, repita com `--apply`. O procedimento salva backup e recusa sobrescrever
 JRXML personalizado. Consulte [os exemplos nativos](../../jasperserver/samples/jrxml7/README.md).
-**BREAKING CHANGE:** o PDF desses dois exemplos passa a ser comum, sem tags de
+**BREAKING CHANGE:** o PDF de Employees, EmployeeAccounts e Foodmart passa a ser comum, sem tags de
 acessibilidade. O suporte a PDF acessível será tratado separadamente.

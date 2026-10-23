@@ -19,134 +19,97 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TestReportExportImport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
-	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-	<style name="Sans_Bold" isDefault="false" fontName="SansSerif" fontSize="12" isBold="true" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-	<style name="Sans_Italic" isDefault="false" fontName="SansSerif" fontSize="12" isItalic="true" pdfFontName="Helvetica-Oblique" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-	<style name="PageHeader" isDefault="false" style="Sans_Bold" forecolor="#FFFFFF"/>
-	<style name="detail" isDefault="false">
-		<conditionalStyle>
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="TestReportExportImport" dpi="72" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="cde81ab8-57d0-4fa0-979e-311fccdbc171">
+	<style name="Sans_Normal" default="true" fontName="SansSerif" fontSize="12.0" pdfFontName="Helvetica" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<style name="Sans_Bold" fontName="SansSerif" fontSize="12.0" bold="true" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<style name="Sans_Italic" fontName="SansSerif" fontSize="12.0" italic="true" pdfFontName="Helvetica-Oblique" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<style name="PageHeader" style="Sans_Bold" forecolor="#FFFFFF"/>
+	<style name="detail">
+		<conditionalStyle mode="Opaque" backcolor="#E0E0E0">
 			<conditionExpression><![CDATA[new Boolean($V{CityGroup_COUNT}.intValue() % 2 == 0)]]></conditionExpression>
-			<style isDefault="false" style="detail" mode="Opaque" backcolor="#E0E0E0"/>
 		</conditionalStyle>
 	</style>
-    <parameter name="param1" class="java.lang.Integer">
+	<parameter name="param1" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[Integer.valueOf(5)]]></defaultValueExpression>
 	</parameter>
-    <parameter name="param2" class="java.lang.String">
+	<parameter name="param2" class="java.lang.String">
 		<defaultValueExpression><![CDATA["value2"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
-		<![CDATA[SELECT name, phone_office, billing_address_city, billing_address_street, billing_address_country FROM accounts ORDER BY billing_address_country, billing_address_city]]>
-	</queryString>
+	<query language="sql"><![CDATA[
+		SELECT name, phone_office, billing_address_city, billing_address_street, billing_address_country FROM accounts ORDER BY billing_address_country, billing_address_city
+	]]></query>
 	<field name="name" class="java.lang.String"/>
 	<field name="phone_office" class="java.lang.String"/>
 	<field name="billing_address_city" class="java.lang.String"/>
 	<field name="billing_address_street" class="java.lang.String"/>
 	<field name="billing_address_country" class="java.lang.String"/>
-	<variable name="CityyNumber" class="java.lang.Integer" resetType="Group" resetGroup="CityGroup" calculation="System">
+	<variable name="CityyNumber" resetType="Group" calculation="System" resetGroup="CityGroup" class="java.lang.Integer">
 		<initialValueExpression><![CDATA[($V{CityyNumber} != null)?(new Integer($V{CityyNumber}.intValue() + 1)):(new Integer(1))]]></initialValueExpression>
 	</variable>
 	<group name="CityGroup" minHeightToStartNewPage="60">
-		<groupExpression><![CDATA[$F{billing_address_city}]]></groupExpression>
+		<expression><![CDATA[$F{billing_address_city}]]></expression>
 		<groupHeader>
 			<band height="30" splitType="Stretch">
-				<frame>
-					<reportElement mode="Opaque" x="0" y="14" width="515" height="16" backcolor="#C0C0C0"/>
+				<element kind="frame" uuid="4fd1fc0c-c5b7-4268-8401-d08dccd2dc8e" x="0" y="14" width="515" height="16" backcolor="#C0C0C0" mode="Opaque">
 					<box>
 						<bottomPen lineWidth="1.0" lineStyle="Solid"/>
 					</box>
-					<textField isStretchWithOverflow="true">
-						<reportElement style="Sans_Bold" x="0" y="0" width="515" height="16"/>
-						<textElement textAlignment="Left"/>
-						<textFieldExpression class="java.lang.String"><![CDATA["  " + String.valueOf($V{CityyNumber}) + ". " + $F{billing_address_city}+ ", " + $F{billing_address_country}]]></textFieldExpression>
-					</textField>
-				</frame>
+					<element kind="textField" uuid="1096fdf7-a9b7-45d6-884f-411f7181d546" x="0" y="0" width="515" height="16" textAdjust="StretchHeight" hTextAlign="Left" style="Sans_Bold">
+						<expression><![CDATA["  " + String.valueOf($V{CityyNumber}) + ". " + $F{billing_address_city}+ ", " + $F{billing_address_country}]]></expression>
+					</element>
+				</element>
 			</band>
 		</groupHeader>
 	</group>
-	<title>
-		<band height="75" splitType="Stretch">
-			<line>
-				<reportElement x="0" y="26" width="515" height="1" forecolor="#000000"/>
-			</line>
-			<textField isBlankWhenNull="true">
-				<reportElement style="Sans_Normal" x="0" y="35" width="515" height="30"/>
-				<textElement textAlignment="Center" lineSpacing="Single">
-					<font size="22"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Accounts Export 01"]]></textFieldExpression>
-			</textField>
-		</band>
+	<title height="75" splitType="Stretch">
+		<element kind="line" uuid="970b373e-dba9-4079-b72f-413f7466ba97" x="0" y="26" width="515" height="1" forecolor="#000000"/>
+		<element kind="textField" uuid="a85abf4d-d90e-4662-a52f-aa0ce3df34cc" x="0" y="35" width="515" height="30" fontSize="22.0" blankWhenNull="true" hTextAlign="Center" style="Sans_Normal">
+			<paragraph lineSpacing="Single"/>
+			<expression><![CDATA["Accounts Export 01"]]></expression>
+		</element>
 	</title>
-	<pageHeader>
-		<band height="20" splitType="Stretch">
-			<frame>
-				<reportElement mode="Opaque" x="0" y="4" width="515" height="16" backcolor="#333333"/>
-				<staticText>
-					<reportElement style="PageHeader" x="30" y="0" width="240" height="16"/>
-					<textElement/>
-					<text><![CDATA[Name]]></text>
-				</staticText>
-				<staticText>
-					<reportElement style="PageHeader" x="280" y="0" width="80" height="16"/>
-					<textElement/>
-					<text><![CDATA[Phone]]></text>
-				</staticText>
-				<staticText>
-					<reportElement style="PageHeader" x="370" y="0" width="145" height="16"/>
-					<textElement/>
-					<text><![CDATA[Address]]></text>
-				</staticText>
-			</frame>
-		</band>
+	<pageHeader height="20" splitType="Stretch">
+		<element kind="frame" uuid="8ca43e05-9d6b-476d-9e82-88041b8cc051" x="0" y="4" width="515" height="16" backcolor="#333333" mode="Opaque">
+			<element kind="staticText" uuid="2ad04efd-fc1c-4438-84a2-3cf46c174c70" x="30" y="0" width="240" height="16" style="PageHeader">
+				<text><![CDATA[Name]]></text>
+			</element>
+			<element kind="staticText" uuid="9052a574-9d6d-4444-9721-209b0eced630" x="280" y="0" width="80" height="16" style="PageHeader">
+				<text><![CDATA[Phone]]></text>
+			</element>
+			<element kind="staticText" uuid="00a110dc-70d6-46fe-980f-ddc99bed37bc" x="370" y="0" width="145" height="16" style="PageHeader">
+				<text><![CDATA[Address]]></text>
+			</element>
+		</element>
 	</pageHeader>
 	<detail>
 		<band height="20" splitType="Prevent">
-			<frame>
-				<reportElement style="detail" x="0" y="0" width="515" height="20"/>
-				<box>
+			<element kind="frame" uuid="896a6c98-26d6-4b1b-b77c-0fe2bdd1baa2" x="0" y="0" width="515" height="20" style="detail">
+				<box style="detail">
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#808080"/>
 				</box>
-				<textField isStretchWithOverflow="true">
-					<reportElement x="0" y="4" width="20" height="16"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$V{CityGroup_COUNT} + "."]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement x="30" y="4" width="240" height="16"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement x="280" y="4" width="80" height="16"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{phone_office}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement x="370" y="4" width="145" height="16"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{billing_address_street}]]></textFieldExpression>
-				</textField>
-			</frame>
+				<element kind="textField" uuid="ab88e50e-eeb7-4b4f-a12e-fb8638323e51" x="0" y="4" width="20" height="16" textAdjust="StretchHeight" hTextAlign="Right">
+					<expression><![CDATA[$V{CityGroup_COUNT} + "."]]></expression>
+				</element>
+				<element kind="textField" uuid="89dff9c1-7ace-4fbf-b218-92b019df6bb8" x="30" y="4" width="240" height="16" textAdjust="StretchHeight">
+					<expression><![CDATA[$F{name}]]></expression>
+				</element>
+				<element kind="textField" uuid="89fdef46-f549-4a12-8c0f-d20743e92e35" x="280" y="4" width="80" height="16" textAdjust="StretchHeight">
+					<expression><![CDATA[$F{phone_office}]]></expression>
+				</element>
+				<element kind="textField" uuid="0ef05536-94f2-41ca-bee0-253a07002818" x="370" y="4" width="145" height="16" textAdjust="StretchHeight">
+					<expression><![CDATA[$F{billing_address_street}]]></expression>
+				</element>
+			</element>
 		</band>
 	</detail>
-	<pageFooter>
-		<band height="40" splitType="Stretch">
-			<line>
-				<reportElement x="0" y="10" width="515" height="1"/>
-			</line>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="200" y="20" width="80" height="16"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" evaluationTime="Report">
-				<reportElement x="280" y="20" width="75" height="16"/>
-				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
-			</textField>
-		</band>
+	<pageFooter height="40" splitType="Stretch">
+		<element kind="line" uuid="21d5a76a-8e6a-45b5-92c3-4439b4d34daf" x="0" y="10" width="515" height="1"/>
+		<element kind="textField" uuid="c9b1bede-728b-46cc-a8f9-490dbb9edfef" x="200" y="20" width="80" height="16" textAdjust="StretchHeight" hTextAlign="Right">
+			<expression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></expression>
+		</element>
+		<element kind="textField" uuid="b29d6543-9e73-4953-9f16-7b408f056b53" x="280" y="20" width="75" height="16" textAdjust="StretchHeight" evaluationTime="Report" hTextAlign="Left">
+			<expression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></expression>
+		</element>
 	</pageFooter>
 </jasperReport>

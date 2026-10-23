@@ -1,33 +1,30 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 OpenJRS contributors.
-package org.openjrs.reports.compat;
+package org.openjrs.reports;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.HtmlExporter;
-import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
-import net.sf.jasperreports.export.*;
+import net.sf.jasperreports.engine.xml.JacksonReportLoader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class LegacyReportLoaderTest {
+/** Native loading and real compilation/fill contracts; no JR6 adapter on the test classpath. */
+public class NativeReportSamplesTest {
     @Test
-    public void loadsNativeEmployeeSamplesWithoutTheLegacyAdapter() throws Exception {
+    public void loadsNativeEmployeeSamples() throws Exception {
         for (String name : new String[] {"Employees", "EmployeeAccounts"}) {
             byte[] xml = Files.readAllBytes(Paths.get("..", "samples", "jrxml7", "analysis", name + ".jrxml"));
             JasperReportsContext context = DefaultJasperReportsContext.getInstance();
-            assertFalse("Native samples must not need the legacy loader",
-                    new LegacyReportLoader().loadReport(context, xml).isPresent());
             JasperDesign design = net.sf.jasperreports.engine.xml.JacksonReportLoader.instance()
                     .loadReport(context, xml).get();
             assertEquals(name, design.getName());
@@ -69,49 +66,8 @@ public class LegacyReportLoaderTest {
         }
     }
 
-    private static final String OLD = "<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" "
-            + "name=\"legacy\" pageWidth=\"300\" pageHeight=\"200\" columnWidth=\"260\" leftMargin=\"20\" rightMargin=\"20\" topMargin=\"20\" bottomMargin=\"20\">"
-            + "<style name=\"default\" isDefault=\"true\" fontName=\"SansSerif\" fontSize=\"10\" isBold=\"true\"/>"
-            + "<queryString>select preserved_query</queryString>"
-            + "<field name=\"value\" class=\"java.lang.String\"><fieldDescription>preserved_description</fieldDescription></field>"
-            + "<detail><band height=\"40\"><textField isBlankWhenNull=\"true\" hyperlinkType=\"Reference\">"
-            + "<reportElement x=\"0\" y=\"0\" width=\"240\" height=\"20\" isRemoveLineWhenBlank=\"true\"/>"
-            + "<textElement textAlignment=\"Center\"><font size=\"12\" isItalic=\"true\"/></textElement>"
-            + "<textFieldExpression class=\"java.lang.String\"><![CDATA[$F{value}]]></textFieldExpression>"
-            + "<hyperlinkReferenceExpression><![CDATA[\"https://example.com/report\"]]></hyperlinkReferenceExpression>"
-            + "</textField></band></detail></jasperReport>";
-
     @Test
-    public void preservesDesignAndExportsLegacyReport() throws Exception {
-        JasperDesign design = load(OLD);
-        assertEquals("select preserved_query", design.getQuery().getText());
-        assertEquals("preserved_description", design.getFields()[0].getDescription());
-        JRTextField text = (JRTextField) design.getDetailSection().getBands()[0].getElements()[0];
-        assertEquals("$F{value}", text.getExpression().getText());
-        assertEquals(HorizontalTextAlignEnum.CENTER, text.getHorizontalTextAlign());
-        assertEquals(Float.valueOf(12), text.getOwnFontSize());
-        assertTrue(text.isItalic()); assertTrue(text.isBold()); assertTrue(text.isBlankWhenNull());
-        assertTrue(text.isRemoveLineWhenBlank());
-        assertEquals("\"https://example.com/report\"", text.getHyperlinkReferenceExpression().getText());
-        JRDataSource source = new net.sf.jasperreports.engine.data.JRMapCollectionDataSource(
-                java.util.Collections.<java.util.Map<String,?>>singletonList(java.util.Collections.singletonMap("value", "Legacy content")));
-        JasperPrint print = JasperFillManager.fillReport(JasperCompileManager.compileReport(design),
-                new HashMap<String,Object>(), source);
-        StringBuilder html = new StringBuilder();
-        HtmlExporter exporter = new HtmlExporter();
-        exporter.setExporterInput(new SimpleExporterInput(print));
-        exporter.setExporterOutput(new SimpleHtmlExporterOutput(html)); exporter.exportReport();
-        assertTrue(html.toString().contains("Legacy content"));
-        assertTrue(html.toString().contains("https://example.com/report"));
-        StringBuilder csv = new StringBuilder();
-        JRCsvExporter csvExporter = new JRCsvExporter();
-        csvExporter.setExporterInput(new SimpleExporterInput(print));
-        csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csv)); csvExporter.exportReport();
-        assertTrue(csv.toString().contains("Legacy content"));
-    }
-
-    @Test
-    public void loadsActualCustomersReportAndSubreportsWithoutChangingCatalog() throws Exception {
+    public void loadsNativeCustomersReportAndSubreports() throws Exception {
         int loaded = 0;
         try (ZipFile zip = new ZipFile(Paths.get("..", "buildomatic", "install_resources", "export", "js-catalog-postgresql-ce.zip").toFile())) {
             java.util.Enumeration<? extends ZipEntry> entries = zip.entries();
@@ -204,38 +160,6 @@ public class LegacyReportLoaderTest {
     }
 
     @Test
-    public void preservesLegacyDynamicVisualizationItemProperty() throws Exception {
-        String xml = "<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" name=\"dynamicCV\">"
-                + "<title><band height=\"100\"><componentElement><reportElement x=\"0\" y=\"0\" width=\"100\" height=\"100\"/>"
-                + "<c:customvisualization xmlns:c=\"http://www.jaspersoft.com/cvcomponent\">"
-                + "<c:itemProperty name=\"module\" value=\"test\"/>"
-                + "<c:itemProperty name=\"latitude\"><c:valueExpression><![CDATA[42.21f]]></c:valueExpression></c:itemProperty>"
-                + "</c:customvisualization></componentElement></band></title></jasperReport>";
-        net.sf.jasperreports.customvisualization.CVComponent cv =
-                (net.sf.jasperreports.customvisualization.CVComponent) ((JRComponentElement) load(xml).getTitle().getElements()[0]).getComponent();
-        assertEquals("42.21f", cv.getItemProperties().get(1).getValueExpression().getText());
-    }
-
-    @Test(expected = JRException.class)
-    public void rejectsUnsupportedMapContentInsteadOfDroppingIt() throws Exception {
-        String xml = "<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" name=\"advancedMap\">"
-                + "<title><band height=\"100\"><componentElement><reportElement x=\"0\" y=\"0\" width=\"100\" height=\"100\"/>"
-                + "<c:map xmlns:c=\"http://jasperreports.sourceforge.net/jasperreports/components\">"
-                + "<c:markerData/></c:map></componentElement></band></title></jasperReport>";
-        load(xml);
-    }
-
-    @Test
-    public void preservesDeprecatedStretchAliases() throws Exception {
-        for (String[] mapping : new String[][] {{"RelativeToBandHeight", "ContainerHeight"},
-                {"RelativeToTallestObject", "ElementGroupHeight"}}) {
-            JasperDesign design = load(OLD.replace("isRemoveLineWhenBlank=\"true\"",
-                    "stretchType=\"" + mapping[0] + "\" isRemoveLineWhenBlank=\"true\""));
-            assertEquals(mapping[1], design.getDetailSection().getBands()[0].getElements()[0].getStretchType().getName());
-        }
-    }
-
-    @Test
     public void compilesWithWebappLibrariesOutsideTheJvmClasspath() throws Exception {
         String classpath = System.getProperty("java.class.path");
         ClassLoader original = Thread.currentThread().getContextClassLoader();
@@ -247,11 +171,11 @@ public class LegacyReportLoaderTest {
             System.setProperty("java.class.path", "");
             Class<?> loader = webapp.loadClass("net.sf.jasperreports.engine.xml.JRXmlLoader");
             Object design = loader.getMethod("load", InputStream.class)
-                    .invoke(null, new ByteArrayInputStream(OLD.getBytes(StandardCharsets.UTF_8)));
+                    .invoke(null, new ByteArrayInputStream(Files.readAllBytes(Paths.get("..", "samples", "jrxml7", "interactive", "CustomersReport.jrxml"))));
             Class<?> compiler = webapp.loadClass("net.sf.jasperreports.engine.JasperCompileManager");
             Object report = compiler.getMethod("compileReport", webapp.loadClass("net.sf.jasperreports.engine.design.JasperDesign"))
                     .invoke(null, design);
-            assertEquals("legacy", report.getClass().getMethod("getName").invoke(report));
+            assertEquals("CustomersReport", report.getClass().getMethod("getName").invoke(report));
         } finally {
             System.setProperty("java.class.path", classpath);
             Thread.currentThread().setContextClassLoader(original);
@@ -267,9 +191,9 @@ public class LegacyReportLoaderTest {
         SimpleJasperReportsContext context = new SimpleJasperReportsContext();
         String key = "net.sf.jasperreports.xpath.executer.factory";
         context.setProperty(key, server.getProperty(key));
-        String xml = OLD.replace("<queryString>select preserved_query</queryString>",
-                "<queryString language=\"xPath\">/rows/row</queryString>")
-                .replace("preserved_description", "value");
+        String xml = "<jasperReport name=\"xpathNative\" pageWidth=\"300\" pageHeight=\"200\" columnWidth=\"260\" leftMargin=\"20\" rightMargin=\"20\" topMargin=\"20\" bottomMargin=\"20\">"
+                + "<query language=\"xPath\">/rows/row</query><field name=\"value\" class=\"java.lang.String\"><description>value</description></field>"
+                + "<detail><band height=\"20\"><element kind=\"textField\" x=\"0\" y=\"0\" width=\"240\" height=\"20\"><expression>$F{value}</expression></element></band></detail></jasperReport>";
         JasperDesign design = JRXmlLoader.load(context, new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         HashMap<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("XML_DATA_DOCUMENT", net.sf.jasperreports.engine.util.JRXmlUtils.parse(
@@ -279,26 +203,114 @@ public class LegacyReportLoaderTest {
         assertEquals("XPath value", ((JRPrintText) print.getPages().get(0).getElements().get(0)).getFullText());
     }
 
-    @Test(expected = JRException.class)
-    public void rejectsUnsupportedContentInsteadOfDroppingIt() throws Exception {
-        load(OLD.replace("<detail>", "<inventedElement/><detail>"));
+    @Test
+    public void compilesEveryCommunityCatalogDefinitionWithOnlyTheNativeLoader() throws Exception {
+        for (String catalog : new String[] {"postgresql", "mysql"}) {
+            int reports = 0;
+            try (ZipFile zip = new ZipFile(Paths.get("..", "buildomatic", "install_resources", "export",
+                    "js-catalog-" + catalog + "-ce.zip").toFile())) {
+                java.util.Enumeration<? extends ZipEntry> entries = zip.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    if (entry.isDirectory() || !entry.getName().endsWith(".data")) continue;
+                    byte[] data = read(zip.getInputStream(entry));
+                    if (!new String(data, StandardCharsets.UTF_8).contains("<jasperReport")) continue;
+                    JasperDesign design = JacksonReportLoader.instance().loadReport(
+                            DefaultJasperReportsContext.getInstance(), data).get();
+                    assertNotNull(entry.getName(), JasperCompileManager.compileReport(design));
+                    reports++;
+                }
+            }
+            assertEquals(catalog, 7, reports);
+        }
     }
 
     @Test
-    public void refusesExternalEntitiesAndDtds() throws Exception {
-        byte[] input = ("<!DOCTYPE jasperReport [<!ENTITY xxe SYSTEM 'file:///does-not-exist-openjrs'>]>" + OLD)
-                .getBytes(StandardCharsets.UTF_8);
-        assertFalse(new LegacyReportLoader().loadReport(DefaultJasperReportsContext.getInstance(), input).isPresent());
+    public void rejectsJr6SyntaxInsteadOfConvertingIt() throws Exception {
+        String old = "<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" name=\"old\"><queryString>SELECT 1</queryString></jasperReport>";
+        try {
+            JRXmlLoader.load(new ByteArrayInputStream(old.getBytes(StandardCharsets.UTF_8)));
+            fail("JR6 input must require explicit migration");
+        } catch (JRException expected) {
+            assertNotNull(expected.getMessage());
+        }
+        for (net.sf.jasperreports.engine.xml.ReportLoader loader : DefaultJasperReportsContext.getInstance()
+                .getExtensions(net.sf.jasperreports.engine.xml.ReportLoader.class)) {
+            assertFalse(loader.getClass().getName().contains("LegacyReportLoader"));
+        }
     }
 
     @Test
-    public void delegatesNativeVersionSevenXml() throws Exception {
-        String nativeXml = "<jasperReport name=\"native\"><detail><band height=\"20\"><element kind=\"staticText\" x=\"0\" y=\"0\" width=\"100\" height=\"20\"><text>Native</text></element></band></detail></jasperReport>";
-        assertFalse(new LegacyReportLoader().loadReport(DefaultJasperReportsContext.getInstance(), nativeXml.getBytes(StandardCharsets.UTF_8)).isPresent());
-        assertEquals("native", load(nativeXml).getName());
+    public void loadsStandaloneExamplesAndProductionFixturesInNativeFormat() throws Exception {
+        Path root = Paths.get("..");
+        int reports = 0;
+        for (String directory : new String[] {"samples", "production-tests/src/test/resources", "jasperserver-remote-tests/src/test/resources", "jasperserver-remote-tests/test-backup", "jasperserver-war-jar/src/test/resources"}) {
+            try (java.util.stream.Stream<Path> files = Files.walk(root.resolve(directory))) {
+                for (Path file : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".jrxml"))::iterator) {
+                    byte[] data = Files.readAllBytes(file);
+                    String xml = new String(data, StandardCharsets.UTF_8);
+                    assertFalse(file.toString(), xml.contains("<queryString") || xml.contains("<reportElement"));
+                    // These two extension examples require separately installing their
+                    // real query-executer plugins; no substitute executor is used here.
+                    if (file.getFileName().toString().equals("hqlTest.jrxml")
+                            || file.getFileName().toString().equals("webscraperQEtest.jrxml")) {
+                        try {
+                            JacksonReportLoader.instance().loadReport(DefaultJasperReportsContext.getInstance(), data);
+                            fail("Missing optional query plugin should be reported");
+                        } catch (JRRuntimeException expected) {
+                            assertTrue(expected.getMessage().contains("No query executer factory"));
+                        }
+                    } else {
+                        assertTrue(file.toString(), JacksonReportLoader.instance().loadReport(
+                                DefaultJasperReportsContext.getInstance(), data).isPresent());
+                    }
+                    reports++;
+                }
+            }
+        }
+        assertEquals(53, reports);
     }
 
-    private JasperDesign load(String xml) throws JRException {
-        return JRXmlLoader.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+    @Test
+    public void compilesNativeChartsCrosstabsAndBookParts() throws Exception {
+        for (String name : new String[] {"BookReport", "ChartPart", "CrosstabPart", "TOCPart", "TablePart", "StandardChartsReport", "StandardChartsAegeanReport", "StandardChartsEyeCandyReport"}) {
+            JasperDesign design = JRXmlLoader.load(Paths.get("..", "production-tests", "src", "test", "resources", "reports", "jasper", name + ".jrxml").toFile());
+            assertNotNull(name, JasperCompileManager.compileReport(design));
+        }
+    }
+
+    @Test
+    public void fillsAndExportsNativeCommunityCharts() throws Exception {
+        JasperDesign design = JRXmlLoader.load(Paths.get("..", "samples", "reports", "chartSamples.jrxml").toFile());
+        java.util.List<java.util.Map<String, ?>> rows = new java.util.ArrayList<>();
+        for (int index = 1; index <= 3; index++) {
+            java.util.Map<String, Object> row = new HashMap<>();
+            row.put("id", index); row.put("account_name", "Account " + index);
+            row.put("account_type", "Customer"); row.put("industry", "Industry " + index);
+            rows.add(row);
+        }
+        JasperPrint print = JasperFillManager.fillReport(JasperCompileManager.compileReport(design),
+                new HashMap<String, Object>(), new net.sf.jasperreports.engine.data.JRMapCollectionDataSource(rows));
+        assertFalse(print.getPages().isEmpty());
+        assertTrue(print.getPages().stream().flatMap(page -> page.getElements().stream())
+                .anyMatch(element -> element instanceof JRPrintImage));
+        assertTrue(JasperExportManager.exportReportToPdf(print).length > 1000);
+    }
+
+    @Test
+    public void exportsNativeMdxLayoutAsOrdinaryPdf() throws Exception {
+        JasperDesign design = JRXmlLoader.load(Paths.get("..", "samples", "jrxml7", "analysis",
+                "FoodmartSalesMondrianReport.jrxml").toFile());
+        assertEquals("mdx", design.getQuery().getLanguage());
+        assertEquals("false", design.getPropertiesMap().getProperty("net.sf.jasperreports.export.pdf.tagged"));
+        java.util.Map<String, Object> row = new HashMap<>();
+        for (JRField field : design.getFields()) {
+            row.put(field.getName(), String.class.equals(field.getValueClass()) ? "CA" : Integer.valueOf(100));
+        }
+        JasperPrint print = JasperFillManager.fillReport(JasperCompileManager.compileReport(design),
+                new HashMap<String, Object>(), new net.sf.jasperreports.engine.data.JRMapCollectionDataSource(
+                        java.util.Collections.<java.util.Map<String, ?>>singletonList(row)));
+        assertFalse(print.getPages().isEmpty());
+        assertTrue(JasperExportManager.exportReportToPdf(print).length > 1000);
     }
 }

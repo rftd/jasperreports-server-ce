@@ -12,7 +12,7 @@ cd /src/jasperserver/buildomatic
 mvn -B -ntp -f /src/jasperserver/pom.xml -DbuildArtifactVersionName=ci \
   -Dji-repo-releases=https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts \
   -Dji-repo-snapshots=https://jaspersoft.jfrog.io/jaspersoft/jr-ce-snapshots \
-  -pl jasperserver-custom-visualization,jasperserver-legacy-jrxml -am test
+  -pl jasperserver-custom-visualization -am test
 set +e
 ./js-ant build-ce 2>&1 | tee /tmp/backend-build.log
 build_status=${PIPESTATUS[0]}
@@ -28,6 +28,7 @@ mvn -B -ntp -f /src/jasperserver/jasperserver-war-jar/pom.xml \
   -DskipTests=false -Dtest=JSCommonControllerTest,ViewerActionMappingsTest,InteractiveTableActionsTest test
 unzip -t /src/jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
 python3 /src/scripts/verify-no-vendor-heartbeat.py /src/jasperserver/jasperserver-war/target/jasperserver.war
+python3 /src/scripts/verify-native-reports.py --war /src/jasperserver/jasperserver-war/target/jasperserver.war
 mkdir -p /opt/openjrs-webapp
 unzip -q /src/jasperserver/jasperserver-war/target/jasperserver.war -d /opt/openjrs-webapp
 rm -rf "$ks"

@@ -11,6 +11,7 @@ on:
       - 'scripts/prepare-legacy-frontend.py'
       - 'scripts/verify-legacy-war-deps.py'
       - 'scripts/verify-no-vendor-heartbeat.py'
+      - 'scripts/verify-native-reports.py'
       - 'scripts/smoke-jasperserver.sh'
       - 'scripts/test-legacy-rest-reports.sh'
       - 'scripts/test-legacy-viewer.py'
@@ -151,7 +152,9 @@ jobs:
           mvn -version
           ant -version
       - name: Check native JR7 sample catalogs
-        run: python3 scripts/sync-jr7-samples.py
+        run: |
+          python3 scripts/sync-jr7-samples.py
+          python3 scripts/verify-native-reports.py
       - name: Download frontend overlay
         uses: actions/download-artifact@v4
         with:
@@ -201,13 +204,13 @@ jobs:
           test -s "$ksp/.jrsksp"
           test -s keystore.init.properties
           echo "CI keystore generated in runner temporary storage."
-      - name: Test JR7 component registration, legacy XML and exports
+      - name: Test native JR7 reports, component registration and exports
         run: |
           mvn -B -ntp -f jasperserver/pom.xml \
             -DbuildArtifactVersionName=ci \
             -Dji-repo-releases=https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts \
             -Dji-repo-snapshots=https://jaspersoft.jfrog.io/jaspersoft/jr-ce-snapshots \
-            -pl jasperserver-custom-visualization,jasperserver-legacy-jrxml -am test
+            -pl jasperserver-custom-visualization -am test
       - name: Build original Community WAR
         working-directory: jasperserver/buildomatic
         env:
@@ -236,6 +239,7 @@ jobs:
           test -s jasperserver/jasperserver-war/target/jasperserver.war
           unzip -t jasperserver/jasperserver-war/target/jasperserver.war >/dev/null
           python3 scripts/verify-no-vendor-heartbeat.py jasperserver/jasperserver-war/target/jasperserver.war
+          python3 scripts/verify-native-reports.py --war jasperserver/jasperserver-war/target/jasperserver.war
       - name: Test legacy viewer action and resource registration
         run: |
           mvn -B -ntp -f jasperserver/jasperserver-war-jar/pom.xml \
@@ -257,7 +261,7 @@ jobs:
           set -o pipefail
           ./js-ant build-init-js-db-ce 2>&1 | tee "$RUNNER_TEMP/database-init.log"
           ./js-ant run-production-data-ce 2>&1 | tee -a "$RUNNER_TEMP/database-init.log"
-      - name: Load SugarCRM sample data and sample reports
+      - name: Load SugarCRM, Foodmart and native sample reports
         working-directory: jasperserver/buildomatic
         env:
           BUILDOMATIC_ENV: ci
@@ -272,6 +276,7 @@ jobs:
           test -s "$ks/.jrsks"
           test -s "$ksp/.jrsksp"
           ./js-ant create-sugarcrm-db load-sugarcrm-db 2>&1 | tee "$RUNNER_TEMP/sample-data.log"
+          ./js-ant create-foodmart-db load-foodmart-db 2>&1 | tee -a "$RUNNER_TEMP/sample-data.log"
           ./js-ant import-sample-data-ce 2>&1 | tee -a "$RUNNER_TEMP/sample-data.log"
       - name: Prepare runtime WAR with Buildomatic files
         run: |
@@ -305,7 +310,7 @@ jobs:
               username="postgres" password="postgres" maxTotal="10"/>
             <Resource name="jdbc/foodmart" auth="Container" type="javax.sql.DataSource"
               factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
-              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/jasperserver"
+              driverClassName="org.postgresql.Driver" url="jdbc:postgresql://127.0.0.1:5432/foodmart"
               username="postgres" password="postgres" maxTotal="10"/>
           </Context>
           EOF

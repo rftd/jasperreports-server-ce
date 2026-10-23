@@ -19,19 +19,21 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SalesByMonth" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" scriptletClass="test.TestScriptlet" resourceBundle="sales" whenResourceMissingType="Error">
+<!-- Migrated to native JasperReports 7.1.0 XML by OpenJRS contributors. -->
+<jasperReport name="SalesByMonth" dpi="72" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" scriptletClass="test.TestScriptlet" resourceBundle="sales" whenResourceMissingType="Error" uuid="492bbdcc-45f6-4edf-8f61-fae43f667333">
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="title"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="summary"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.4" value="pageFooter"/>
 	<property name="net.sf.jasperreports.export.pdf.tagged" value="true"/>
 	<property name="net.sf.jasperreports.export.pdf.tag.language" value="EN-US"/>
-	<import value="com.jaspersoft.jasperserver.api.metadata.user.domain.User"/>
-	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-	<style name="Sans_Bold" isDefault="false" fontName="SansSerif" fontSize="12" isBold="true" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-	<style name="Sans_Italic" isDefault="false" fontName="SansSerif" fontSize="12" isItalic="true" pdfFontName="Helvetica-Oblique" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-	<style name="DetailHeader" isDefault="false" style="Sans_Bold" forecolor="#FFFFFF"/>
-	<style name="Title" isDefault="false" style="Sans_Normal" lineSpacing="Single" fontSize="22"/>
+	<import></import>
+	<style name="Sans_Normal" default="true" fontName="SansSerif" fontSize="12.0" pdfFontName="Helvetica" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<style name="Sans_Bold" fontName="SansSerif" fontSize="12.0" bold="true" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<style name="Sans_Italic" fontName="SansSerif" fontSize="12.0" italic="true" pdfFontName="Helvetica-Oblique" pdfEncoding="Cp1252" pdfEmbedded="false"/>
+	<style name="DetailHeader" style="Sans_Bold" forecolor="#FFFFFF"/>
+	<style name="Title" style="Sans_Normal" fontSize="22.0">
+		<paragraph lineSpacing="Single"/>
+	</style>
 	<parameter name="TextInput" class="java.lang.Integer"/>
 	<parameter name="CheckboxInput" class="java.lang.Boolean">
 		<defaultValueExpression><![CDATA[new Boolean("true")]]></defaultValueExpression>
@@ -42,181 +44,121 @@
 	<parameter name="DateInput" class="java.util.Date"/>
 	<parameter name="QueryInput" class="java.lang.String"/>
 	<parameter name="LoggedInUser" class="com.jaspersoft.jasperserver.api.metadata.user.domain.User"/>
-	<queryString>
-		<![CDATA[SELECT DISTINCT
+	<query language="sql"><![CDATA[
+		SELECT DISTINCT
 			sales_date_of_close.close_year as close_year,
 			sales_date_of_close.close_month as close_month,
 			sales_date_of_close.close_month_name as close_month_name
 		FROM
 		    sales_date_of_close
-		ORDER BY sales_date_of_close.close_year, sales_date_of_close.close_month]]>
-	</queryString>
+		ORDER BY sales_date_of_close.close_year, sales_date_of_close.close_month
+	]]></query>
 	<field name="close_year" class="java.lang.Short"/>
 	<field name="close_month" class="java.lang.Short"/>
 	<field name="close_month_name" class="java.lang.String"/>
-	<variable name="MonthAmount" class="java.lang.Float" calculation="System"/>
-	<title>
-		<band height="220" splitType="Stretch">
-			<line>
-				<reportElement x="0" y="1" width="515" height="1" forecolor="#000000"/>
-			</line>
-			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
-				<reportElement x="0" y="10" width="150" height="26"/>
-				<imageExpression class="java.lang.String"><![CDATA["repo:/images/JRLogo"]]></imageExpression>
-				<hyperlinkTooltipExpression><![CDATA["JasperReports Logo"]]></hyperlinkTooltipExpression>
-			</image>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Title" x="160" y="10" width="355" height="30"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{title}]]></textFieldExpression>
-			</textField>
-			<frame>
-				<reportElement style="Title" positionType="Float" x="160" y="40" width="300" height="30" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[Boolean.valueOf($P{TextInput} != null)]]></printWhenExpression>
-				</reportElement>
-				<textField>
-					<reportElement style="Title" x="0" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$R{param.number}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,###" isBlankWhenNull="true">
-					<reportElement style="Title" x="150" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Number"><![CDATA[$P{TextInput}]]></textFieldExpression>
-				</textField>
-			</frame>
-			<textField>
-				<reportElement style="Title" positionType="Float" x="160" y="70" width="300" height="30" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[$P{CheckboxInput}]]></printWhenExpression>
-				</reportElement>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$R{param.checkbox}]]></textFieldExpression>
-			</textField>
-			<frame>
-				<reportElement style="Title" positionType="Float" x="160" y="100" width="300" height="30" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[Boolean.valueOf($P{ListInput} != null)]]></printWhenExpression>
-				</reportElement>
-				<textField>
-					<reportElement style="Title" x="0" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$R{param.list}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement style="Title" x="150" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$P{ListInput}]]></textFieldExpression>
-				</textField>
-			</frame>
-			<frame>
-				<reportElement style="Title" positionType="Float" x="160" y="130" width="300" height="30" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[Boolean.valueOf($P{DateInput} != null)]]></printWhenExpression>
-				</reportElement>
-				<textField>
-					<reportElement style="Title" x="0" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$R{param.date}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="medium,hide" isBlankWhenNull="true">
-					<reportElement style="Title" x="150" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.util.Date"><![CDATA[$P{DateInput}]]></textFieldExpression>
-				</textField>
-			</frame>
-			<frame>
-				<reportElement style="Title" positionType="Float" x="160" y="160" width="300" height="30" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[Boolean.valueOf($P{QueryInput} != null)]]></printWhenExpression>
-				</reportElement>
-				<textField>
-					<reportElement style="Title" x="0" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$R{param.query}]]></textFieldExpression>
-				</textField>
-				<textField isBlankWhenNull="true">
-					<reportElement style="Title" x="150" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$P{QueryInput}]]></textFieldExpression>
-				</textField>
-			</frame>
-			<frame>
-				<reportElement style="Title" positionType="Float" x="160" y="190" width="300" height="30" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[Boolean.valueOf($P{LoggedInUser} != null)]]></printWhenExpression>
-				</reportElement>
-				<textField>
-					<reportElement style="Title" x="0" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$R{param.user}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement style="Title" x="150" y="0" width="150" height="30"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$P{LoggedInUser}.getFullName()]]></textFieldExpression>
-				</textField>
-			</frame>
-		</band>
+	<variable name="MonthAmount" calculation="System" class="java.lang.Float"/>
+	<title height="220" splitType="Stretch">
+		<element kind="line" uuid="2dd84277-336f-4db4-ac50-69b202188bd6" x="0" y="1" width="515" height="1" forecolor="#000000"/>
+		<element kind="image" uuid="32d442fd-39fc-44a1-9a5e-7085da205338" x="0" y="10" width="150" height="26" scaleImage="RetainShape" hImageAlign="Center" vImageAlign="Middle">
+			<expression><![CDATA["repo:/images/JRLogo"]]></expression>
+			<hyperlinkTooltipExpression><![CDATA["JasperReports Logo"]]></hyperlinkTooltipExpression>
+		</element>
+		<element kind="textField" uuid="6cd20b85-69cb-4396-9e27-6e88896b80e7" x="160" y="10" width="355" height="30" textAdjust="StretchHeight" blankWhenNull="true" style="Title">
+			<expression><![CDATA[$R{title}]]></expression>
+		</element>
+		<element kind="frame" uuid="a0da414d-2904-4e66-a327-18509de3d35d" x="160" y="40" width="300" height="30" positionType="Float" removeLineWhenBlank="true" style="Title">
+			<printWhenExpression><![CDATA[Boolean.valueOf($P{TextInput} != null)]]></printWhenExpression>
+			<element kind="textField" uuid="d53ce641-b8b2-4067-9ff5-7053a92df089" x="0" y="0" width="150" height="30" style="Title">
+				<expression><![CDATA[$R{param.number}]]></expression>
+			</element>
+			<element kind="textField" uuid="cb8dbe1a-2c9d-4406-9a8a-b5afb9dff458" x="150" y="0" width="150" height="30" pattern="#,###" blankWhenNull="true" style="Title">
+				<expression><![CDATA[$P{TextInput}]]></expression>
+			</element>
+		</element>
+		<element kind="textField" uuid="a4b53036-91de-4196-8ab2-f39accd99ef8" x="160" y="70" width="300" height="30" positionType="Float" removeLineWhenBlank="true" style="Title">
+			<printWhenExpression><![CDATA[$P{CheckboxInput}]]></printWhenExpression>
+			<expression><![CDATA[$R{param.checkbox}]]></expression>
+		</element>
+		<element kind="frame" uuid="3b3c3f9c-2fed-4a9b-8065-a929a1755720" x="160" y="100" width="300" height="30" positionType="Float" removeLineWhenBlank="true" style="Title">
+			<printWhenExpression><![CDATA[Boolean.valueOf($P{ListInput} != null)]]></printWhenExpression>
+			<element kind="textField" uuid="d5519e7d-d730-4e28-8e0c-d5daa57c6de2" x="0" y="0" width="150" height="30" style="Title">
+				<expression><![CDATA[$R{param.list}]]></expression>
+			</element>
+			<element kind="textField" uuid="d57545d6-a878-45d6-b815-ff121b3a18ec" x="150" y="0" width="150" height="30" blankWhenNull="true" style="Title">
+				<expression><![CDATA[$P{ListInput}]]></expression>
+			</element>
+		</element>
+		<element kind="frame" uuid="8891b970-3638-4f5d-8b38-b2ea4bd494a4" x="160" y="130" width="300" height="30" positionType="Float" removeLineWhenBlank="true" style="Title">
+			<printWhenExpression><![CDATA[Boolean.valueOf($P{DateInput} != null)]]></printWhenExpression>
+			<element kind="textField" uuid="8492dfe6-4da6-41a5-9cf7-fcae580abb70" x="0" y="0" width="150" height="30" style="Title">
+				<expression><![CDATA[$R{param.date}]]></expression>
+			</element>
+			<element kind="textField" uuid="96fa2071-4660-403c-bc02-6ff2c6ce997c" x="150" y="0" width="150" height="30" textAdjust="StretchHeight" pattern="medium,hide" blankWhenNull="true" style="Title">
+				<expression><![CDATA[$P{DateInput}]]></expression>
+			</element>
+		</element>
+		<element kind="frame" uuid="f653c4c0-fd4f-4480-b0a5-8afd271fe9db" x="160" y="160" width="300" height="30" positionType="Float" removeLineWhenBlank="true" style="Title">
+			<printWhenExpression><![CDATA[Boolean.valueOf($P{QueryInput} != null)]]></printWhenExpression>
+			<element kind="textField" uuid="b81a90ca-c5e6-41c2-8ee6-9c79ed0e4c80" x="0" y="0" width="150" height="30" style="Title">
+				<expression><![CDATA[$R{param.query}]]></expression>
+			</element>
+			<element kind="textField" uuid="1e559cdb-a21d-4ccf-904f-bc00c585aa91" x="150" y="0" width="150" height="30" blankWhenNull="true" style="Title">
+				<expression><![CDATA[$P{QueryInput}]]></expression>
+			</element>
+		</element>
+		<element kind="frame" uuid="9a3582ad-a575-41fc-80f5-99fda8f86633" x="160" y="190" width="300" height="30" positionType="Float" removeLineWhenBlank="true" style="Title">
+			<printWhenExpression><![CDATA[Boolean.valueOf($P{LoggedInUser} != null)]]></printWhenExpression>
+			<element kind="textField" uuid="6a42323f-ce2c-49ed-8910-0c0250f7af3f" x="0" y="0" width="150" height="30" style="Title">
+				<expression><![CDATA[$R{param.user}]]></expression>
+			</element>
+			<element kind="textField" uuid="8ba780c8-56f7-49d5-a528-461a7cf59ce7" x="150" y="0" width="150" height="30" textAdjust="StretchHeight" blankWhenNull="true" style="Title">
+				<expression><![CDATA[$P{LoggedInUser}.getFullName()]]></expression>
+			</element>
+		</element>
 	</title>
 	<detail>
 		<band height="50" splitType="Stretch">
-			<frame>
-				<reportElement mode="Opaque" x="0" y="0" width="515" height="16" backcolor="#333333">
-					<property name="net.sf.jasperreports.export.pdf.tag.h1" value="full"/>
-				</reportElement>
+			<element kind="frame" uuid="cc83111a-8eb7-47ae-b29b-f89450e8725b" x="0" y="0" width="515" height="16" backcolor="#333333" mode="Opaque">
+				<property name="net.sf.jasperreports.export.pdf.tag.h1" value="full"/>
 				<box>
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
 				</box>
-				<textField>
-					<reportElement style="DetailHeader" x="20" y="0" width="200" height="16"/>
-					<textElement textAlignment="Left"/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{close_month_name}+ ", " + $F{close_year}]]></textFieldExpression>
-				</textField>
-				<textField evaluationTime="Band" pattern="#0.00">
-					<reportElement style="DetailHeader" x="410" y="0" width="95" height="16"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression class="java.lang.Float"><![CDATA[$V{MonthAmount}]]></textFieldExpression>
-				</textField>
-			</frame>
-			<subreport>
-				<reportElement x="0" y="16" width="515" height="25"/>
-				<subreportParameter name="CloseMonth">
-					<subreportParameterExpression><![CDATA[$F{close_month}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="CloseYear">
-					<subreportParameterExpression><![CDATA[$F{close_year}]]></subreportParameterExpression>
-				</subreportParameter>
+				<element kind="textField" uuid="8ba4f190-16dc-4ee9-9edc-13fca7b4f9fa" x="20" y="0" width="200" height="16" hTextAlign="Left" style="DetailHeader">
+					<expression><![CDATA[$F{close_month_name}+ ", " + $F{close_year}]]></expression>
+				</element>
+				<element kind="textField" uuid="4c06170e-30c0-4656-b553-19c38c3578f6" x="410" y="0" width="95" height="16" evaluationTime="Band" pattern="#0.00" hTextAlign="Right" style="DetailHeader">
+					<expression><![CDATA[$V{MonthAmount}]]></expression>
+				</element>
+			</element>
+			<element kind="subreport" uuid="7bc6efa2-77e2-40f7-b951-2cfcd13de11a" x="0" y="16" width="515" height="25">
+				<parameter name="CloseMonth">
+					<expression><![CDATA[$F{close_month}]]></expression>
+				</parameter>
+				<parameter name="CloseYear">
+					<expression><![CDATA[$F{close_year}]]></expression>
+				</parameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<returnValue subreportVariable="totalAmount" toVariable="MonthAmount"/>
-				<subreportExpression class="java.lang.String"><![CDATA["repo:SalesByMonthDetail"]]></subreportExpression>
-			</subreport>
+				<expression><![CDATA["repo:SalesByMonthDetail"]]></expression>
+				<returnValue toVariable="MonthAmount" subreportVariable="totalAmount"/>
+			</element>
 		</band>
 	</detail>
-	<pageFooter>
-		<band height="40" splitType="Stretch">
-			<line>
-				<reportElement x="0" y="10" width="515" height="1"/>
-			</line>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="200" y="20" width="80" height="16"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" evaluationTime="Report">
-				<reportElement x="280" y="20" width="75" height="16"/>
-				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
-			</textField>
-		</band>
+	<pageFooter height="40" splitType="Stretch">
+		<element kind="line" uuid="c24b0ee0-abb8-408d-ba63-b7ac02ba6e6f" x="0" y="10" width="515" height="1"/>
+		<element kind="textField" uuid="6ffdfe34-aa93-4e62-abf4-54e9eecd32d2" x="200" y="20" width="80" height="16" textAdjust="StretchHeight" hTextAlign="Right">
+			<expression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></expression>
+		</element>
+		<element kind="textField" uuid="01e60498-59e9-4eb0-8341-f56c720dcd41" x="280" y="20" width="75" height="16" textAdjust="StretchHeight" evaluationTime="Report" hTextAlign="Left">
+			<expression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></expression>
+		</element>
 	</pageFooter>
-	<summary>
-		<band height="100" splitType="Stretch">
-			<image scaleImage="Clip" hAlign="Center" vAlign="Middle">
-				<reportElement x="0" y="10" width="515" height="70"/>
-				<imageExpression class="java.lang.String"><![CDATA["repo:Logo"]]></imageExpression>
-				<hyperlinkTooltipExpression><![CDATA["JasperReports Logo"]]></hyperlinkTooltipExpression>
-			</image>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="100" y="80" width="315" height="20"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_SCRIPTLET}.message()]]></textFieldExpression>
-			</textField>
-		</band>
+	<summary height="100" splitType="Stretch">
+		<element kind="image" uuid="bbb5c3fb-a07b-4be5-b9fe-73c25e58eb93" x="0" y="10" width="515" height="70" scaleImage="Clip" hImageAlign="Center" vImageAlign="Middle">
+			<expression><![CDATA["repo:Logo"]]></expression>
+			<hyperlinkTooltipExpression><![CDATA["JasperReports Logo"]]></hyperlinkTooltipExpression>
+		</element>
+		<element kind="textField" uuid="d0a89cf7-b64e-435e-8565-ee26b7eccf99" x="100" y="80" width="315" height="20" textAdjust="StretchHeight" hTextAlign="Center" vTextAlign="Bottom">
+			<expression><![CDATA[$P{REPORT_SCRIPTLET}.message()]]></expression>
+		</element>
 	</summary>
 </jasperReport>

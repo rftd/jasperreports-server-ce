@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate native JR7 employee samples, real drilldown and PDF/XLSX exports."""
+"""Validate native Community JRXML, employee drilldown and SQL/MDX exports."""
 import base64
 from io import BytesIO
 import json
@@ -79,6 +79,24 @@ def main():
                             assert any(n.startswith("xl/worksheets/sheet") for n in archive.namelist())
                     (output / (report + "." + extension)).write_bytes(data)
             checks.append("Employees and EmployeeAccounts PDF/XLSX exports")
+            page.goto(base + "/flow.html?_flowId=viewReportFlow&reportUnit=/analysis/reports/FoodmartSalesMondrianReport&standAlone=true",
+                      wait_until="domcontentloaded")
+            page.wait_for_selector(".jrPage", timeout=150000)
+            page.wait_for_function("!document.querySelector('#export').disabled", timeout=150000)
+            assert "Sales" in page.locator(".jrPage").first.inner_text()
+            page.screenshot(path=str(output / "foodmart.png"), full_page=True)
+            for extension in ("pdf", "xlsx"):
+                response = api.get(base + "/rest_v2/reports/analysis/reports/FoodmartSalesMondrianReport." + extension,
+                                   timeout=180000)
+                assert response.status == 200, f"Foodmart.{extension}: HTTP {response.status}"
+                data = response.body()
+                if extension == "pdf":
+                    assert data.startswith(b"%PDF-") and len(data) > 1000
+                else:
+                    with ZipFile(BytesIO(data)) as archive:
+                        assert archive.testzip() is None and "xl/workbook.xml" in archive.namelist()
+                (output / ("Foodmart." + extension)).write_bytes(data)
+            checks.append("Native MDX Foodmart viewer and PDF/XLSX exports")
             assert not errors, errors
             assert not failed, failed
         except Exception:
