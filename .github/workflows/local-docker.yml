@@ -13,6 +13,9 @@ on:
       - 'scripts/test-openjrs-branding.py'
       - 'scripts/test-legacy-viewer.py'
       - 'scripts/test-sample-map-table.py'
+      - 'scripts/sync-jr7-samples.py'
+      - 'scripts/update-native-samples.py'
+      - 'scripts/test-native-samples.py'
       - 'scripts/verify-no-vendor-heartbeat.py'
       - 'docker/local/**'
       - '.github/workflows/local-docker.yml'
@@ -42,6 +45,7 @@ jobs:
           docker compose config --quiet
           bash -n docker/local/*.sh
           python3 -m py_compile docker/local/configure.py
+          python3 scripts/sync-jr7-samples.py
       - name: Build frontend, backend, initializer and runtime images
         run: |
           set -o pipefail
@@ -71,6 +75,8 @@ jobs:
         run: |
           docker compose cp jasperserver/jasperserver-custom-visualization/src/test/resources/map-test-tile.png openjrs:/usr/local/tomcat/webapps/jasperserver/scripts/openjrs-map-test-tile.png
           python3 scripts/test-sample-map-table.py
+      - name: Check native JR7 employee samples and drilldown
+        run: python3 scripts/test-native-samples.py
       - name: Check sandboxed Chromium in the runtime image
         run: docker compose exec -T openjrs chromium --headless --disable-gpu --dump-dom about:blank
       - name: Export a Community visualization using Chromium inside Tomcat
@@ -96,6 +102,7 @@ jobs:
             ${{ runner.temp }}/viewer-smoke/**
             ${{ runner.temp }}/docker-cv.pdf
             ${{ runner.temp }}/map-table-tests/**
+            ${{ runner.temp }}/native-sample-tests/**
           retention-days: 7
       - name: Remove disposable CI environment
         if: always()

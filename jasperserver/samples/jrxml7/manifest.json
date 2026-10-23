@@ -1,0 +1,20 @@
+{
+  "catalogs": [
+    "js-catalog-postgresql-ce.zip",
+    "js-catalog-mysql-ce.zip"
+  ],
+  "reports": [
+    {
+      "uri": "/analysis/reports/Employees",
+      "file": "analysis/Employees.jrxml",
+      "resource": "/analysis/reports/Employees_files/EmployeesJRXML",
+      "legacySha256": "b253d3082a81805820a252de1e786d2468192ae3ef5248d1351c63e39e5d31a2"
+    },
+    {
+      "uri": "/analysis/reports/EmployeeAccounts",
+      "file": "analysis/EmployeeAccounts.jrxml",
+      "resource": "/analysis/reports/EmployeeAccounts_files/EmployeeAccountsJRXML",
+      "legacySha256": "b3e65c197b729f1a33d9c3ce152d4cb55e79441a1cfc13c1d154409dda8c90e1"
+    }
+  ]
+}

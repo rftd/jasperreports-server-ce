@@ -15,6 +15,9 @@ on:
       - 'scripts/test-legacy-rest-reports.sh'
       - 'scripts/test-legacy-viewer.py'
       - 'scripts/test-sample-map-table.py'
+      - 'scripts/sync-jr7-samples.py'
+      - 'scripts/update-native-samples.py'
+      - 'scripts/test-native-samples.py'
   push:
     branches:
       - feature/jasperreports-7-migration
@@ -147,6 +150,8 @@ jobs:
           java -version
           mvn -version
           ant -version
+      - name: Check native JR7 sample catalogs
+        run: python3 scripts/sync-jr7-samples.py
       - name: Download frontend overlay
         uses: actions/download-artifact@v4
         with:
@@ -335,6 +340,7 @@ jobs:
         run: |
           python3 scripts/test-legacy-viewer.py
           python3 scripts/test-sample-map-table.py
+          python3 scripts/test-native-samples.py
       - name: Render Community visualization SVG and PDF in Chrome
         run: |
           chrome_path=$(command -v google-chrome)
@@ -372,6 +378,7 @@ jobs:
             ${{ runner.temp }}/jrs-login-headers.txt
             ${{ runner.temp }}/viewer-smoke/**
             ${{ runner.temp }}/map-table-tests/**
+            ${{ runner.temp }}/native-sample-tests/**
             jasperserver/jasperserver-custom-visualization/target/cv-browser/**
           if-no-files-found: ignore
           retention-days: 7

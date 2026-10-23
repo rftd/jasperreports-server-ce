@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -20,6 +21,54 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class LegacyReportLoaderTest {
+    @Test
+    public void loadsNativeEmployeeSamplesWithoutTheLegacyAdapter() throws Exception {
+        for (String name : new String[] {"Employees", "EmployeeAccounts"}) {
+            byte[] xml = Files.readAllBytes(Paths.get("..", "samples", "jrxml7", "analysis", name + ".jrxml"));
+            JasperReportsContext context = DefaultJasperReportsContext.getInstance();
+            assertFalse("Native samples must not need the legacy loader",
+                    new LegacyReportLoader().loadReport(context, xml).isPresent());
+            JasperDesign design = net.sf.jasperreports.engine.xml.JacksonReportLoader.instance()
+                    .loadReport(context, xml).get();
+            assertEquals(name, design.getName());
+            assertEquals("false", design.getPropertiesMap().getProperty("net.sf.jasperreports.export.pdf.tagged"));
+            assertTrue(design.getQuery().getText().contains("Employees".equals(name) ? "FROM users" : "FROM accounts"));
+            if ("EmployeeAccounts".equals(name)) {
+                assertTrue(design.getQuery().getText().contains("assigned_user_id = $P{EmployeeID}"));
+            }
+            if ("Employees".equals(name)) {
+                JRImage logo = (JRImage) design.getTitle().getElements()[0];
+                assertEquals(net.sf.jasperreports.engine.type.HorizontalImageAlignEnum.RIGHT,
+                        logo.getHorizontalImageAlign());
+                assertEquals("\"repo:/images/JRLogo\"", logo.getExpression().getText());
+            }
+            assertEquals(5, design.getStyles().length);
+            assertNotNull(JasperCompileManager.compileReport(design));
+            try (ZipFile zip = new ZipFile(Paths.get("..", "buildomatic", "install_resources", "export",
+                    "js-catalog-postgresql-ce.zip").toFile())) {
+                assertArrayEquals(xml, read(zip.getInputStream(zip.getEntry(
+                        "resources/analysis/reports/" + name + "_files/" + name + "JRXML.data"))));
+            }
+            if ("Employees".equals(name)) {
+                JRFrame row = (JRFrame) design.getDetailSection().getBands()[0].getElements()[0];
+                JRTextField link = (JRTextField) row.getElements()[4];
+                assertEquals("ReportExecution", link.getLinkType());
+                assertEquals("\"/analysis/reports/EmployeeAccounts\"",
+                        link.getHyperlinkParameters()[0].getValueExpression().getText());
+                assertEquals("$F{id}", link.getHyperlinkParameters()[1].getValueExpression().getText());
+            }
+        }
+    }
+
+    private static byte[] read(InputStream stream) throws Exception {
+        try (InputStream input = stream; java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int size;
+            while ((size = input.read(buffer)) != -1) output.write(buffer, 0, size);
+            return output.toByteArray();
+        }
+    }
+
     private static final String OLD = "<jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" "
             + "name=\"legacy\" pageWidth=\"300\" pageHeight=\"200\" columnWidth=\"260\" leftMargin=\"20\" rightMargin=\"20\" topMargin=\"20\" bottomMargin=\"20\">"
             + "<style name=\"default\" isDefault=\"true\" fontName=\"SansSerif\" fontSize=\"10\" isBold=\"true\"/>"

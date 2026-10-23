@@ -1,5 +1,29 @@
 # OpenJRS Server — JasperReports Server CE migration baseline
 
+## Native JR7 employee samples
+
+The bundled `/analysis/reports/Employees` and `EmployeeAccounts` definitions now
+use native JasperReports 7.1.0 XML. This fixes the obsolete image `hAlign` attribute
+and text-element line spacing while retaining data queries, styles,
+logo and EmployeeID drilldown. Both are loaded directly by the official Jackson
+loader, without the legacy report adapter. PostgreSQL/MySQL CE catalogs contain
+the native definitions; other samples and user reports retain compatibility support.
+
+**BREAKING CHANGE — PDF accessibility:** these two sample definitions now set
+`net.sf.jasperreports.export.pdf.tagged=false` and export ordinary, untagged PDF.
+JasperReports 7.1.0 Community's default PDF tagger rejects tagged export; the
+official silent factory also produces untagged output. This is not accessible
+tagged PDF or a PDF/UA compliance claim. PDF accessibility is deferred to separate
+work. Existing structural tag properties remain in the JRXML for that work but
+have no effect while tagging is disabled. This changes only these two samples:
+there is no global silent tagger or override of users' report settings.
+
+Existing databases preserve their stored reports on image rebuild. From an updated
+checkout with the local server running, `python3 scripts/update-native-samples.py`
+previews the upgrade and `--apply` backs up and updates only known unmodified
+originals. Customized files are refused, versions are checked and volumes are
+preserved. See [native sample sources and upgrade instructions](jasperserver/samples/jrxml7/README.md).
+
 ## Table Report and OpenStreetMap example
 
 The shipped legacy Table Report now converts hyperlink parameter expressions
